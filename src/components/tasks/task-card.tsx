@@ -8,6 +8,7 @@ import { useQuickAdd } from "@/components/app/quick-add-provider"
 import { TaskForm } from "@/components/tasks/task-form"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
@@ -70,7 +71,7 @@ export function TaskCard({ task, highlightDue = true }: { task: TaskRow; highlig
 
   return (
     <>
-      <div className="group flex items-start gap-3 rounded-lg border border-border-subtle bg-surface-1 p-3 transition-colors hover:bg-surface-2">
+      <Card size="sm" className="group flex-row items-start gap-3 transition-colors hover:bg-surface-2">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center">
           <Checkbox
             checked={task.status === "done"}
@@ -176,7 +177,7 @@ export function TaskCard({ task, highlightDue = true }: { task: TaskRow; highlig
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </div>
+      </Card>
 
       <TaskForm open={editing} onOpenChange={setEditing} task={task} />
     </>

@@ -8,6 +8,8 @@ import { useGoals, useProjects } from "@/hooks/use-data"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Card } from "@/components/ui/card"
+import { PageHeader } from "@/components/ui/page-header"
 import { toast } from "sonner"
 import { CalendarClock, Flag, AlarmClock, AlertTriangle, CheckCircle2, GitBranch, Target } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -149,13 +151,13 @@ export default function ReviewPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Weekly review</h1>
-        <p className="mt-1 text-sm text-text-secondary">A 2-minute pass to catch drift. Nothing to fill in — just look.</p>
-      </div>
+    <div className="mx-auto max-w-3xl space-y-6">
+      <PageHeader
+        title="Weekly review"
+        description="A 2-minute pass to catch drift. Nothing to fill in — just look."
+      />
 
-      <div className="flex items-center justify-between rounded-xl border border-border-subtle bg-surface-1 p-4">
+      <Card className="flex-row items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="rounded-lg bg-surface-2 p-2 text-accent-success">
             <CheckCircle2 className="h-5 w-5" />
@@ -171,7 +173,7 @@ export default function ReviewPage() {
             </p>
           </div>
         </div>
-      </div>
+      </Card>
 
       {goalsSlipping.length > 0 && (
         <Section
@@ -335,7 +337,7 @@ function Section({
     <section className="space-y-3">
       <div className="flex items-center gap-2">
         <span className={cn("flex h-6 w-6 items-center justify-center rounded-md bg-surface-2", tone)}>{icon}</span>
-        <h2 className="text-base font-semibold">{title}</h2>
+        <h2 className="text-sm font-semibold">{title}</h2>
       </div>
       <p className="text-xs text-text-secondary">{body}</p>
       {children}

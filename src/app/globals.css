@@ -291,3 +291,34 @@
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-disabled);
 }
+
+/* 🌙 Neon ADHD Mode — Electric high-contrast dopamine palette */
+.theme-neon,
+[data-theme="neon"] {
+  --surface-base: #05060b;
+  --surface-1: #0a0d16;
+  --surface-2: #131726;
+  --surface-3: #1d2338;
+  --border-subtle: #2e3857;
+  --accent-primary: #00f3ff;
+  --accent-warm: #ff007f;
+  --accent-success: #39ff14;
+  --accent-danger: #ff2a6d;
+  --text-primary: #ffffff;
+  --text-secondary: #a3b2d1;
+  --text-disabled: #55668c;
+
+  --background: #05060b;
+  --foreground: #ffffff;
+  --card: #0a0d16;
+  --card-foreground: #ffffff;
+  --popover: #131726;
+  --popover-foreground: #ffffff;
+  --primary: #00f3ff;
+  --primary-foreground: #05060b;
+  --secondary: #131726;
+  --secondary-foreground: #a3b2d1;
+  --border: #2e3857;
+  --input: #2e3857;
+  --ring: #00f3ff;
+}

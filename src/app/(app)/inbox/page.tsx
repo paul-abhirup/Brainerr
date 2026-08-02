@@ -9,6 +9,8 @@ import { TaskCard } from "@/components/tasks/task-card"
 import { TaskForm } from "@/components/tasks/task-form"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { PageHeader } from "@/components/ui/page-header"
+import { EmptyState } from "@/components/ui/empty-state"
 import { toast } from "sonner"
 import { Plus, Dices, Loader2, Inbox as InboxIcon } from "lucide-react"
 
@@ -80,24 +82,22 @@ export default function InboxPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Inbox</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Everything unsorted lands here. Triage it whenever you like.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={pickForMe}>
-            <Dices className="mr-2 h-4 w-4" />
-            Pick for me
-          </Button>
-          <Button onClick={() => setFormOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            New task
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Inbox"
+        description="Everything unsorted lands here. Triage it whenever you like."
+        actions={
+          <>
+            <Button variant="outline" onClick={pickForMe}>
+              <Dices className="mr-2 h-4 w-4" />
+              Pick for me
+            </Button>
+            <Button onClick={() => setFormOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              New task
+            </Button>
+          </>
+        }
+      />
 
       <form onSubmit={handleQuickAdd} className="flex gap-2">
         <Input
@@ -118,14 +118,16 @@ export default function InboxPage() {
           ))}
         </div>
       ) : sorted.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border-subtle py-16 text-center">
-          <InboxIcon className="h-8 w-8 text-text-disabled" />
-          <p className="text-sm text-text-secondary">Your inbox is empty</p>
-          <p className="text-xs text-text-disabled">Capture the first thing on your mind.</p>
-          <Button variant="outline" size="sm" onClick={() => setFormOpen(true)}>
-            Add your first task
-          </Button>
-        </div>
+        <EmptyState
+          icon={<InboxIcon className="h-8 w-8 text-text-disabled" />}
+          title="Your inbox is empty"
+          description="Capture the first thing on your mind."
+          action={
+            <Button variant="outline" size="sm" onClick={() => setFormOpen(true)}>
+              Add your first task
+            </Button>
+          }
+        />
       ) : (
         <div className="space-y-2">
           {sorted.map((task) => (

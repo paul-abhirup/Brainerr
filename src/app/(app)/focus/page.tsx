@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner"
 import { Play, Pause, RotateCcw, Check, Music, Volume2, VolumeX, Flame, Sparkles, Keyboard } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { PostFocusBreakModal } from "@/components/app/post-focus-break-modal"
 
 type SoundPreset = "none" | "white" | "binaural" | "lo-fi"
 
@@ -25,6 +26,8 @@ export default function FocusPage() {
   const [taskId, setTaskId] = useState<string>("")
   const [sound, setSound] = useState<SoundPreset>("none")
   const [elapsed, setElapsed] = useState(0)
+  const [breakModalOpen, setBreakModalOpen] = useState(false)
+
 
   const audioCtxRef = useRef<AudioContext | null>(null)
   const noiseNodes = useRef<{ source: AudioBufferSourceNode; gain: GainNode } | null>(null)
@@ -110,6 +113,7 @@ export default function FocusPage() {
     }
     await qc.invalidateQueries({ queryKey: ["tasks"] })
     toast.success("Session complete! Great work maintaining focus.")
+    setBreakModalOpen(true)
   }
 
   function reset() {
@@ -320,9 +324,9 @@ export default function FocusPage() {
       </div>
 
       {/* Shortcut hint */}
-      <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-text-disabled">
+      <div className="hidden sm:flex items-center gap-1.5 text-xs text-text-disabled">
         <Keyboard className="h-3.5 w-3.5" />
-        <span>Press <kbd className="px-1.5 py-0.5 rounded bg-surface-2 border border-border-subtle font-mono text-[10px]">Space</kbd> to toggle, <kbd className="px-1.5 py-0.5 rounded bg-surface-2 border border-border-subtle font-mono text-[10px]">R</kbd> to reset</span>
+        <span>Press <kbd className="px-1.5 py-0.5 rounded bg-surface-2 border border-border-subtle font-mono text-xs">Space</kbd> to toggle, <kbd className="px-1.5 py-0.5 rounded bg-surface-2 border border-border-subtle font-mono text-xs">R</kbd> to reset</span>
       </div>
 
       {/* Ambient Sound Selector */}
@@ -361,6 +365,13 @@ export default function FocusPage() {
           {Math.round(elapsed / 60)} minute{Math.round(elapsed / 60) > 1 ? "s" : ""} focused and logged.
         </div>
       )}
+
+      {/* 🎉 Post-Focus Rest & Stretch Modal */}
+      <PostFocusBreakModal
+        open={breakModalOpen}
+        onOpenChange={setBreakModalOpen}
+        sessionMinutes={duration}
+      />
     </div>
   )
 }

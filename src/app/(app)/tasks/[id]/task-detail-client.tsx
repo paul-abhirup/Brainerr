@@ -8,9 +8,11 @@ import { useUpdateTask, useDeleteTask } from "@/hooks/use-tasks"
 import { TaskForm } from "@/components/tasks/task-form"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { PageHeader } from "@/components/ui/page-header"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
-import { ArrowLeft, Calendar, Clock, Link2, ListTodo, Pencil, StickyNote, Timer, Trash2 } from "lucide-react"
+import { Calendar, Clock, Link2, ListTodo, Pencil, StickyNote, Timer, Trash2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type Row = {
@@ -125,33 +127,16 @@ export function TaskDetailClient({
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <Link href="/inbox" className="flex items-center gap-1 text-sm text-text-secondary hover:text-text-primary">
-        <ArrowLeft className="h-4 w-4" /> Inbox
-      </Link>
-
-      <div className="rounded-xl border border-border-subtle bg-surface-1 p-6">
-        <div className="flex items-start gap-4">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center">
-            <Checkbox
-              checked={task.status === "done"}
-              onCheckedChange={toggleDone}
-              className="h-5 w-5 rounded-md data-[state=checked]:bg-accent-success data-[state=checked]:text-surface-base"
-            />
-          </div>
-          <div className="min-w-0 flex-1">
-            <h1 className={cn("text-xl font-semibold tracking-tight", task.status === "done" && "text-text-disabled line-through")}>
-              {task.title}
-            </h1>
-            {task.description && (
-              <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-text-secondary">{task.description}</p>
-            )}
-            <div className="mt-4 flex flex-wrap gap-2">
-              <Meta icon={Calendar} label={task.due_date ? `Due ${format(new Date(task.due_date), "EEE, MMM d h:mm a")}` : "No due date"} />
-              <Meta icon={Clock} label={task.scheduled_start ? `Planned ${format(new Date(task.scheduled_start), "EEE, MMM d h:mm a")}` : "Not scheduled"} />
-              <Meta icon={Timer} label={task.estimated_minutes ? `${task.estimated_minutes}m est${task.actual_minutes ? ` · ${task.actual_minutes}m actual` : ""}` : "No estimate"} />
-              {task.reschedule_count > 0 && <Meta label={`rescheduled ×${task.reschedule_count}`} />}
-            </div>
-          </div>
+      <PageHeader
+        backHref="/inbox"
+        backLabel="Inbox"
+        title={
+          <span className={cn("break-words", task.status === "done" && "text-text-disabled line-through")}>
+            {task.title}
+          </span>
+        }
+        description={task.description ?? undefined}
+        actions={
           <div className="flex shrink-0 gap-1.5">
             <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
               <Pencil className="mr-1.5 h-3.5 w-3.5" /> Edit
@@ -160,9 +145,29 @@ export function TaskDetailClient({
               <Trash2 className="h-3.5 w-3.5" />
             </Button>
           </div>
+        }
+      />
+
+      <Card size="lg" className="gap-4">
+        <div className="flex items-center gap-3">
+          <Checkbox
+            checked={task.status === "done"}
+            onCheckedChange={toggleDone}
+            className="h-5 w-5 rounded-md data-[state=checked]:bg-accent-success data-[state=checked]:text-surface-base"
+          />
+          <span className={cn("text-sm font-medium", task.status === "done" ? "text-text-disabled" : "text-text-secondary")}>
+            {task.status === "done" ? "Reopen task" : "Mark done"}
+          </span>
         </div>
 
-        <div className="mt-5 flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Meta icon={Calendar} label={task.due_date ? `Due ${format(new Date(task.due_date), "EEE, MMM d h:mm a")}` : "No due date"} />
+          <Meta icon={Clock} label={task.scheduled_start ? `Planned ${format(new Date(task.scheduled_start), "EEE, MMM d h:mm a")}` : "Not scheduled"} />
+          <Meta icon={Timer} label={task.estimated_minutes ? `${task.estimated_minutes}m est${task.actual_minutes ? ` · ${task.actual_minutes}m actual` : ""}` : "No estimate"} />
+          {task.reschedule_count > 0 && <Meta label={`rescheduled ×${task.reschedule_count}`} />}
+        </div>
+
+        <div className="flex flex-wrap gap-2">
           {project && (
             <Link href={`/projects`} className="flex items-center gap-1.5 rounded-lg border border-border-subtle bg-surface-2 px-2.5 py-1 text-xs hover:border-accent-primary/50">
               <span className="h-2 w-2 rounded-full" style={{ background: project.color ?? "#7C9EFF" }} />
@@ -177,7 +182,7 @@ export function TaskDetailClient({
         </div>
 
         {(parent || blocker) && (
-          <div className="mt-4 space-y-2 border-t border-border-subtle pt-4 text-sm">
+          <div className="space-y-2 border-t border-border-subtle pt-4 text-sm">
             {parent && (
               <Link href={`/tasks/${parent.id}`} className="flex items-center gap-2 text-text-secondary hover:text-text-primary">
                 <ListTodo className="h-4 w-4" /> Part of: <span className="font-medium text-text-primary">{parent.title}</span>
@@ -194,14 +199,14 @@ export function TaskDetailClient({
             )}
           </div>
         )}
-      </div>
+      </Card>
 
-      <section className="rounded-xl border border-border-subtle bg-surface-1 p-5">
+      <Card>
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold">Subtasks</h2>
           <span className="text-xs text-text-secondary">{subtasks.filter((s) => s.status === "done").length}/{subtasks.length} done</span>
         </div>
-        <form onSubmit={addSubtask} className="mt-3 flex gap-2">
+        <form onSubmit={addSubtask} className="flex gap-2">
           <input
             value={quick}
             onChange={(e) => setQuick(e.target.value)}
@@ -213,7 +218,7 @@ export function TaskDetailClient({
           </Button>
         </form>
         {subtasks.length > 0 && (
-          <ul className="mt-3 space-y-1.5">
+          <ul className="space-y-1.5">
             {subtasks.map((s) => (
               <li key={s.id} className="group flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-surface-2">
                 <Checkbox
@@ -229,12 +234,12 @@ export function TaskDetailClient({
             ))}
           </ul>
         )}
-      </section>
+      </Card>
 
       {blocks.length > 0 && (
-        <section className="rounded-xl border border-border-subtle bg-surface-1 p-5">
+        <Card>
           <h2 className="text-sm font-semibold">Unblocks</h2>
-          <ul className="mt-3 space-y-1.5">
+          <ul className="space-y-1.5">
             {blocks.map((b) => (
               <li key={b.id}>
                 <Link href={`/tasks/${b.id}`} className="text-sm text-accent-primary hover:underline">
@@ -243,10 +248,10 @@ export function TaskDetailClient({
               </li>
             ))}
           </ul>
-        </section>
+        </Card>
       )}
 
-      <section className="rounded-xl border border-border-subtle bg-surface-1 p-5">
+      <Card>
         <div className="flex items-center justify-between">
           <h2 className="flex items-center gap-2 text-sm font-semibold">
             <StickyNote className="h-4 w-4 text-accent-primary" /> Notes
@@ -254,12 +259,12 @@ export function TaskDetailClient({
           <span className="text-xs text-text-secondary">{notes.length}</span>
         </div>
         {notes.length === 0 ? (
-          <p className="mt-3 text-xs text-text-disabled">
+          <p className="text-xs text-text-disabled">
             No notes linked yet — write one from the{" "}
             <Link href="/notes" className="text-accent-primary hover:underline">Notes</Link> page and tag this task with @.
           </p>
         ) : (
-          <ul className="mt-3 space-y-1.5">
+          <ul className="space-y-1.5">
             {notes.map((n) => (
               <li key={n.id}>
                 <Link href={`/notes/${n.id}`} className="block rounded-lg px-2 py-1.5 text-sm hover:bg-surface-2">
@@ -270,9 +275,9 @@ export function TaskDetailClient({
             ))}
           </ul>
         )}
-      </section>
+      </Card>
 
-      <section className="rounded-xl border border-border-subtle bg-surface-1 p-5">
+      <Card>
         <div className="flex items-center justify-between">
           <h2 className="flex items-center gap-2 text-sm font-semibold">
             <Timer className="h-4 w-4 text-accent-success" /> Focus time
@@ -282,7 +287,7 @@ export function TaskDetailClient({
           </span>
         </div>
         {sessions.length > 0 && (
-          <ul className="mt-3 space-y-1.5">
+          <ul className="space-y-1.5">
             {sessions.slice(0, 10).map((s) => (
               <li key={s.id} className="flex items-center justify-between rounded-lg px-2 py-1.5 text-sm hover:bg-surface-2">
                 <span className="text-text-secondary">{format(new Date(s.started_at), "EEE, MMM d h:mm a")}</span>
@@ -293,7 +298,7 @@ export function TaskDetailClient({
             ))}
           </ul>
         )}
-      </section>
+      </Card>
 
       <TaskForm open={editing} onOpenChange={setEditing} task={task as never} />
     </div>

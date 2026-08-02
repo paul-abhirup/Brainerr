@@ -7,7 +7,10 @@ import { createClient } from "@/lib/supabase/client"
 import { useGoals, useGoalProgress, useGoalForecast, type GoalRow } from "@/hooks/use-data"
 import { useQueryClient } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
+import { PageHeader } from "@/components/ui/page-header"
+import { EmptyState } from "@/components/ui/empty-state"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -60,18 +63,16 @@ export default function GoalsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Goals</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Long-term → monthly → weekly. Progress rolls up from linked tasks.
-          </p>
-        </div>
-        <Button onClick={() => setCreating(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          New goal
-        </Button>
-      </div>
+      <PageHeader
+        title="Goals"
+        description="Long-term → monthly → weekly. Progress rolls up from linked tasks."
+        actions={
+          <Button onClick={() => setCreating(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            New goal
+          </Button>
+        }
+      />
 
       <div className="flex items-center gap-2">
         <Button variant="outline" size="sm" onClick={() => setTemplatesOpen(true)}>
@@ -83,21 +84,23 @@ export default function GoalsPage() {
       {isLoading ? (
         <div className="h-64 animate-pulse rounded-xl bg-surface-2" />
       ) : !roots.length ? (
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border-subtle py-16 text-center">
-          <Flag className="h-8 w-8 text-text-disabled" />
-          <p className="text-sm text-text-secondary">No goals yet</p>
-          <p className="text-xs text-text-disabled">Start with one long-term goal, then break it into monthlies.</p>
-          <Button variant="outline" size="sm" onClick={() => setCreating(true)}>
-            Create your first goal
-          </Button>
-        </div>
+        <EmptyState
+          icon={<Flag className="h-8 w-8 text-text-disabled" />}
+          title="No goals yet"
+          description="Start with one long-term goal, then break it into monthlies."
+          action={
+            <Button variant="outline" size="sm" onClick={() => setCreating(true)}>
+              Create your first goal
+            </Button>
+          }
+        />
       ) : (
         <div className="space-y-3">
           {roots.map((goal) => {
             const hasChildren = childrenOf(goal.id).length > 0
             const isOpen = expanded.has(goal.id)
             return (
-              <div key={goal.id} className="rounded-xl border border-border-subtle bg-surface-1">
+              <Card key={goal.id} className="gap-0 p-0">
                 <GoalRow
                   goal={goal}
                   depth={0}
@@ -121,7 +124,7 @@ export default function GoalsPage() {
                       />
                     </div>
                   ))}
-              </div>
+              </Card>
             )
           })}
         </div>
@@ -161,7 +164,7 @@ function GoalRow({
       )}
       <Link href={`/goals/${goal.id}`} className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className="rounded-full bg-surface-2 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-text-secondary">
+          <span className="rounded-full bg-surface-2 px-2 py-0.5 text-xs font-medium uppercase tracking-wide text-text-secondary">
             {goal.horizon.replace("_", " ")}
           </span>
           <p className="truncate text-sm font-medium">{goal.title}</p>
@@ -408,7 +411,7 @@ function TemplatesDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
                   {applying === tpl.id ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Sparkles className="mr-1.5 h-3.5 w-3.5" />}
                   Use
                 </Button>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-accent-danger" onClick={() => remove(tpl.id)}>
+                <Button variant="ghost" size="icon" className="text-accent-danger" onClick={() => remove(tpl.id)}>
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </li>

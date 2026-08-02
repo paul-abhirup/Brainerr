@@ -8,6 +8,9 @@ import { useTasks } from "@/hooks/use-tasks"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Card } from "@/components/ui/card"
+import { PageHeader } from "@/components/ui/page-header"
+import { EmptyState } from "@/components/ui/empty-state"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
@@ -98,48 +101,48 @@ export default function ProjectsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Projects</h1>
-          <p className="mt-1 text-sm text-text-secondary">
-            Group tasks under a project, optionally under a goal. Projects feed goal progress and estimate calibration.
-          </p>
-        </div>
-        <Button onClick={openNew}>
-          <Plus className="mr-2 h-4 w-4" />
-          New project
-        </Button>
-      </div>
+      <PageHeader
+        title="Projects"
+        description="Group tasks under a project, optionally under a goal. Projects feed goal progress and estimate calibration."
+        actions={
+          <Button onClick={openNew}>
+            <Plus className="mr-2 h-4 w-4" />
+            New project
+          </Button>
+        }
+      />
 
       {isLoading ? (
         <div className="h-64 animate-pulse rounded-xl bg-surface-2" />
       ) : !projects?.length ? (
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border-subtle py-16 text-center">
-          <FolderKanban className="h-8 w-8 text-text-disabled" />
-          <p className="text-sm text-text-secondary">No projects yet</p>
-          <p className="text-xs text-text-disabled">Projects group related tasks — try one per ongoing initiative.</p>
-          <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
-            Create your first project
-          </Button>
-        </div>
+        <EmptyState
+          icon={<FolderKanban className="h-8 w-8 text-text-disabled" />}
+          title="No projects yet"
+          description="Projects group related tasks — try one per ongoing initiative."
+          action={
+            <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
+              Create your first project
+            </Button>
+          }
+        />
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {projects.map((p) => {
             const s = stats(p.id)
             const goal = goals?.find((g) => g.id === p.goal_id)
             return (
-              <div key={p.id} className="rounded-xl border border-border-subtle bg-surface-1 p-4">
+              <Card key={p.id} className="gap-0">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-2.5">
                     <span className="h-3 w-3 shrink-0 rounded-full" style={{ background: p.color ?? "#7C9EFF" }} />
                     <h3 className="truncate text-sm font-semibold">{p.name}</h3>
                   </div>
                   <div className="flex shrink-0 gap-1">
-                    <Button variant="ghost" size="sm" className="h-7 w-7 p-0"
+                    <Button variant="ghost" size="icon-sm"
                       onClick={() => openEdit(p)}>
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
-                    <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-accent-danger" onClick={() => remove(p.id, p.name)}>
+                    <Button variant="ghost" size="icon-sm" className="text-accent-danger" onClick={() => remove(p.id, p.name)}>
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>
@@ -157,7 +160,7 @@ export default function ProjectsPage() {
                     </Link>
                   )}
                 </div>
-              </div>
+              </Card>
             )
           })}
         </div>

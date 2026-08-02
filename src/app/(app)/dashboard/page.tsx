@@ -7,10 +7,12 @@ import { useQuery } from "@tanstack/react-query"
 import { useTasks, type TaskRow } from "@/hooks/use-tasks"
 import { useHabits, useHabitLogs, useUserState } from "@/hooks/use-data"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { PageHeader } from "@/components/ui/page-header"
 import { toast } from "sonner"
 import { Flame, Trophy, Moon, Battery, BatteryMedium, BatteryLow, AlertTriangle, Sparkles, CheckCircle2, ListTodo } from "lucide-react"
-import dynamic from "next/dynamic"
 import { cn } from "@/lib/utils"
+import { WellnessWidget } from "@/components/app/wellness-widget"
+import dynamic from "next/dynamic"
 
 const BarChart = dynamic(() => import("@/components/dashboard/weekly-chart"), { ssr: false })
 const Heatmap = dynamic(() => import("@/components/dashboard/heatmap"), { ssr: false })
@@ -81,40 +83,36 @@ export default function DashboardPage() {
   const levelProgress = pts % 100
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <div className="space-y-6 animate-in fade-in duration-300">
       {/* Top Banner Header */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-text-primary via-text-primary to-text-secondary bg-clip-text text-transparent">
-              {greeting}
-            </h1>
+      <PageHeader
+        title={
+          <span className="flex items-center gap-2">
+            {greeting}
             <Sparkles className="h-5 w-5 text-accent-warm animate-pulse" />
-          </div>
-          <p className="mt-1 text-sm text-text-secondary">
-            Here is your executive overview. Low pressure, momentum built step-by-step.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Level & Points Badge */}
-          <div className="flex items-center gap-2 rounded-2xl border border-accent-warm/30 bg-surface-1/80 px-3.5 py-2 text-sm backdrop-blur-md shadow-sm">
-            <Trophy className="h-4 w-4 text-accent-warm" />
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1.5 text-xs font-semibold">
-                <span className="tabular-nums">{pts} pts</span>
-                <span className="text-text-disabled">·</span>
-                <span className="text-accent-warm">Lv {level}</span>
-              </div>
-              <div className="mt-1 h-1 w-20 rounded-full bg-surface-3 overflow-hidden">
-                <div className="h-full bg-accent-warm rounded-full transition-all duration-500" style={{ width: `${levelProgress}%` }} />
+          </span>
+        }
+        description="Here is your executive overview. Low pressure, momentum built step-by-step."
+        actions={
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 rounded-xl border border-accent-warm/30 bg-surface-1/80 px-3.5 py-2 text-sm backdrop-blur-md shadow-sm">
+              <Trophy className="h-4 w-4 text-accent-warm" />
+              <div className="flex flex-col">
+                <div className="flex items-center gap-1.5 text-xs font-semibold">
+                  <span className="tabular-nums">{pts} pts</span>
+                  <span className="text-text-disabled">·</span>
+                  <span className="text-accent-warm">Lv {level}</span>
+                </div>
+                <div className="mt-1 h-1 w-20 rounded-full bg-surface-3 overflow-hidden">
+                  <div className="h-full bg-accent-warm rounded-full transition-all duration-500" style={{ width: `${levelProgress}%` }} />
+                </div>
               </div>
             </div>
-          </div>
 
-          <MoodCheckIn mood={mood} onChange={setMoodEnergy} />
-        </div>
-      </div>
+            <MoodCheckIn mood={mood} onChange={setMoodEnergy} />
+          </div>
+        }
+      />
 
       {/* Summary KPI Glass Cards */}
       <div className="grid gap-4 sm:grid-cols-3">
@@ -141,15 +139,18 @@ export default function DashboardPage() {
         />
       </div>
 
+      {/* 💧 Body & Wellness Fuel Tracker */}
+      <WellnessWidget />
+
       {/* Weekly Pace & Surfaced Tasks */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2">
         <Card className="glass-card border-border-subtle/60 shadow-lg">
           <CardHeader>
-            <CardTitle className="text-base font-semibold flex items-center justify-between">
+            <CardTitle className="flex items-center justify-between">
               <span>Weekly pace</span>
               <span className="text-xs font-normal text-text-disabled">Last 8 weeks</span>
             </CardTitle>
-            <CardDescription className="text-xs">
+            <CardDescription>
               Completed vs. open tasks comparison
             </CardDescription>
           </CardHeader>
@@ -160,11 +161,11 @@ export default function DashboardPage() {
 
         <Card className="glass-card border-border-subtle/60 shadow-lg">
           <CardHeader>
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-accent-warm" />
               <span>Gently Surfaced Tasks</span>
             </CardTitle>
-            <CardDescription className="text-xs">
+            <CardDescription>
               Overdue items sorted by how often you&apos;ve rescheduled them. No shame, just clarity.
             </CardDescription>
           </CardHeader>
@@ -189,8 +190,8 @@ export default function DashboardPage() {
       {/* Activity Heatmap */}
       <Card className="glass-card border-border-subtle/60 shadow-lg">
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Consistency Heatmap</CardTitle>
-          <CardDescription className="text-xs">Habit check-offs over the last ~6 months</CardDescription>
+          <CardTitle>Consistency Heatmap</CardTitle>
+          <CardDescription>Habit check-offs over the last ~6 months</CardDescription>
         </CardHeader>
         <CardContent>
           <Heatmap logs={weekLogs ?? []} habits={habits ?? []} />
@@ -214,7 +215,7 @@ function GlassStatCard({
   accentColor: string
 }) {
   return (
-    <div className="glass-card glass-card-hover rounded-2xl p-5 relative overflow-hidden group">
+    <div className="glass-card glass-card-hover rounded-xl p-5 relative overflow-hidden group">
       <div
         className="absolute top-0 right-0 w-24 h-24 rounded-full blur-2xl pointer-events-none opacity-20 transition-opacity group-hover:opacity-40"
         style={{ background: accentColor }}
@@ -226,7 +227,7 @@ function GlassStatCard({
         </div>
       </div>
       <div className="mt-3 text-3xl font-bold tracking-tight tabular-nums">{value}</div>
-      <p className="mt-1 text-[11px] text-text-disabled">{subtitle}</p>
+      <p className="mt-1 text-xs text-text-disabled">{subtitle}</p>
     </div>
   )
 }
@@ -239,7 +240,7 @@ function MissedRow({ task }: { task: TaskRow }) {
       <div className="flex items-center justify-between gap-3">
         <span className="truncate text-sm font-medium text-text-primary">{task.title}</span>
         {task.due_date && (
-          <span className="shrink-0 rounded-full bg-accent-warm/15 px-2 py-0.5 text-[11px] font-medium tabular-nums text-accent-warm">
+          <span className="shrink-0 rounded-full bg-accent-warm/15 px-2 py-0.5 text-xs font-medium tabular-nums text-accent-warm">
             due {format(new Date(task.due_date), "MMM d")}
           </span>
         )}
@@ -263,7 +264,7 @@ function MoodCheckIn({ mood, onChange }: { mood: Mood | null; onChange: (m: Mood
     { value: "high", label: "High", icon: <Battery className="h-4 w-4 text-accent-success" /> },
   ]
   return (
-    <div className="flex items-center gap-1 rounded-2xl border border-border-subtle/70 bg-surface-1/80 p-1 backdrop-blur-md">
+    <div className="flex items-center gap-1 rounded-xl border border-border-subtle/70 bg-surface-1/80 p-1 backdrop-blur-md">
       <span className="flex items-center gap-1 pl-3 pr-1 text-xs text-text-secondary font-medium">
         <Moon className="h-3.5 w-3.5 text-accent-primary" />
         Energy

@@ -5,6 +5,7 @@ import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors, useDragg
 import { format, addDays } from "date-fns"
 import type { TaskRow } from "@/hooks/use-tasks"
 import type { BusyBlock } from "@/hooks/use-planner"
+import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { Clock, GripVertical } from "lucide-react"
 
@@ -111,7 +112,7 @@ function HourCell({ hour, dayOffset, tasks, busy }: { hour: number; dayOffset: n
         isOver && "bg-accent-primary/10 ring-1 ring-inset ring-accent-primary/40",
       )}
     >
-      <span className="pointer-events-none absolute left-1 top-0.5 text-[10px] tabular-nums text-text-disabled">
+      <span className="pointer-events-none absolute left-1 top-0.5 text-xs tabular-nums text-text-disabled">
         {hour}:00
       </span>
       <div className="ml-7 space-y-1">
@@ -119,7 +120,7 @@ function HourCell({ hour, dayOffset, tasks, busy }: { hour: number; dayOffset: n
           <div
             key={b.id}
             title={`Busy — ${b.title ?? "event"}`}
-            className="pointer-events-none rounded-md border border-accent-warm/30 bg-accent-warm/10 px-1.5 py-0.5 text-[10px] text-accent-warm/80"
+            className="pointer-events-none rounded-md border border-accent-warm/30 bg-accent-warm/10 px-1.5 py-0.5 text-xs text-accent-warm/80"
           >
             <span className="truncate">▤ {b.title ?? "Busy"}</span>
           </div>
@@ -157,10 +158,11 @@ function PlannedTask({ task }: { task: TaskRow }) {
 function UnscheduledTray({ tasks }: { tasks: TaskRow[] }) {
   const { isOver, setNodeRef } = useDroppable({ id: "unscheduled-tray" })
   return (
-    <div
+    <Card
       ref={setNodeRef}
+      size="sm"
       className={cn(
-        "flex min-h-[64px] flex-wrap items-center gap-2 rounded-xl border border-dashed border-border-subtle bg-surface-1 p-3 transition-colors",
+        "flex-row flex-wrap items-center gap-2 border-dashed transition-colors",
         isOver && "border-accent-primary/60 bg-accent-primary/5",
       )}
     >
@@ -175,7 +177,7 @@ function UnscheduledTray({ tasks }: { tasks: TaskRow[] }) {
           <TrayTask key={t.id} task={t} />
         ))
       )}
-    </div>
+    </Card>
   )
 }
 

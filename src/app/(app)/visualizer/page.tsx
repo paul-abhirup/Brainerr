@@ -1,9 +1,10 @@
 "use client"
 
-import { useState, useMemo, useRef } from "react"
+import { useState, useMemo } from "react"
 import { useTasks, type TaskRow } from "@/hooks/use-tasks"
 import { useProjects } from "@/hooks/use-data"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -18,9 +19,7 @@ import {
   Sparkles,
   Flame,
   AlertTriangle,
-  CheckCircle2,
   Clock,
-  Briefcase,
   Layers,
   ArrowRight,
 } from "lucide-react"
@@ -44,40 +43,37 @@ export default function VisualizerPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
-      {/* Top Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Task Visualizers</h1>
+      <PageHeader
+        title={
+          <span className="flex items-center gap-2">
+            Task Visualizers
             <Badge variant="outline" className="border-accent-primary/30 text-accent-primary bg-accent-primary/10">
               <Sparkles className="mr-1 h-3 w-3" /> Visual Brain
             </Badge>
+          </span>
+        }
+        description="Multi-dimensional graphical views of your workload. Choose the perspective that fits your current focus."
+        actions={
+          <div className="w-48">
+            <Select value={filterProject} onValueChange={(v) => setFilterProject(v ?? "all")}>
+              <SelectTrigger className="h-10 rounded-xl bg-surface-1 border-border-subtle text-xs">
+                <SelectValue placeholder="All Projects" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                <SelectItem value="all">All Projects</SelectItem>
+                {(projects ?? []).map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          <p className="mt-1 text-sm text-text-secondary">
-            Multi-dimensional graphical views of your workload. Choose the perspective that fits your current focus.
-          </p>
-        </div>
-
-        {/* Project Filter */}
-        <div className="w-48">
-          <Select value={filterProject} onValueChange={(v) => setFilterProject(v ?? "all")}>
-            <SelectTrigger className="h-10 rounded-xl bg-surface-1 border-border-subtle text-xs">
-              <SelectValue placeholder="All Projects" />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              <SelectItem value="all">All Projects</SelectItem>
-              {(projects ?? []).map((p) => (
-                <SelectItem key={p.id} value={p.id}>
-                  {p.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+        }
+      />
 
       {/* View Switcher Tabs */}
-      <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-border-subtle/80 bg-surface-1/90 p-1.5 backdrop-blur-md">
+      <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border-subtle/80 bg-surface-1/90 p-1.5 backdrop-blur-md">
         <button
           onClick={() => setViewMode("graph")}
           className={cn(
@@ -133,7 +129,7 @@ export default function VisualizerPage() {
 
       {/* Main Visualizer Area */}
       {tasksLoading ? (
-        <div className="flex h-96 items-center justify-center rounded-2xl border border-border-subtle bg-surface-1 shimmer">
+        <div className="flex h-96 items-center justify-center rounded-xl border border-border-subtle bg-surface-1 shimmer">
           <p className="text-sm text-text-secondary">Generating visual representation…</p>
         </div>
       ) : (
@@ -159,13 +155,13 @@ export default function VisualizerPage() {
       {/* Task Details Drawer/Modal */}
       {selectedTask && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-lg rounded-2xl border border-border-subtle bg-surface-1 p-6 shadow-2xl space-y-4">
+          <Card size="lg" className="w-full max-w-lg gap-4 shadow-2xl">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <Badge
                   variant="outline"
                   className={cn(
-                    "text-[10px] font-semibold uppercase tracking-wider mb-2",
+                    "text-xs font-semibold uppercase tracking-wider mb-2",
                     selectedTask.status === "done" && "border-accent-success/30 text-accent-success bg-accent-success/10",
                     selectedTask.status === "in_progress" && "border-accent-primary/30 text-accent-primary bg-accent-primary/10",
                     selectedTask.status === "todo" && "border-border-subtle text-text-secondary bg-surface-2",
@@ -208,7 +204,7 @@ export default function VisualizerPage() {
                 Close
               </Button>
             </div>
-          </div>
+          </Card>
         </div>
       )}
     </div>
@@ -246,11 +242,11 @@ function TaskGraphVisualizer({
     <Card className="glass-card border-border-subtle/80 overflow-hidden shadow-2xl">
       <CardHeader className="flex flex-row items-center justify-between border-b border-border-subtle/50 pb-4">
         <div>
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2">
             <Network className="h-4 w-4 text-accent-primary" />
             Interactive Task Graph Map
           </CardTitle>
-          <CardDescription className="text-xs">
+          <CardDescription>
             Visual network showing active tasks and their inter-relationships
           </CardDescription>
         </div>
@@ -327,7 +323,7 @@ function TaskGraphVisualizer({
               </text>
 
               {/* Connecting Lines to Task Nodes */}
-              {graphNodes.map(({ task, x, y }, i) => (
+              {graphNodes.map(({ task, x, y }) => (
                 <line
                   key={`line-${task.id}`}
                   x1="400"
@@ -556,18 +552,18 @@ function DreadEffortMatrixVisualizer({
   onSelectTask: (t: TaskRow) => void
 }) {
   return (
-    <Card className="glass-card border-border-subtle/80 shadow-2xl p-6 space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <ScatterIcon className="h-4 w-4 text-accent-warm" />
-            Dread Level vs. Effort Matrix (ADHD Dopamine Map)
-          </CardTitle>
-          <CardDescription className="text-xs">
-            Identify low-dread "easy dopamine" wins versus high-dread barrier tasks.
-          </CardDescription>
+      <Card className="glass-card border-border-subtle/80 shadow-2xl p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <ScatterIcon className="h-4 w-4 text-accent-warm" />
+              Dread Level vs. Effort Matrix (ADHD Dopamine Map)
+            </CardTitle>
+            <CardDescription>
+              Identify low-dread &quot;easy dopamine&quot; wins versus high-dread barrier tasks.
+            </CardDescription>
+          </div>
         </div>
-      </div>
 
       <div className="grid grid-cols-5 gap-2 pt-4">
         {[1, 2, 3, 4, 5].map((dread) => (
@@ -585,7 +581,7 @@ function DreadEffortMatrixVisualizer({
                     className="p-2.5 rounded-lg bg-surface-1 border border-border-subtle hover:border-accent-warm cursor-pointer transition-all text-xs"
                   >
                     <p className="font-semibold truncate text-text-primary">{t.title}</p>
-                    <span className="text-[10px] text-text-disabled capitalize block mt-1">
+                    <span className="text-xs text-text-disabled capitalize block mt-1">
                       Effort: {t.effort ?? "low"}
                     </span>
                   </div>
@@ -615,16 +611,16 @@ function TimelineGanttVisualizer({
   }, [tasks])
 
   return (
-    <Card className="glass-card border-border-subtle/80 shadow-2xl p-6 space-y-4">
-      <CardHeader className="px-0 pt-0">
-        <CardTitle className="text-base font-semibold flex items-center gap-2">
-          <GanttChart className="h-4 w-4 text-accent-success" />
-          Timeline & Due Date Horizon
-        </CardTitle>
-        <CardDescription className="text-xs">
-          Chronological horizon of tasks scheduled across dates
-        </CardDescription>
-      </CardHeader>
+      <Card className="glass-card border-border-subtle/80 shadow-2xl p-6 space-y-4">
+        <CardHeader className="px-0 pt-0">
+          <CardTitle className="flex items-center gap-2">
+            <GanttChart className="h-4 w-4 text-accent-success" />
+            Timeline & Due Date Horizon
+          </CardTitle>
+          <CardDescription>
+            Chronological horizon of tasks scheduled across dates
+          </CardDescription>
+        </CardHeader>
 
       <div className="space-y-3 pt-2">
         {datedTasks.length === 0 ? (
@@ -646,7 +642,7 @@ function TimelineGanttVisualizer({
               <Badge
                 variant="outline"
                 className={cn(
-                  "text-[10px]",
+                  "text-xs",
                   t.status === "done" && "border-accent-success text-accent-success bg-accent-success/10",
                   t.status === "in_progress" && "border-accent-primary text-accent-primary bg-accent-primary/10",
                 )}

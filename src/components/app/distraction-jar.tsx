@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
@@ -80,7 +80,7 @@ export function DistractionJar() {
           <span className="text-base">🫙</span>
           <span className="hidden sm:inline text-text-primary font-medium">Distraction Jar</span>
           {jarItems.length > 0 && (
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500/20 text-amber-400 text-[10px] font-bold">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold">
               {jarItems.length}
             </span>
           )}
@@ -89,15 +89,15 @@ export function DistractionJar() {
 
       {/* Jar Dialog Modal */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-md rounded-2xl border-border-subtle bg-surface-1 p-6 backdrop-blur-2xl">
+        <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-lg font-bold">
+            <DialogTitle className="flex items-center gap-2">
               <span>🫙 Distraction Jar</span>
               <span className="text-xs font-normal text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
                 ADHD Brain Saver
               </span>
             </DialogTitle>
-            <DialogDescription className="text-xs text-text-secondary">
+            <DialogDescription>
               Got a random thought during focus? Park it here instantly so your brain lets go of it without breaking flow.
             </DialogDescription>
           </DialogHeader>
@@ -107,11 +107,11 @@ export function DistractionJar() {
             <Input
               value={thought}
               onChange={(e) => setThought(e.target.value)}
-              placeholder="e.g. Look up mechanial switches later…"
-              className="h-11 rounded-xl bg-surface-2/80 border-border-subtle text-sm focus-visible:ring-amber-500"
+              placeholder="e.g. Look up mechanical switches later…"
+              className="focus-visible:ring-amber-500"
               autoFocus
             />
-            <Button type="submit" disabled={!thought.trim()} className="h-11 rounded-xl bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 border border-amber-500/30">
+            <Button type="submit" disabled={!thought.trim()} className="border border-amber-500/30 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30">
               <Plus className="h-4 w-4" />
               Park
             </Button>
@@ -132,7 +132,7 @@ export function DistractionJar() {
                 >
                   <div className="flex flex-col min-w-0 flex-1">
                     <span className="font-medium text-text-primary truncate">{item.text}</span>
-                    <span className="text-[10px] text-text-disabled">{item.time}</span>
+                    <span className="text-xs text-text-disabled">{item.time}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <button
@@ -156,11 +156,11 @@ export function DistractionJar() {
           </div>
 
           {jarItems.length > 0 && (
-            <div className="flex justify-end pt-2">
+            <DialogFooter>
               <Button variant="ghost" size="sm" onClick={clearJar} className="text-xs text-text-disabled hover:text-text-secondary">
                 Empty jar
               </Button>
-            </div>
+            </DialogFooter>
           )}
         </DialogContent>
       </Dialog>

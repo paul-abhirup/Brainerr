@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { useQuery } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { PageHeader } from "@/components/ui/page-header"
 import { toast } from "sonner"
 import { Calendar, CalendarOff, Link2, Loader2, RefreshCw, CheckCircle2, XCircle, Info } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -89,17 +91,14 @@ export default function CalendarSettingsPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Calendar</h1>
-        <p className="mt-1 text-sm text-text-secondary">
-          Your scheduled tasks mirror to Google Calendar as private events; external events are pulled back in as busy
-          time the scheduler works around.
-        </p>
-      </div>
+      <PageHeader
+        title="Calendar"
+        description="Your scheduled tasks mirror to Google Calendar as private events; external events are pulled back in as busy time the scheduler works around."
+      />
 
       <StatusBanner status={status} onClose={() => setStatus(null)} />
 
-      <div className="rounded-xl border border-border-subtle bg-surface-1 p-5">
+      <Card>
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="h-5 w-5 animate-spin text-text-secondary" />
@@ -166,7 +165,7 @@ export default function CalendarSettingsPage() {
             </Button>
           </div>
         )}
-      </div>
+      </Card>
 
       <div className="flex items-start gap-3 rounded-xl border border-border-subtle bg-surface-1 p-4 text-xs text-text-secondary">
         <Info className="mt-0.5 h-4 w-4 shrink-0 text-accent-primary" />

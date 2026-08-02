@@ -35,8 +35,8 @@ export default function WeeklyChart({ tasks }: { tasks: TaskRow[] }) {
     <div className="h-56 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <ReBarChart data={data} barSize={14}>
-          <XAxis dataKey="label" tick={{ fontSize: 11, fill: "var(--text-secondary)" }} axisLine={false} tickLine={false} />
-          <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "var(--text-secondary)" }} axisLine={false} tickLine={false} width={24} />
+          <XAxis dataKey="label" tick={{ fontSize: 12, fill: "var(--text-secondary)" }} axisLine={false} tickLine={false} />
+          <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: "var(--text-secondary)" }} axisLine={false} tickLine={false} width={24} />
           <Tooltip
             contentStyle={{ background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 10, fontSize: 12 }}
             labelStyle={{ color: "var(--foreground)" }}

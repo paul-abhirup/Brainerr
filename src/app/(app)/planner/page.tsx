@@ -7,6 +7,8 @@ import { PlannerWeek } from "@/components/planner/planner-week"
 import { useWeekTasks, useScheduleTask, useUnscheduleTask, useBusyBlocks } from "@/hooks/use-planner"
 import { useTasks } from "@/hooks/use-tasks"
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { PageHeader as UIHeader } from "@/components/ui/page-header"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { ChevronLeft, ChevronRight, Sparkles, X, Loader2, ArrowRight } from "lucide-react"
@@ -88,32 +90,30 @@ export default function PlannerPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Planner</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Drag tasks onto a time block. Manually-placed tasks stay put.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => setWeekOffset((o) => o - 1)}>
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <span className="min-w-[130px] text-center text-sm font-medium tabular-nums">
-            {format(weekStart, "MMM d")} – {format(addDays(weekStart, 6), "MMM d")}
-          </span>
-          <Button variant="outline" size="sm" onClick={() => setWeekOffset((o) => o + 1)}>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setWeekOffset(0)}>
-            This week
-          </Button>
-          <Button size="sm" onClick={runReoptimize} disabled={running}>
-            {running ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Sparkles className="mr-1.5 h-4 w-4" />}
-            Re-optimize
-          </Button>
-        </div>
-      </div>
+      <UIHeader
+        title="Planner"
+        description="Drag tasks onto a time block. Manually-placed tasks stay put."
+        actions={
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => setWeekOffset((o) => o - 1)}>
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="min-w-[130px] text-center text-sm font-medium tabular-nums">
+              {format(weekStart, "MMM d")} – {format(addDays(weekStart, 6), "MMM d")}
+            </span>
+            <Button variant="outline" size="sm" onClick={() => setWeekOffset((o) => o + 1)}>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setWeekOffset(0)}>
+              This week
+            </Button>
+            <Button size="sm" onClick={runReoptimize} disabled={running}>
+              {running ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Sparkles className="mr-1.5 h-4 w-4" />}
+              Re-optimize
+            </Button>
+          </div>
+        }
+      />
 
       <Tabs defaultValue="week">
         <TabsList>
@@ -206,7 +206,7 @@ function EisenhowerView({ tasks }: { tasks: TaskRow[] }) {
   return (
     <div className="grid gap-4 md:grid-cols-2">
       {quadrants.map((q) => (
-        <div key={q.key} className={`rounded-xl border border-border-subtle bg-surface-1 p-4 ${q.tone} border-l-2`}>
+        <Card key={q.key} className={`border-l-2 ${q.tone}`}>
           <div className="flex items-baseline justify-between">
             <h3 className="text-sm font-semibold">{q.label}</h3>
             <span className="text-xs text-text-secondary">{q.items.length}</span>
@@ -223,7 +223,7 @@ function EisenhowerView({ tasks }: { tasks: TaskRow[] }) {
               ))
             )}
           </ul>
-        </div>
+        </Card>
       ))}
     </div>
   )

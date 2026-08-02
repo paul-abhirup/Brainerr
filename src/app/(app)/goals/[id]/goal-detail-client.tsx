@@ -7,13 +7,15 @@ import { format } from "date-fns"
 import { createClient } from "@/lib/supabase/client"
 import { useQueryClient } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { PageHeader } from "@/components/ui/page-header"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
-import { ArrowLeft, CheckCircle2, Save, Target, TrendingUp, Loader2 } from "lucide-react"
+import { CheckCircle2, Save, Target, TrendingUp, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type Goal = {
@@ -131,25 +133,13 @@ export function GoalDetailClient({
   }
 
   return (
-    <div className="space-y-6">
-      <Link href="/goals" className="flex items-center gap-1 text-sm text-text-secondary hover:text-text-primary">
-        <ArrowLeft className="h-4 w-4" /> Goals
-      </Link>
-
-      <div className="rounded-xl border border-border-subtle bg-surface-1 p-6">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <Badge className="bg-surface-2 text-text-secondary">{goal.horizon.replace("_", " ")}</Badge>
-              {goal.status === "done" && <Badge className="bg-accent-success/15 text-accent-success">Done</Badge>}
-              {goal.status === "archived" && <Badge variant="outline">Archived</Badge>}
-            </div>
-            <h1 className="mt-2 text-2xl font-semibold tracking-tight">{goal.title}</h1>
-            {goal.description && <p className="mt-1.5 text-sm text-text-secondary">{goal.description}</p>}
-            {goal.target_date && (
-              <p className="mt-2 text-xs text-text-secondary">Target {format(new Date(goal.target_date), "MMMM d, yyyy")}</p>
-            )}
-          </div>
+    <div className="mx-auto max-w-3xl space-y-6">
+      <PageHeader
+        backHref="/goals"
+        backLabel="Goals"
+        title={goal.title}
+        description={goal.description ?? undefined}
+        actions={
           <div className="flex shrink-0 gap-2">
             {goal.status === "active" && (
               <>
@@ -165,9 +155,20 @@ export function GoalDetailClient({
               <Button variant="ghost" size="sm" onClick={archive} disabled={working}>Archive</Button>
             )}
           </div>
+        }
+      />
+
+      <Card size="lg" className="gap-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge className="bg-surface-2 text-text-secondary">{goal.horizon.replace("_", " ")}</Badge>
+          {goal.status === "done" && <Badge className="bg-accent-success/15 text-accent-success">Done</Badge>}
+          {goal.status === "archived" && <Badge variant="outline">Archived</Badge>}
+          {goal.target_date && (
+            <span className="text-xs text-text-secondary">Target {format(new Date(goal.target_date), "MMMM d, yyyy")}</span>
+          )}
         </div>
 
-        <div className="mt-6 rounded-lg bg-surface-2 p-4">
+        <div className="rounded-lg bg-surface-2 p-4">
           <div className="flex items-center justify-between text-sm">
             <span className="font-medium">Progress</span>
             <span className="tabular-nums text-text-secondary">
@@ -184,14 +185,14 @@ export function GoalDetailClient({
             </p>
           )}
         </div>
-      </div>
+      </Card>
 
       {subGoals.length > 0 && (
-        <section className="rounded-xl border border-border-subtle bg-surface-1 p-5">
+        <Card>
           <h2 className="flex items-center gap-2 text-sm font-semibold">
             <Target className="h-4 w-4 text-accent-primary" /> Sub-goals
           </h2>
-          <ul className="mt-3 space-y-1.5">
+          <ul className="space-y-1.5">
             {subGoals.map((c) => (
               <li key={c.id}>
                 <Link href={`/goals/${c.id}`} className="block rounded-lg px-2 py-1.5 text-sm hover:bg-surface-2">
@@ -201,21 +202,21 @@ export function GoalDetailClient({
               </li>
             ))}
           </ul>
-        </section>
+        </Card>
       )}
 
-      <section className="rounded-xl border border-border-subtle bg-surface-1 p-5">
+      <Card>
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold">Projects</h2>
           <span className="text-xs text-text-secondary">{projects.length}</span>
         </div>
         {projects.length === 0 ? (
-          <p className="mt-3 text-xs text-text-disabled">
+          <p className="text-xs text-text-disabled">
             No projects linked. Create one and assign it to this goal from{" "}
             <Link href="/projects" className="text-accent-primary hover:underline">Projects</Link>.
           </p>
         ) : (
-          <ul className="mt-3 space-y-3">
+          <ul className="space-y-3">
             {projects.map((p) => {
               const pTasks = byProject.get(p.id) ?? []
               const pDone = pTasks.filter((t) => t.status === "done").length
@@ -244,17 +245,17 @@ export function GoalDetailClient({
             })}
           </ul>
         )}
-      </section>
+      </Card>
 
-      <section className="rounded-xl border border-border-subtle bg-surface-1 p-5">
+      <Card>
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold">Tasks</h2>
           <span className="text-xs text-text-secondary">{open.length} open · {done.length} done</span>
         </div>
         {tasks.length === 0 ? (
-          <p className="mt-3 text-xs text-text-disabled">No tasks under this goal yet.</p>
+          <p className="text-xs text-text-disabled">No tasks under this goal yet.</p>
         ) : (
-          <ul className="mt-3 space-y-1">
+          <ul className="space-y-1">
             {[...open, ...done].map((t) => (
               <li key={t.id}>
                 <Link href={`/tasks/${t.id}`} className={cn("block truncate rounded px-2 py-1.5 text-sm hover:bg-surface-2", t.status === "done" && "text-text-disabled line-through")}>
@@ -265,7 +266,7 @@ export function GoalDetailClient({
             ))}
           </ul>
         )}
-      </section>
+      </Card>
 
       <Dialog open={templateOpen} onOpenChange={setTemplateOpen}>
         <DialogContent>

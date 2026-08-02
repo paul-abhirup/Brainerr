@@ -5,6 +5,8 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { useQuickAdd } from "@/components/app/quick-add-provider"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 import {
   Zap,
   Inbox,
@@ -22,9 +24,11 @@ import {
   X,
   Brain,
   Network,
+  Sparkles,
+  BookOpen,
+  Trophy,
+  BarChart3,
 } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 
 const primaryNav = [
   { href: "/now", label: "Now", icon: Zap },
@@ -35,6 +39,10 @@ const primaryNav = [
 ]
 
 const secondaryNav = [
+  { href: "/capture", label: "Rapid Dump", icon: Sparkles },
+  { href: "/journal", label: "Daily Journal", icon: BookOpen },
+  { href: "/achievements", label: "Achievements", icon: Trophy },
+  { href: "/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/visualizer", label: "Task Visualizers", icon: Network },
   { href: "/planner", label: "Planner", icon: CalendarDays },
   { href: "/goals", label: "Goals", icon: Target },
@@ -64,7 +72,7 @@ export function MobileNav({ userEmail }: { userEmail: string }) {
         <button
           onClick={openQuickAdd}
           aria-label="Quick add task or note"
-          className="flex h-13 w-13 items-center justify-center rounded-full bg-accent-primary text-surface-base shadow-lg shadow-accent-primary/25 transition-transform active:scale-95"
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-accent-primary text-surface-base shadow-lg shadow-accent-primary/25 transition-transform active:scale-95"
         >
           <Plus className="h-6 w-6 stroke-[2.5]" />
         </button>
@@ -87,7 +95,7 @@ export function MobileNav({ userEmail }: { userEmail: string }) {
                 <span className="absolute -top-1 h-1 w-5 rounded-full bg-accent-primary shadow-[0_0_8px_var(--accent-primary)]" />
               )}
               <Icon className={cn("h-5 w-5 transition-transform", active && "scale-110")} />
-              <span className="text-[10px] tracking-tight">{label}</span>
+              <span className="text-xs tracking-tight">{label}</span>
             </Link>
           )
         })}
@@ -100,7 +108,7 @@ export function MobileNav({ userEmail }: { userEmail: string }) {
           )}
         >
           <Menu className="h-5 w-5" />
-          <span className="text-[10px] tracking-tight">More</span>
+          <span className="text-xs tracking-tight">More</span>
         </button>
       </nav>
 

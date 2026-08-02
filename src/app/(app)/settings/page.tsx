@@ -5,6 +5,8 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 import { useUserSettings, type UserSettingsRow } from "@/hooks/use-data"
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { PageHeader } from "@/components/ui/page-header"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
@@ -29,12 +31,10 @@ export default function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
-        <p className="mt-1 text-sm text-text-secondary">
-          These hours and limits drive the auto-scheduler when you hit Re-optimize.
-        </p>
-      </div>
+      <PageHeader
+        title="Settings"
+        description="These hours and limits drive the auto-scheduler when you hit Re-optimize."
+      />
 
       {isLoading || !settings ? (
         <div className="h-64 animate-pulse rounded-xl bg-surface-2" />
@@ -99,7 +99,7 @@ function SettingsForm({ settings }: { settings: UserSettingsRow }) {
 
   return (
     <div className="space-y-6">
-      <section className="rounded-xl border border-border-subtle bg-surface-1 p-5">
+      <Card>
         <h2 className="text-sm font-semibold">Working hours</h2>
         <p className="mt-0.5 text-xs text-text-secondary">
           The scheduler only places tasks inside these windows. Toggle a day off for days you don&apos;t plan.
@@ -123,18 +123,18 @@ function SettingsForm({ settings }: { settings: UserSettingsRow }) {
             </div>
           ))}
         </div>
-      </section>
+      </Card>
 
-      <section className="rounded-xl border border-border-subtle bg-surface-1 p-5">
+      <Card>
         <h2 className="text-sm font-semibold">Scheduling</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-3">
           <Field label="Buffer between tasks (min)" value={buffer} onChange={setBuffer} min={0} />
           <Field label="Max planned task time / day (min)" value={maxDaily} onChange={setMaxDaily} min={15} />
           <Field label="Scheduling horizon (days)" value={horizon} onChange={setHorizon} min={1} max={30} />
         </div>
-      </section>
+      </Card>
 
-      <section className="rounded-xl border border-border-subtle bg-surface-1 p-5">
+      <Card>
         <Link
           href="/settings/calendar"
           className="flex items-center justify-between rounded-lg px-1 py-1 transition-colors hover:bg-surface-2"
@@ -150,7 +150,7 @@ function SettingsForm({ settings }: { settings: UserSettingsRow }) {
           </div>
           <ChevronRight className="h-4 w-4 text-text-secondary" />
         </Link>
-      </section>
+      </Card>
 
       <div className="flex justify-end">
         <Button onClick={save} disabled={saving}>

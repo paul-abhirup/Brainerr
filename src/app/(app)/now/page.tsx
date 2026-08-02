@@ -10,12 +10,15 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { requestNotificationPermission } from "@/hooks/use-reminders"
 import { registerServiceWorker, subscribePush } from "@/lib/reminders/sw"
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { EmptyState } from "@/components/ui/empty-state"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Checkbox } from "@/components/ui/checkbox"
 import { toast } from "sonner"
 import { SkipForward, Check, Timer, SplitSquareHorizontal, Target, Play, Sparkles, Moon, Sunset, Bell } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { ParalysisBreakerModal } from "@/components/app/paralysis-breaker-modal"
 
 export default function NowPage() {
   const router = useRouter()
@@ -30,6 +33,7 @@ export default function NowPage() {
   const [savingBig3, setSavingBig3] = useState(false)
   const [windDownOpen, setWindDownOpen] = useState(false)
   const [windDownSaved, setWindDownSaved] = useState(false)
+  const [paralysisBreakerOpen, setParalysisBreakerOpen] = useState(false)
 
   const todayStr = format(new Date(), "yyyy-MM-dd")
   const dayStart = useMemo(() => new Date().setHours(0, 0, 0, 0), [])
@@ -188,22 +192,24 @@ export default function NowPage() {
 
   if (!current) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-center">
-        <Sparkles className="h-10 w-10 text-accent-primary" />
-        <h1 className="mt-4 text-xl font-semibold">Nothing due right now</h1>
-        <p className="mt-2 max-w-sm text-sm text-text-secondary">
-          Enjoy it. When something shows up, it&apos;ll land here one at a time.
-        </p>
-        <Button variant="outline" className="mt-6" onClick={() => router.push("/inbox")}>
-          Add a task
-        </Button>
+      <div className="mx-auto max-w-xl py-24">
+        <EmptyState
+          icon={<Sparkles className="h-8 w-8 text-accent-primary" />}
+          title="Nothing due right now"
+          description="Enjoy it. When something shows up, it'll land here one at a time."
+          action={
+            <Button variant="outline" onClick={() => router.push("/inbox")}>
+              Add a task
+            </Button>
+          }
+        />
       </div>
     )
   }
 
   return (
     <div className="mx-auto flex max-w-xl flex-col items-center space-y-8 py-10 text-center">
-      <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-text-disabled">
+      <div className="flex flex-wrap items-center justify-center gap-2 text-xs uppercase tracking-widest text-text-disabled">
         <Target className="h-3.5 w-3.5" />
         One thing at a time
         {(dailyFocus?.task_ids.length ?? 0) > 0 && (
@@ -222,6 +228,12 @@ export default function NowPage() {
             Set Big 3
           </button>
         )}
+        <button
+          onClick={() => setParalysisBreakerOpen(true)}
+          className="rounded-full border border-accent-warm/40 bg-accent-warm/10 px-3 py-0.5 normal-case tracking-normal text-accent-warm font-semibold transition-all hover:bg-accent-warm/20 hover:scale-105 flex items-center gap-1 cursor-pointer"
+        >
+          🧊 Smash Paralysis
+        </button>
       </div>
 
       {/* Resume banner for interrupted tasks */}
@@ -229,7 +241,7 @@ export default function NowPage() {
         <ResumeBanner taskId={userState.last_active_task_id} tasks={tasks ?? []} />
       )}
 
-      <div className="w-full rounded-2xl border border-border-subtle bg-surface-1 p-8 shadow-sm">
+      <Card size="lg" className="w-full gap-0 p-8 shadow-sm">
         <div className="flex flex-wrap items-center justify-center gap-2">
           {current.priority === "high" && <Badge className="bg-accent-warm/15 text-accent-warm">High priority</Badge>}
           {current.dread_level && current.dread_level > 2 && (
@@ -257,7 +269,7 @@ export default function NowPage() {
             </p>
           </div>
         )}
-      </div>
+      </Card>
 
       <div className="flex flex-wrap items-center justify-center gap-2">
         <Button size="lg" onClick={handleFocus}>
@@ -414,6 +426,13 @@ export default function NowPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* 🧊 ADHD Paralysis Breaker Single-Task Isolation Modal */}
+      <ParalysisBreakerModal
+        open={paralysisBreakerOpen}
+        onOpenChange={setParalysisBreakerOpen}
+        tasks={tasks ?? []}
+      />
     </div>
   )
 }
