@@ -1,10 +1,10 @@
 "use client"
 
-import { useMemo, useState } from "react"
-import { addDays, addWeeks, startOfWeek, subWeeks, format } from "date-fns"
+import { useEffect, useMemo, useState } from "react"
+import { addDays, addWeeks, startOfWeek, format } from "date-fns"
 import { toast } from "sonner"
 import { PlannerWeek } from "@/components/planner/planner-week"
-import { useWeekTasks, useScheduleTask, useUnscheduleTask } from "@/hooks/use-planner"
+import { useWeekTasks, useScheduleTask, useUnscheduleTask, useBusyBlocks } from "@/hooks/use-planner"
 import { useTasks } from "@/hooks/use-tasks"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
@@ -22,6 +22,7 @@ export default function PlannerPage() {
 
   const { data: weekTasks, isLoading } = useWeekTasks(weekStart, weekEnd)
   const { data: allTasks } = useTasks()
+  const { data: busy } = useBusyBlocks(weekStart, weekEnd)
   const scheduleTask = useScheduleTask()
   const unscheduleTask = useUnscheduleTask()
 
@@ -123,7 +124,7 @@ export default function PlannerPage() {
           {isLoading ? (
             <div className="h-96 animate-pulse rounded-xl bg-surface-2" />
           ) : (
-            <PlannerWeek weekStart={weekStart} tasks={tasks} onSchedule={handleSchedule} />
+            <PlannerWeek weekStart={weekStart} tasks={tasks} busy={busy} onSchedule={handleSchedule} />
           )}
           <div className="mt-2 flex items-center justify-between">
             <p className="text-xs text-text-secondary">
@@ -185,8 +186,14 @@ export default function PlannerPage() {
 
 function EisenhowerView({ tasks }: { tasks: TaskRow[] }) {
   const open = tasks.filter((t) => t.status !== "done")
+  const [now, setNow] = useState(() => Date.now())
 
-  const urgent = (t: TaskRow) => !!t.due_date && new Date(t.due_date).getTime() < Date.now() + 3 * 864e5
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 60_000)
+    return () => clearInterval(id)
+  }, [])
+
+  const urgent = (t: TaskRow) => !!t.due_date && new Date(t.due_date).getTime() < now + 3 * 864e5
   const important = (t: TaskRow) => t.priority === "high"
 
   const quadrants = [

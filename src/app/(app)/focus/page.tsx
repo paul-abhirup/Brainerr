@@ -1,13 +1,13 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useCallback } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import { createClient } from "@/lib/supabase/client"
 import { useTasks } from "@/hooks/use-tasks"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
-import { Play, Pause, RotateCcw, Check, Music, Volume2, VolumeX, Flame } from "lucide-react"
+import { Play, Pause, RotateCcw, Check, Music, Volume2, VolumeX, Flame, Sparkles, Keyboard } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type SoundPreset = "none" | "white" | "binaural" | "lo-fi"
@@ -57,6 +57,32 @@ export default function FocusPage() {
     }
   }, [])
 
+  // Keyboard shortcut listener (Space = start/pause, R = reset)
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
+    if (e.code === "Space") {
+      e.preventDefault()
+      setRunning((prev) => {
+        if (prev) {
+          stopAudio()
+          return false
+        } else {
+          if (sound !== "none") startAudio()
+          autoBlockCalendar()
+          return true
+        }
+      })
+    } else if (e.key.toLowerCase() === "r" && !e.metaKey && !e.ctrlKey) {
+      e.preventDefault()
+      reset()
+    }
+  }, [sound]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [handleKeyDown])
+
   async function setTaskInProgress() {
     if (!taskId) return
     await supabase.from("tasks").update({ status: "in_progress" }).eq("id", taskId)
@@ -83,7 +109,7 @@ export default function FocusPage() {
         .eq("id", taskId)
     }
     await qc.invalidateQueries({ queryKey: ["tasks"] })
-    toast.success("Session complete. Well done.")
+    toast.success("Session complete! Great work maintaining focus.")
   }
 
   function reset() {
@@ -99,7 +125,6 @@ export default function FocusPage() {
     autoBlockCalendar()
   }
 
-  // §13.7 — defend the focus block against external meeting invites.
   async function autoBlockCalendar() {
     const task = taskId ? tasks?.find((t) => t.id === taskId) : undefined
     const now = new Date()
@@ -175,7 +200,6 @@ export default function FocusPage() {
     if (running) {
       stopAudio()
       if (next !== "none") {
-        // start after a tick so the new sound state is applied
         setTimeout(() => startAudio(), 50)
       }
     }
@@ -188,22 +212,26 @@ export default function FocusPage() {
   const CIRC = 2 * Math.PI * R
 
   return (
-    <div className="flex flex-col items-center space-y-8 py-6">
-      <div>
-        <h1 className="text-center text-2xl font-semibold tracking-tight">Focus</h1>
-        <p className="mt-1 text-center text-sm text-muted-foreground">
-          One task, one block. Your calendar gets blocked so nothing double-books this time.
+    <div className="flex flex-col items-center space-y-8 py-4 animate-in fade-in duration-300">
+      <div className="text-center space-y-1">
+        <div className="inline-flex items-center gap-1.5 rounded-full border border-accent-primary/20 bg-accent-primary/10 px-3 py-1 text-xs font-medium text-accent-primary">
+          <Sparkles className="h-3.5 w-3.5" />
+          Single-Task Focus State
+        </div>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Focus Zone</h1>
+        <p className="max-w-md text-sm text-text-secondary">
+          Eliminate distraction. One block, total flow.
         </p>
       </div>
 
       {/* Task selector */}
       <div className="w-full max-w-md">
         <Select value={taskId || "none"} onValueChange={(v) => setTaskId(v === "none" ? "" : (v ?? ""))}>
-          <SelectTrigger className="w-full">
+          <SelectTrigger className="w-full h-11 rounded-xl border-border-subtle bg-surface-1/80 backdrop-blur-md">
             <SelectValue placeholder="What are you focusing on? (optional)" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">No specific task</SelectItem>
+          <SelectContent className="rounded-xl">
+            <SelectItem value="none">No specific task (General focus)</SelectItem>
             {(tasks ?? []).filter((t) => t.status !== "done").map((t) => (
               <SelectItem key={t.id} value={t.id}>{t.title}</SelectItem>
             ))}
@@ -211,40 +239,50 @@ export default function FocusPage() {
         </Select>
       </div>
 
-      {/* Timer ring */}
-      <div className="relative flex h-[320px] w-[320px] items-center justify-center">
+      {/* Animated Timer ring */}
+      <div className="relative flex h-[300px] w-[300px] sm:h-[340px] sm:w-[340px] items-center justify-center">
+        <div className={cn(
+          "absolute inset-0 rounded-full transition-all duration-700 blur-3xl opacity-20 pointer-events-none",
+          running ? "bg-accent-primary opacity-30" : "bg-surface-3"
+        )} />
         <svg viewBox="0 0 320 320" className="h-full w-full -rotate-90">
+          <defs>
+            <linearGradient id="focusGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="var(--accent-primary)" />
+              <stop offset="100%" stopColor="var(--accent-warm)" />
+            </linearGradient>
+          </defs>
           <circle cx="160" cy="160" r={R} fill="none" stroke="var(--surface-2)" strokeWidth="12" />
           <circle
             cx="160"
             cy="160"
             r={R}
             fill="none"
-            stroke="var(--accent-primary)"
+            stroke="url(#focusGradient)"
             strokeWidth="12"
             strokeLinecap="round"
             strokeDasharray={CIRC}
             strokeDashoffset={CIRC * progress}
-            className="transition-[stroke-dashoffset] duration-500 ease-linear"
+            className="transition-[stroke-dashoffset] duration-500 ease-linear drop-shadow-[0_0_10px_rgba(124,158,255,0.4)]"
           />
         </svg>
-        <div className="absolute text-center">
-          <div className="font-mono text-6xl font-semibold tabular-nums tracking-tight">
+        <div className={cn("absolute text-center transition-transform", running && "animate-breathe")}>
+          <div className="font-mono text-5xl sm:text-6xl font-bold tabular-nums tracking-tight bg-gradient-to-b from-text-primary to-text-secondary bg-clip-text text-transparent">
             {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
           </div>
           {running ? (
-            <div className="mt-2 flex items-center justify-center gap-1.5 text-sm text-accent-warm">
+            <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-full bg-accent-warm/15 px-3 py-1 text-xs font-semibold text-accent-warm animate-pulse">
               <Flame className="h-4 w-4" />
-              in flow
+              In Deep Flow
             </div>
           ) : (
-            <p className="mt-2 text-sm text-text-secondary">{duration} min · break on</p>
+            <p className="mt-2 text-xs font-medium text-text-secondary">{duration} min block · Ready</p>
           )}
         </div>
       </div>
 
       {/* Duration picker */}
-      <div className="flex items-center gap-1.5 rounded-full border border-border-subtle bg-surface-1 p-1">
+      <div className="flex items-center gap-1.5 rounded-full border border-border-subtle/80 bg-surface-1/90 p-1.5 backdrop-blur-md shadow-sm">
         {DURATIONS.map((d) => (
           <button
             key={d}
@@ -254,8 +292,10 @@ export default function FocusPage() {
               setRemaining(d * 60)
             }}
             className={cn(
-              "rounded-full px-4 py-1.5 text-sm tabular-nums transition-colors",
-              duration === d ? "bg-surface-3 text-text-primary" : "text-text-secondary hover:text-text-primary",
+              "rounded-full px-4 py-1.5 text-xs font-medium tabular-nums transition-all active:scale-95",
+              duration === d
+                ? "bg-accent-primary/20 text-accent-primary font-semibold border border-accent-primary/30"
+                : "text-text-secondary hover:text-text-primary hover:bg-surface-2",
             )}
           >
             {d}m
@@ -263,41 +303,50 @@ export default function FocusPage() {
         ))}
       </div>
 
-      {/* Controls */}
-      <div className="flex items-center gap-3">
+      {/* Action Controls */}
+      <div className="flex items-center gap-4">
         {running ? (
-          <Button onClick={pause} size="lg" variant="outline">
-            <Pause className="mr-2 h-4 w-4" /> Pause
+          <Button onClick={pause} size="lg" variant="outline" className="h-12 px-8 rounded-full border-border-subtle text-text-primary hover:bg-surface-2">
+            <Pause className="mr-2 h-5 w-5 fill-current" /> Pause
           </Button>
         ) : (
-          <Button onClick={start} size="lg">
-            <Play className="mr-2 h-4 w-4" /> Start
+          <Button onClick={start} size="lg" className="h-12 px-8 rounded-full bg-accent-primary text-surface-base hover:bg-accent-primary/90 font-semibold shadow-lg shadow-accent-primary/20">
+            <Play className="mr-2 h-5 w-5 fill-current" /> Start Flow
           </Button>
         )}
-        <Button onClick={reset} size="lg" variant="ghost">
+        <Button onClick={reset} size="lg" variant="ghost" className="h-12 px-5 rounded-full text-text-secondary hover:text-text-primary">
           <RotateCcw className="mr-2 h-4 w-4" /> Reset
         </Button>
       </div>
 
-      {/* Ambient sound */}
-      <div className="flex items-center gap-2">
-        <Music className="h-4 w-4 text-text-secondary" />
+      {/* Shortcut hint */}
+      <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-text-disabled">
+        <Keyboard className="h-3.5 w-3.5" />
+        <span>Press <kbd className="px-1.5 py-0.5 rounded bg-surface-2 border border-border-subtle font-mono text-[10px]">Space</kbd> to toggle, <kbd className="px-1.5 py-0.5 rounded bg-surface-2 border border-border-subtle font-mono text-[10px]">R</kbd> to reset</span>
+      </div>
+
+      {/* Ambient Sound Selector */}
+      <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+        <div className="flex items-center gap-1.5 text-xs text-text-secondary mr-1">
+          <Music className="h-3.5 w-3.5 text-accent-primary" />
+          <span>Soundscape:</span>
+        </div>
         {(
           [
             ["none", "None", VolumeX],
             ["white", "White noise", Volume2],
-            ["binaural", "Binaural", Volume2],
-            ["lo-fi", "Lo-fi", Volume2],
+            ["binaural", "Binaural (220Hz)", Volume2],
+            ["lo-fi", "Lo-fi hum", Volume2],
           ] as [SoundPreset, string, typeof Volume2][]
         ).map(([key, label, Icon]) => (
           <button
             key={key}
             onClick={() => changeSound(key)}
             className={cn(
-              "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition-colors",
+              "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition-all active:scale-95",
               sound === key
-                ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
-                : "border-border-subtle text-text-secondary hover:text-text-primary",
+                ? "border-accent-primary bg-accent-primary/15 text-accent-primary font-medium shadow-[0_0_12px_rgba(124,158,255,0.15)]"
+                : "border-border-subtle/80 bg-surface-1/60 text-text-secondary hover:text-text-primary hover:bg-surface-2",
             )}
           >
             <Icon className="h-3.5 w-3.5" />
@@ -307,11 +356,12 @@ export default function FocusPage() {
       </div>
 
       {elapsed > 0 && !running && (
-        <p className="flex items-center gap-1.5 text-sm text-accent-success">
+        <div className="animate-pop flex items-center gap-2 rounded-2xl border border-accent-success/30 bg-accent-success/10 px-4 py-2 text-sm text-accent-success font-medium">
           <Check className="h-4 w-4" />
           {Math.round(elapsed / 60)} minute{Math.round(elapsed / 60) > 1 ? "s" : ""} focused and logged.
-        </p>
+        </div>
       )}
     </div>
   )
 }
+

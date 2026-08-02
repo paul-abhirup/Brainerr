@@ -9,25 +9,14 @@
 // via parent_task_id) with the due date advanced by the rule, so the planner
 // only ever reads simple date-bound rows.
 
-import { RRule } from "npm:rrule"
 import { createClient } from "npm:@supabase/supabase-js@2"
+import { nextOccurrence, shouldSkipOccurrence } from "./logic.ts"
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   { auth: { persistSession: false } },
 )
-
-function nextOccurrence(rrule: string, after: Date): Date | null {
-  let rule: RRule
-  try {
-    rule = RRule.fromString(rrule)
-  } catch {
-    return null
-  }
-  const next = rule.after(after, true)
-  return next ? new Date(next.getTime()) : null
-}
 
 Deno.serve(async () => {
   const { data: templates, error } = await supabase
@@ -40,14 +29,14 @@ Deno.serve(async () => {
 
   let created = 0
   for (const tpl of templates ?? []) {
-    // Already materialized an open occurrence? Skip (prevents dupes on re-run).
-    const { data: open } = await supabase
+    // Already materialized an occurrence? Skip (prevents dupes when both a
+    // recurring task and its completed child are picked up in the same run).
+    const { data: existing } = await supabase
       .from("tasks")
       .select("id")
       .eq("parent_task_id", tpl.id)
-      .not("status", "eq", "done")
       .limit(1)
-    if (open && open.length > 0) continue
+    if (shouldSkipOccurrence(existing?.length ?? 0)) continue
 
     const after = tpl.completed_at ? new Date(tpl.completed_at) : new Date()
     const due = nextOccurrence(tpl.recurring_rule, after)
@@ -76,3 +65,4 @@ Deno.serve(async () => {
     headers: { "Content-Type": "application/json" },
   })
 })
+

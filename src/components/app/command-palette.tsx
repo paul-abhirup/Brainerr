@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useQueryClient } from "@tanstack/react-query"
 import { createClient } from "@/lib/supabase/client"
@@ -18,8 +18,9 @@ export function CommandPalette() {
   const queryClient = useQueryClient()
   const supabase = createClient()
   const [value, setValue] = useState("")
-  const [parsed, setParsed] = useState<ReturnType<typeof parseQuickAdd> | null>(null)
   const [loading, setLoading] = useState(false)
+
+  const parsed = useMemo(() => (value.trim() ? parseQuickAdd(value) : null), [value])
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -28,7 +29,6 @@ export function CommandPalette() {
         if (isOpen) closeQuickAdd()
         else {
           setValue("")
-          setParsed(null)
           openQuickAdd()
         }
       }
@@ -36,10 +36,6 @@ export function CommandPalette() {
     window.addEventListener("keydown", onKeyDown)
     return () => window.removeEventListener("keydown", onKeyDown)
   }, [isOpen, openQuickAdd, closeQuickAdd])
-
-  useEffect(() => {
-    setParsed(value.trim() ? parseQuickAdd(value) : null)
-  }, [value])
 
   async function createTask() {
     if (!value.trim() || loading) return
@@ -64,7 +60,6 @@ export function CommandPalette() {
       await queryClient.invalidateQueries()
       router.refresh()
       setValue("")
-      setParsed(null)
       closeQuickAdd()
     } catch (err) {
       toast.error((err as Error).message)

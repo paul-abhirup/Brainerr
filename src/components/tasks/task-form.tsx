@@ -1,8 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { createClient } from "@/lib/supabase/client"
-import { useCreateTask, useUpdateTask, type TaskRow } from "@/hooks/use-tasks"
+import { useState } from "react"
+import { useCreateTask, useUpdateTask, useTasks, type TaskRow } from "@/hooks/use-tasks"
 import { useProjects } from "@/hooks/use-data"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -12,6 +11,23 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
+
+const REPEAT_OPTIONS: { value: string; label: string; rrule: string | null }[] = [
+  { value: "none", label: "Doesn't repeat", rrule: null },
+  { value: "daily", label: "Daily", rrule: "FREQ=DAILY" },
+  { value: "weekly", label: "Weekly", rrule: "FREQ=WEEKLY" },
+  { value: "monthly", label: "Monthly", rrule: "FREQ=MONTHLY" },
+  { value: "custom", label: "Custom…", rrule: null },
+]
+
+function rruleToOption(rule: string | null): { kind: string; custom: string } {
+  if (!rule) return { kind: "none", custom: "" }
+  const normalized = rule.toUpperCase().replace(/\s+/g, "")
+  if (normalized === "FREQ=DAILY") return { kind: "daily", custom: "" }
+  if (normalized === "FREQ=WEEKLY") return { kind: "weekly", custom: "" }
+  if (normalized === "FREQ=MONTHLY") return { kind: "monthly", custom: "" }
+  return { kind: "custom", custom: rule }
+}
 
 export function TaskForm({
   open,
@@ -24,37 +40,58 @@ export function TaskForm({
   task?: TaskRow | null
   defaultProjectId?: string | null
 }) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <TaskFormFields
+        key={open ? task?.id ?? "new" : "closed"}
+        task={task}
+        defaultProjectId={defaultProjectId}
+        onClose={() => onOpenChange(false)}
+      />
+    </Dialog>
+  )
+}
+
+function TaskFormFields({
+  task,
+  defaultProjectId,
+  onClose,
+}: {
+  task?: TaskRow | null
+  defaultProjectId?: string | null
+  onClose: () => void
+}) {
   const { data: projects } = useProjects()
+  const { data: allTasks } = useTasks()
   const createTask = useCreateTask()
   const updateTask = useUpdateTask()
-  const supabase = createClient()
 
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
-  const [projectId, setProjectId] = useState<string>("")
-  const [priority, setPriority] = useState<TaskRow["priority"]>("medium")
-  const [effort, setEffort] = useState<TaskRow["effort"]>(null)
-  const [dread, setDread] = useState<number | null>(null)
-  const [dueDate, setDueDate] = useState("")
-  const [estimated, setEstimated] = useState("")
+  const [title, setTitle] = useState(task?.title ?? "")
+  const [description, setDescription] = useState(task?.description ?? "")
+  const [projectId, setProjectId] = useState<string>(task?.project_id ?? defaultProjectId ?? "")
+  const [priority, setPriority] = useState<TaskRow["priority"]>(task?.priority ?? "medium")
+  const [effort, setEffort] = useState<TaskRow["effort"]>(task?.effort ?? null)
+  const [dread, setDread] = useState<number | null>(task?.dread_level ?? null)
+  const [dueDate, setDueDate] = useState(task?.due_date ? toLocalInput(task.due_date) : "")
+  const [estimated, setEstimated] = useState(task?.estimated_minutes ? String(task.estimated_minutes) : "")
+  const [blockedBy, setBlockedBy] = useState(task?.blocked_by_task_id ?? "")
+  const r = rruleToOption(task?.recurring_rule ?? null)
+  const [recurring, setRecurring] = useState(r.kind)
+  const [customRrule, setCustomRrule] = useState(r.custom)
   const [saving, setSaving] = useState(false)
 
-  useEffect(() => {
-    if (!open) return
-    setTitle(task?.title ?? "")
-    setDescription(task?.description ?? "")
-    setProjectId(task?.project_id ?? defaultProjectId ?? "")
-    setPriority(task?.priority ?? "medium")
-    setEffort(task?.effort ?? null)
-    setDread(task?.dread_level ?? null)
-    setDueDate(task?.due_date ? toLocalInput(task.due_date) : "")
-    setEstimated(task?.estimated_minutes ? String(task.estimated_minutes) : "")
-  }, [open, task, defaultProjectId])
+  const blockerCandidates = (allTasks ?? []).filter(
+    (t) => t.status !== "done" && t.id !== task?.id && t.id !== task?.parent_task_id,
+  )
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
     try {
+      const rrule =
+        recurring === "custom"
+          ? customRrule.trim() || null
+          : (REPEAT_OPTIONS.find((o) => o.value === recurring)?.rrule ?? null)
       const body = {
         title: title.trim(),
         description: description.trim() || null,
@@ -64,6 +101,8 @@ export function TaskForm({
         dread_level: dread,
         due_date: dueDate ? new Date(dueDate).toISOString() : null,
         estimated_minutes: estimated ? Number(estimated) : null,
+        blocked_by_task_id: blockedBy || null,
+        recurring_rule: rrule,
       }
       if (task) {
         await updateTask.mutateAsync({ id: task.id, ...body })
@@ -72,7 +111,7 @@ export function TaskForm({
         await createTask.mutateAsync(body)
         toast.success("Added to inbox")
       }
-      onOpenChange(false)
+      onClose()
     } catch (err) {
       toast.error((err as Error).message)
     } finally {
@@ -81,11 +120,10 @@ export function TaskForm({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{task ? "Edit task" : "New task"}</DialogTitle>
-        </DialogHeader>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>{task ? "Edit task" : "New task"}</DialogTitle>
+      </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
             <Label htmlFor="tf-title">What needs doing?</Label>
@@ -167,16 +205,53 @@ export function TaskForm({
             </div>
           </div>
 
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label>Depends on</Label>
+              <Select value={blockedBy || "none"} onValueChange={(v) => setBlockedBy(v === "none" ? "" : (v ?? ""))}>
+                <SelectTrigger><SelectValue placeholder="Nothing" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Nothing</SelectItem>
+                  {blockerCandidates.map((t) => (
+                    <SelectItem key={t.id} value={t.id}>{t.title}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Repeats</Label>
+              <Select value={recurring || "none"} onValueChange={(v) => setRecurring(v ?? "none")}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {REPEAT_OPTIONS.map((o) => (
+                    <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {recurring === "custom" && (
+            <div className="space-y-1.5">
+              <Label htmlFor="tf-rrule">RRULE</Label>
+              <Input
+                id="tf-rrule"
+                value={customRrule}
+                onChange={(e) => setCustomRrule(e.target.value)}
+                placeholder="FREQ=WEEKLY;BYDAY=MO,WE,FR"
+              />
+            </div>
+          )}
+
           <DialogFooter>
-            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
+            <Button type="button" variant="ghost" onClick={onClose}>Cancel</Button>
             <Button type="submit" disabled={saving || !title.trim()}>
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {task ? "Save changes" : "Add task"}
             </Button>
           </DialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+    </DialogContent>
   )
 }
 

@@ -29,7 +29,7 @@ export function NoteDetailClient({
   const supabase = createClient()
   const [title, setTitle] = useState(note.title ?? "")
   const [body, setBody] = useState(note.body ?? "")
-  const [tags, setTags] = useState(note.tags.join(", "))
+  const [tags] = useState(note.tags.join(", "))
   const [saving, setSaving] = useState(false)
 
   async function save() {

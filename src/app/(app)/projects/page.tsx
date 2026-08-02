@@ -1,0 +1,212 @@
+"use client"
+
+import { useState } from "react"
+import Link from "next/link"
+import { createClient } from "@/lib/supabase/client"
+import { useProjects, useGoals } from "@/hooks/use-data"
+import { useTasks } from "@/hooks/use-tasks"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { toast } from "sonner"
+import { FolderKanban, Plus, Pencil, Trash2, Target, CheckCircle2 } from "lucide-react"
+import { useQueryClient } from "@tanstack/react-query"
+import { cn } from "@/lib/utils"
+
+const COLORS = ["#7C9EFF", "#E8A34D", "#6FCF97", "#E5766D", "#C792EA", "#4DB8A6", "#5C5C5E"]
+
+export default function ProjectsPage() {
+  const { data: projects, isLoading } = useProjects()
+  const { data: goals } = useGoals()
+  const { data: tasks } = useTasks()
+  const supabase = createClient()
+  const qc = useQueryClient()
+
+  const [open, setOpen] = useState(false)
+  const [editing, setEditing] = useState<{ id: string; name: string; goal_id: string | null; color: string } | null>(null)
+  const [name, setName] = useState("")
+  const [goalId, setGoalId] = useState("")
+  const [color, setColor] = useState(COLORS[0])
+  const [saving, setSaving] = useState(false)
+
+  function openNew() {
+    setEditing(null)
+    setName("")
+    setGoalId("")
+    setColor(COLORS[0])
+    setOpen(true)
+  }
+
+  function openEdit(p: { id: string; name: string; goal_id: string | null; color: string | null }) {
+    setEditing({ id: p.id, name: p.name, goal_id: p.goal_id, color: p.color ?? COLORS[0] })
+    setName(p.name)
+    setGoalId(p.goal_id ?? "")
+    setColor(p.color ?? COLORS[0])
+    setOpen(true)
+  }
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!name.trim() || saving) return
+    setSaving(true)
+    try {
+      if (editing) {
+        const { error } = await supabase.from("projects").update({
+          name: name.trim(),
+          goal_id: goalId || null,
+          color,
+        }).eq("id", editing.id)
+        if (error) throw error
+        toast.success("Project updated")
+      } else {
+        const { error } = await supabase.from("projects").insert({
+          name: name.trim(),
+          goal_id: goalId || null,
+          color,
+        })
+        if (error) throw error
+        toast.success("Project created")
+      }
+      setOpen(false)
+      await qc.invalidateQueries({ queryKey: ["projects"] })
+    } catch (err) {
+      toast.error((err as Error).message)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  async function remove(projectId: string, name: string) {
+    if (!confirm(`Delete project "${name}"? Tasks keep their project assignment cleared.`)) return
+    const { error } = await supabase.from("projects").delete().eq("id", projectId)
+    if (error) toast.error(error.message)
+    else {
+      await qc.invalidateQueries({ queryKey: ["projects"] })
+      toast.success("Project deleted")
+    }
+  }
+
+  const stats = (projectId: string) => {
+    const list = (tasks ?? []).filter((t) => t.project_id === projectId)
+    return {
+      open: list.filter((t) => t.status !== "done").length,
+      done: list.filter((t) => t.status === "done").length,
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Projects</h1>
+          <p className="mt-1 text-sm text-text-secondary">
+            Group tasks under a project, optionally under a goal. Projects feed goal progress and estimate calibration.
+          </p>
+        </div>
+        <Button onClick={openNew}>
+          <Plus className="mr-2 h-4 w-4" />
+          New project
+        </Button>
+      </div>
+
+      {isLoading ? (
+        <div className="h-64 animate-pulse rounded-xl bg-surface-2" />
+      ) : !projects?.length ? (
+        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border-subtle py-16 text-center">
+          <FolderKanban className="h-8 w-8 text-text-disabled" />
+          <p className="text-sm text-text-secondary">No projects yet</p>
+          <p className="text-xs text-text-disabled">Projects group related tasks — try one per ongoing initiative.</p>
+          <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
+            Create your first project
+          </Button>
+        </div>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {projects.map((p) => {
+            const s = stats(p.id)
+            const goal = goals?.find((g) => g.id === p.goal_id)
+            return (
+              <div key={p.id} className="rounded-xl border border-border-subtle bg-surface-1 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <span className="h-3 w-3 shrink-0 rounded-full" style={{ background: p.color ?? "#7C9EFF" }} />
+                    <h3 className="truncate text-sm font-semibold">{p.name}</h3>
+                  </div>
+                  <div className="flex shrink-0 gap-1">
+                    <Button variant="ghost" size="sm" className="h-7 w-7 p-0"
+                      onClick={() => openEdit(p)}>
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-accent-danger" onClick={() => remove(p.id, p.name)}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+                <div className="mt-2 flex items-center gap-4 text-xs text-text-secondary">
+                  <span className="flex items-center gap-1">
+                    <CheckCircle2 className="h-3 w-3 text-accent-success" />
+                    {s.done} done
+                  </span>
+                  <span>{s.open} open</span>
+                  {goal && (
+                    <Link href={`/goals/${goal.id}`} className="flex items-center gap-1 text-accent-primary hover:underline">
+                      <Target className="h-3 w-3" />
+                      {goal.title}
+                    </Link>
+                  )}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{editing ? "Edit project" : "New project"}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={submit} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="p-name">Name</Label>
+              <Input id="p-name" autoFocus required value={name} onChange={(e) => setName(e.target.value)} placeholder="GATE CS Prep" />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Goal</Label>
+              <Select value={goalId || "none"} onValueChange={(v) => setGoalId(v === "none" ? "" : (v ?? ""))}>
+                <SelectTrigger><SelectValue placeholder="No goal" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No goal</SelectItem>
+                  {(goals ?? []).filter((g) => g.status === "active").map((g) => (
+                    <SelectItem key={g.id} value={g.id}>{g.title}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Color</Label>
+              <div className="flex flex-wrap gap-2">
+                {COLORS.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setColor(c)}
+                    className={cn("h-7 w-7 rounded-full transition-transform", color === c && "ring-2 ring-accent-primary ring-offset-2 ring-offset-surface-1")}
+                    style={{ background: c }}
+                    aria-label={`Color ${c}`}
+                  />
+                ))}
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
+              <Button type="submit" disabled={saving || !name.trim()}>{saving ? "Saving…" : editing ? "Save" : "Create"}</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
+}

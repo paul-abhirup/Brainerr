@@ -14,16 +14,27 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
-import { Plus, ChevronRight, ChevronDown, Flag, TrendingUp, Sparkles } from "lucide-react"
+import { Plus, ChevronRight, ChevronDown, Flag, TrendingUp, Sparkles, Trash2, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type Horizon = GoalRow["horizon"]
+
+type GoalTemplate = {
+  id: string
+  name: string
+  goal_title: string
+  goal_description: string | null
+  horizon: Horizon
+  data: { projects?: { name: string; color: string | null; tasks?: { title: string; priority: string; due_date: string | null }[] }[] }
+  created_at: string
+}
 
 export default function GoalsPage() {
   const { data: goals, isLoading } = useGoals()
   const { data: progress } = useGoalProgress()
   const { data: forecasts } = useGoalForecast()
   const [creating, setCreating] = useState(false)
+  const [templatesOpen, setTemplatesOpen] = useState(false)
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
 
   const roots = useMemo(
@@ -59,6 +70,13 @@ export default function GoalsPage() {
         <Button onClick={() => setCreating(true)}>
           <Plus className="mr-2 h-4 w-4" />
           New goal
+        </Button>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <Button variant="outline" size="sm" onClick={() => setTemplatesOpen(true)}>
+          <Sparkles className="mr-1.5 h-4 w-4 text-accent-primary" />
+          Templates
         </Button>
       </div>
 
@@ -110,6 +128,7 @@ export default function GoalsPage() {
       )}
 
       <GoalDialog open={creating} onOpenChange={setCreating} goals={goals ?? []} />
+      <TemplatesDialog open={templatesOpen} onOpenChange={setTemplatesOpen} />
     </div>
   )
 }
@@ -291,3 +310,114 @@ function GoalDialog({
     </Dialog>
   )
 }
+
+function TemplatesDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
+  const supabase = createClient()
+  const qc = useQueryClient()
+  const [templates, setTemplates] = useState<GoalTemplate[] | null>(null)
+  const [applying, setApplying] = useState<string | null>(null)
+
+  async function load() {
+    const { data, error } = await supabase.from("goal_templates").select("*").order("created_at", { ascending: false })
+    if (error) toast.error(error.message)
+    else setTemplates((data ?? []) as unknown as GoalTemplate[])
+  }
+
+  function onOpenChangeInner(v: boolean) {
+    onOpenChange(v)
+    if (v) load()
+  }
+
+  async function apply(tpl: GoalTemplate) {
+    setApplying(tpl.id)
+    try {
+      const { data: goal, error: goalError } = await supabase
+        .from("goals")
+        .insert({
+          title: tpl.goal_title,
+          description: tpl.goal_description,
+          horizon: tpl.horizon,
+        })
+        .select()
+        .single()
+      if (goalError) throw goalError
+
+      for (const p of tpl.data?.projects ?? []) {
+        const { data: project, error: projError } = await supabase
+          .from("projects")
+          .insert({ name: p.name, color: p.color, goal_id: goal.id })
+          .select()
+          .single()
+        if (projError) throw projError
+        for (const t of p.tasks ?? []) {
+          const { error: taskError } = await supabase.from("tasks").insert({
+            title: t.title,
+            priority: t.priority as TaskPriority,
+            project_id: project.id,
+            status: "todo",
+          })
+          if (taskError) throw taskError
+        }
+      }
+
+      await qc.invalidateQueries({ queryKey: ["goals"] })
+      await qc.invalidateQueries({ queryKey: ["tasks"] })
+      await qc.invalidateQueries({ queryKey: ["projects"] })
+      toast.success("Goal created from template")
+      onOpenChange(false)
+    } catch (err) {
+      toast.error((err as Error).message)
+    } finally {
+      setApplying(null)
+    }
+  }
+
+  async function remove(id: string) {
+    const { error } = await supabase.from("goal_templates").delete().eq("id", id)
+    if (error) toast.error(error.message)
+    else {
+      toast.success("Template deleted")
+      load()
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChangeInner}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Goal templates</DialogTitle>
+        </DialogHeader>
+        {templates === null ? (
+          <div className="h-40 animate-pulse rounded-xl bg-surface-2" />
+        ) : templates.length === 0 ? (
+          <p className="py-8 text-center text-sm text-text-disabled">
+            No templates yet. Open a goal and hit “Save as template” to reuse its structure next cycle.
+          </p>
+        ) : (
+          <ul className="max-h-80 space-y-2 overflow-y-auto">
+            {templates.map((tpl) => (
+              <li key={tpl.id} className="flex items-center gap-3 rounded-lg border border-border-subtle bg-surface-2 p-3">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium">{tpl.name}</p>
+                  <p className="truncate text-xs text-text-secondary">
+                    {tpl.goal_title} · {tpl.horizon.replace("_", " ")} · {(tpl.data?.projects ?? []).length} project
+                    {(tpl.data?.projects ?? []).length !== 1 ? "s" : ""}
+                  </p>
+                </div>
+                <Button size="sm" onClick={() => apply(tpl)} disabled={applying === tpl.id}>
+                  {applying === tpl.id ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Sparkles className="mr-1.5 h-3.5 w-3.5" />}
+                  Use
+                </Button>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-accent-danger" onClick={() => remove(tpl.id)}>
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+type TaskPriority = "low" | "medium" | "high"

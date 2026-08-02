@@ -12,6 +12,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
 import { Calendar, Clock, MoreHorizontal, Pencil, Trash2, AlarmClockOff } from "lucide-react"
+import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 const priorityColors: Record<TaskRow["priority"], string> = {
@@ -92,7 +93,13 @@ export function TaskCard({ task, highlightDue = true }: { task: TaskRow; highlig
               task.status === "done" && "text-text-disabled line-through",
             )}
           >
-            {task.title}
+            <Link
+              href={`/tasks/${task.id}`}
+              className="hover:text-accent-primary"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {task.title}
+            </Link>
           </p>
 
           <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-text-secondary">

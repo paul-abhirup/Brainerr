@@ -33,30 +33,48 @@ export function NoteEditor({
   note?: NoteInput | null
   onSaved?: () => void
 }) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <NoteEditorForm
+        key={open ? note?.id ?? "new" : "closed"}
+        note={note}
+        onClose={() => onOpenChange(false)}
+        onSaved={onSaved}
+      />
+    </Dialog>
+  )
+}
+
+function NoteEditorForm({
+  note,
+  onClose,
+  onSaved,
+}: {
+  note?: NoteInput | null
+  onClose: () => void
+  onSaved?: () => void
+}) {
   const supabase = createClient()
   const qc = useQueryClient()
   const { data: tasks } = useTasks()
   const { data: goals } = useGoals()
 
-  const [title, setTitle] = useState("")
-  const [body, setBody] = useState("")
-  const [tags, setTags] = useState("")
-  const [linkedTask, setLinkedTask] = useState<string | null>(null)
-  const [linkedGoal, setLinkedGoal] = useState<string | null>(null)
+  const [title, setTitle] = useState(note?.title ?? "")
+  const [body, setBody] = useState(note?.body ?? "")
+  const [tags, setTags] = useState((note?.tags ?? []).join(", "))
+  const [linkedTask, setLinkedTask] = useState<string | null>(note?.linked_task_id ?? null)
+  const [linkedGoal, setLinkedGoal] = useState<string | null>(note?.linked_goal_id ?? null)
   const [saving, setSaving] = useState(false)
 
   const [mentionOpen, setMentionOpen] = useState(false)
   const [mentionQuery, setMentionQuery] = useState("")
+  const [focusTick, setFocusTick] = useState(0)
   const bodyRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
-    if (!open) return
-    setTitle(note?.title ?? "")
-    setBody(note?.body ?? "")
-    setTags((note?.tags ?? []).join(", "))
-    setLinkedTask(note?.linked_task_id ?? null)
-    setLinkedGoal(note?.linked_goal_id ?? null)
-  }, [open, note])
+    if (focusTick === 0) return
+    bodyRef.current?.focus()
+  }, [focusTick])
 
   const mentionMatches = [...(tasks ?? []), ...(goals ?? [])]
     .filter((x) => !("status" in x) || x.status !== "done")
@@ -88,7 +106,7 @@ export function NoteEditor({
     } else {
       setLinkedGoal(item.id)
     }
-    if (bodyRef.current) bodyRef.current.focus()
+    setFocusTick((t) => t + 1)
   }
 
   async function submit(e: React.FormEvent) {
@@ -111,7 +129,7 @@ export function NoteEditor({
         if (error) throw error
       }
       await qc.invalidateQueries({ queryKey: ["notes"] })
-      onOpenChange(false)
+      onClose()
       onSaved?.()
       toast.success(note?.id ? "Note updated" : "Note saved")
     } catch (err) {
@@ -122,8 +140,7 @@ export function NoteEditor({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+    <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>{note?.id ? "Edit note" : "New note"}</DialogTitle>
         </DialogHeader>
@@ -173,14 +190,13 @@ export function NoteEditor({
             <Input id="n-tags" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="research, idea" />
           </div>
           <DialogFooter>
-            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>
+            <Button type="button" variant="ghost" onClick={onClose}>Cancel</Button>
             <Button type="submit" disabled={saving}>
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Save
             </Button>
           </DialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+    </DialogContent>
   )
 }

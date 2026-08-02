@@ -4,6 +4,7 @@ import { useState } from "react"
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors, useDraggable, useDroppable, type DragStartEvent, type DragEndEvent } from "@dnd-kit/core"
 import { format, addDays } from "date-fns"
 import type { TaskRow } from "@/hooks/use-tasks"
+import type { BusyBlock } from "@/hooks/use-planner"
 import { cn } from "@/lib/utils"
 import { Clock, GripVertical } from "lucide-react"
 
@@ -16,10 +17,12 @@ function taskDuration(task: TaskRow) {
 export function PlannerWeek({
   weekStart,
   tasks,
+  busy,
   onSchedule,
 }: {
   weekStart: Date
   tasks: TaskRow[]
+  busy?: BusyBlock[]
   onSchedule: (task: TaskRow, start: Date) => void
 }) {
   const [activeId, setActiveId] = useState<string | null>(null)
@@ -57,6 +60,12 @@ export function PlannerWeek({
             const dayTasks = scheduled
               .filter((t) => t.scheduled_start && new Date(t.scheduled_start).getDate() === date.getDate())
               .sort((a, b) => new Date(a.scheduled_start!).getTime() - new Date(b.scheduled_start!).getTime())
+            const dayBusy = (busy ?? []).filter(
+              (b) =>
+                b.start.getFullYear() === date.getFullYear() &&
+                b.start.getMonth() === date.getMonth() &&
+                b.start.getDate() === date.getDate(),
+            )
 
             return (
               <div key={day} className="bg-surface-1">
@@ -66,7 +75,13 @@ export function PlannerWeek({
                 </div>
                 <div className="divide-y divide-border-subtle/60">
                   {HOURS.map((hour) => (
-                    <HourCell key={hour} hour={hour} dayOffset={day} tasks={dayTasks.filter((t) => new Date(t.scheduled_start!).getHours() === hour)} />
+                    <HourCell
+                      key={hour}
+                      hour={hour}
+                      dayOffset={day}
+                      tasks={dayTasks.filter((t) => new Date(t.scheduled_start!).getHours() === hour)}
+                      busy={dayBusy.filter((b) => b.start.getHours() === hour)}
+                    />
                   ))}
                 </div>
               </div>
@@ -86,7 +101,7 @@ export function PlannerWeek({
   )
 }
 
-function HourCell({ hour, dayOffset, tasks }: { hour: number; dayOffset: number; tasks: TaskRow[] }) {
+function HourCell({ hour, dayOffset, tasks, busy }: { hour: number; dayOffset: number; tasks: TaskRow[]; busy: BusyBlock[] }) {
   const { isOver, setNodeRef } = useDroppable({ id: `day-${dayOffset}-${hour}`, data: { dayOffset, hour } })
   return (
     <div
@@ -100,6 +115,15 @@ function HourCell({ hour, dayOffset, tasks }: { hour: number; dayOffset: number;
         {hour}:00
       </span>
       <div className="ml-7 space-y-1">
+        {busy.map((b) => (
+          <div
+            key={b.id}
+            title={`Busy — ${b.title ?? "event"}`}
+            className="pointer-events-none rounded-md border border-accent-warm/30 bg-accent-warm/10 px-1.5 py-0.5 text-[10px] text-accent-warm/80"
+          >
+            <span className="truncate">▤ {b.title ?? "Busy"}</span>
+          </div>
+        ))}
         {tasks.map((t) => (
           <PlannedTask key={t.id} task={t} />
         ))}

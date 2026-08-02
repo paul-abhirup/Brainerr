@@ -86,25 +86,52 @@ export function useUnscheduleTask() {
   })
 }
 
-/** Busy blocks from synced Google Calendar events, exposed for the planner to reserve. */
+export interface BusyBlock {
+  id: string
+  title: string | null
+  start: Date
+  end: Date
+  source: "task" | "calendar"
+}
+
+/** Busy time for the planner: scheduled tasks plus synced Google events. */
 export function useBusyBlocks(from: Date, to: Date) {
   const isoStart = from.toISOString()
   const isoEnd = to.toISOString()
   return useQuery({
     queryKey: ["busy_blocks", isoStart],
     queryFn: async () => {
-      const { data, error } = await supabase()
-        .from("tasks")
-        .select("id,title,scheduled_start,scheduled_end")
-        .gte("scheduled_start", isoStart)
-        .lte("scheduled_end", isoEnd)
-      if (error) throw error
-      return (data ?? []).map((t) => ({
+      const client = supabase()
+      const [tasksRes, calendarRes] = await Promise.all([
+        client
+          .from("tasks")
+          .select("id,title,scheduled_start,scheduled_end")
+          .gte("scheduled_start", isoStart)
+          .lte("scheduled_end", isoEnd),
+        client
+          .from("calendar_busy")
+          .select("id,title,start,end")
+          .lte("start", isoEnd)
+          .gte("end", isoStart),
+      ])
+      if (tasksRes.error) throw tasksRes.error
+      if (calendarRes.error) throw calendarRes.error
+
+      const tasks: BusyBlock[] = (tasksRes.data ?? []).map((t) => ({
         id: t.id,
         title: t.title,
         start: new Date(t.scheduled_start!),
         end: new Date(t.scheduled_end!),
+        source: "task",
       }))
+      const calendar: BusyBlock[] = (calendarRes.data ?? []).map((b) => ({
+        id: b.id,
+        title: b.title,
+        start: new Date(b.start),
+        end: new Date(b.end),
+        source: "calendar",
+      }))
+      return [...tasks, ...calendar].sort((a, b) => a.start.getTime() - b.start.getTime())
     },
   })
 }

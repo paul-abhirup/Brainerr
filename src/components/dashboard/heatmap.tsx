@@ -5,7 +5,6 @@ import { subDays, format } from "date-fns"
 import CalendarHeatmap, { type HeatmapValue } from "react-calendar-heatmap"
 import "react-calendar-heatmap/dist/styles.css"
 import type { HabitRow } from "@/hooks/use-data"
-import { cn } from "@/lib/utils"
 
 interface HeatLog {
   habit_id: string

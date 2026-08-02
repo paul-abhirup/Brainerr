@@ -138,6 +138,14 @@ export function useUserState() {
   })
 }
 
+export type UserSettingsRow = {
+  user_id: string
+  working_hours: unknown
+  buffer_minutes: number
+  max_daily_task_minutes: number
+  scheduling_horizon_days: number
+}
+
 export function useUserSettings() {
   return useQuery({
     queryKey: ["user_settings"],
