@@ -21,6 +21,9 @@ alter table calendar_busy enable row level security;
 create policy "Owners manage their calendar_busy" on calendar_busy
   for all using (is_owner(user_id)) with check (is_owner(user_id));
 
+create trigger calendar_busy_set_user before insert on calendar_busy
+  for each row execute function set_user_id();
+
 -- ============================================================
 -- Streak milestone achievement (habit streak reaches 7 → +20)
 -- ============================================================

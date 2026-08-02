@@ -427,6 +427,39 @@ begin
 end $$;
 
 -- ============================================================
+-- Auto-own rows: client inserts never send user_id; derive it from the
+-- session (auth.uid()). Admin/service-role inserts that pass user_id are
+-- left untouched.
+-- ============================================================
+create or replace function set_user_id()
+returns trigger as $$
+begin
+  if new.user_id is null then
+    new.user_id = auth.uid();
+  end if;
+  return new;
+end;
+$$ language plpgsql;
+
+do $$
+declare
+  tbl text;
+begin
+  foreach tbl in array array[
+    'goals','projects','tasks','task_dependencies','habits','habit_logs',
+    'notes','focus_sessions','daily_focus','user_state','achievements',
+    'push_subscriptions','reminder_log','calendar_integrations','user_settings',
+    'scheduling_feedback','productivity_patterns','estimate_calibration','goal_templates'
+  ]
+  loop
+    execute format(
+      'create trigger %I before insert on %I for each row execute function set_user_id();',
+      tbl || '_set_user', tbl
+    );
+  end loop;
+end $$;
+
+-- ============================================================
 -- Views
 -- ============================================================
 
@@ -665,6 +698,9 @@ create index calendar_busy_user_range_idx on calendar_busy(user_id, start, "end"
 alter table calendar_busy enable row level security;
 create policy "Owners manage their calendar_busy" on calendar_busy
   for all using (is_owner(user_id)) with check (is_owner(user_id));
+
+create trigger calendar_busy_set_user before insert on calendar_busy
+  for each row execute function set_user_id();
 
 -- ============================================================
 -- Streak milestone achievement (habit streak reaches 7 → +20)
