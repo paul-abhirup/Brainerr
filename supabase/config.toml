@@ -1,0 +1,27 @@
+# Supabase configuration. `supabase link` will fill in project_id.
+project_id = "brainer"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+
+[db]
+port = 54322
+
+[studio]
+enabled = true
+
+[functions]
+enabled = true
+verify_jwt = false
+
+# Cron schedules for reminder + recurring-task materialization.
+[functions.send-reminders]
+enabled = true
+schedule = "*/10 * * * *"
+
+[functions.recurring-generator]
+enabled = true
+schedule = "0 1 * * *"
