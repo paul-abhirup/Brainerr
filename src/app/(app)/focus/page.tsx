@@ -218,12 +218,12 @@ export default function FocusPage() {
   return (
     <div className="flex flex-col items-center space-y-8 py-4 animate-in fade-in duration-300">
       <div className="text-center space-y-1">
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-accent-primary/20 bg-accent-primary/10 px-3 py-1 text-xs font-medium text-accent-primary">
+        <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
           <Sparkles className="h-3.5 w-3.5" />
           Single-Task Focus State
         </div>
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Focus Zone</h1>
-        <p className="max-w-md text-sm text-text-secondary">
+        <p className="max-w-md text-sm text-muted-foreground">
           Eliminate distraction. One block, total flow.
         </p>
       </div>
@@ -231,7 +231,7 @@ export default function FocusPage() {
       {/* Task selector */}
       <div className="w-full max-w-md">
         <Select value={taskId || "none"} onValueChange={(v) => setTaskId(v === "none" ? "" : (v ?? ""))}>
-          <SelectTrigger className="w-full h-11 rounded-xl border-border-subtle bg-surface-1/80 backdrop-blur-md">
+          <SelectTrigger className="w-full h-11 rounded-xl border-border bg-card/80 backdrop-blur-md">
             <SelectValue placeholder="What are you focusing on? (optional)" />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
@@ -244,19 +244,19 @@ export default function FocusPage() {
       </div>
 
       {/* Animated Timer ring */}
-      <div className="relative flex h-[300px] w-[300px] sm:h-[340px] sm:w-[340px] items-center justify-center">
+      <div className="relative flex h-[min(300px,80vw)] w-[min(300px,80vw)] sm:h-[340px] sm:w-[340px] items-center justify-center">
         <div className={cn(
           "absolute inset-0 rounded-full transition-all duration-700 blur-3xl opacity-20 pointer-events-none",
-          running ? "bg-accent-primary opacity-30" : "bg-surface-3"
+          running ? "bg-primary opacity-30" : "bg-muted"
         )} />
         <svg viewBox="0 0 320 320" className="h-full w-full -rotate-90">
           <defs>
             <linearGradient id="focusGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="var(--accent-primary)" />
-              <stop offset="100%" stopColor="var(--accent-warm)" />
+              <stop offset="0%" stopColor="var(--primary)" />
+              <stop offset="100%" stopColor="var(--warning)" />
             </linearGradient>
           </defs>
-          <circle cx="160" cy="160" r={R} fill="none" stroke="var(--surface-2)" strokeWidth="12" />
+          <circle cx="160" cy="160" r={R} fill="none" stroke="var(--secondary)" strokeWidth="12" />
           <circle
             cx="160"
             cy="160"
@@ -271,22 +271,22 @@ export default function FocusPage() {
           />
         </svg>
         <div className={cn("absolute text-center transition-transform", running && "animate-breathe")}>
-          <div className="font-mono text-5xl sm:text-6xl font-bold tabular-nums tracking-tight bg-gradient-to-b from-text-primary to-text-secondary bg-clip-text text-transparent">
+          <div className="font-mono text-5xl sm:text-6xl font-bold tabular-nums tracking-tight bg-gradient-to-b from-foreground to-muted-foreground bg-clip-text text-transparent">
             {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
           </div>
           {running ? (
-            <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-full bg-accent-warm/15 px-3 py-1 text-xs font-semibold text-accent-warm animate-pulse">
+            <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-full bg-warning/15 px-3 py-1 text-xs font-semibold text-warning animate-pulse">
               <Flame className="h-4 w-4" />
               In Deep Flow
             </div>
           ) : (
-            <p className="mt-2 text-xs font-medium text-text-secondary">{duration} min block · Ready</p>
+            <p className="mt-2 text-xs font-medium text-muted-foreground">{duration} min block · Ready</p>
           )}
         </div>
       </div>
 
       {/* Duration picker */}
-      <div className="flex items-center gap-1.5 rounded-full border border-border-subtle/80 bg-surface-1/90 p-1.5 backdrop-blur-md shadow-sm">
+      <div className="flex items-center gap-1.5 rounded-full border border-border/80 bg-card/90 p-1.5 backdrop-blur-md shadow-sm">
         {DURATIONS.map((d) => (
           <button
             key={d}
@@ -298,8 +298,8 @@ export default function FocusPage() {
             className={cn(
               "rounded-full px-4 py-1.5 text-xs font-medium tabular-nums transition-all active:scale-95",
               duration === d
-                ? "bg-accent-primary/20 text-accent-primary font-semibold border border-accent-primary/30"
-                : "text-text-secondary hover:text-text-primary hover:bg-surface-2",
+                ? "bg-primary/20 text-primary font-semibold border border-primary/30"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary",
             )}
           >
             {d}m
@@ -310,29 +310,29 @@ export default function FocusPage() {
       {/* Action Controls */}
       <div className="flex items-center gap-4">
         {running ? (
-          <Button onClick={pause} size="lg" variant="outline" className="h-12 px-8 rounded-full border-border-subtle text-text-primary hover:bg-surface-2">
+          <Button onClick={pause} size="lg" variant="outline" className="h-12 px-8 rounded-full border-border text-foreground hover:bg-secondary">
             <Pause className="mr-2 h-5 w-5 fill-current" /> Pause
           </Button>
         ) : (
-          <Button onClick={start} size="lg" className="h-12 px-8 rounded-full bg-accent-primary text-surface-base hover:bg-accent-primary/90 font-semibold shadow-lg shadow-accent-primary/20">
+          <Button onClick={start} size="lg" className="h-12 px-8 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold shadow-lg shadow-primary/20">
             <Play className="mr-2 h-5 w-5 fill-current" /> Start Flow
           </Button>
         )}
-        <Button onClick={reset} size="lg" variant="ghost" className="h-12 px-5 rounded-full text-text-secondary hover:text-text-primary">
+        <Button onClick={reset} size="lg" variant="ghost" className="h-12 px-5 rounded-full text-muted-foreground hover:text-foreground">
           <RotateCcw className="mr-2 h-4 w-4" /> Reset
         </Button>
       </div>
 
       {/* Shortcut hint */}
-      <div className="hidden sm:flex items-center gap-1.5 text-xs text-text-disabled">
+      <div className="hidden sm:flex items-center gap-1.5 text-xs text-disabled">
         <Keyboard className="h-3.5 w-3.5" />
-        <span>Press <kbd className="px-1.5 py-0.5 rounded bg-surface-2 border border-border-subtle font-mono text-xs">Space</kbd> to toggle, <kbd className="px-1.5 py-0.5 rounded bg-surface-2 border border-border-subtle font-mono text-xs">R</kbd> to reset</span>
+        <span>Press <kbd className="px-1.5 py-0.5 rounded bg-secondary border border-border font-mono text-xs">Space</kbd> to toggle, <kbd className="px-1.5 py-0.5 rounded bg-secondary border border-border font-mono text-xs">R</kbd> to reset</span>
       </div>
 
       {/* Ambient Sound Selector */}
       <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-        <div className="flex items-center gap-1.5 text-xs text-text-secondary mr-1">
-          <Music className="h-3.5 w-3.5 text-accent-primary" />
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mr-1">
+          <Music className="h-3.5 w-3.5 text-primary" />
           <span>Soundscape:</span>
         </div>
         {(
@@ -349,8 +349,8 @@ export default function FocusPage() {
             className={cn(
               "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition-all active:scale-95",
               sound === key
-                ? "border-accent-primary bg-accent-primary/15 text-accent-primary font-medium shadow-[0_0_12px_rgba(124,158,255,0.15)]"
-                : "border-border-subtle/80 bg-surface-1/60 text-text-secondary hover:text-text-primary hover:bg-surface-2",
+                ? "border-primary bg-primary/15 text-primary font-medium shadow-[0_0_12px_rgba(124,158,255,0.15)]"
+                : "border-border/80 bg-card/60 text-muted-foreground hover:text-foreground hover:bg-secondary",
             )}
           >
             <Icon className="h-3.5 w-3.5" />
@@ -360,7 +360,7 @@ export default function FocusPage() {
       </div>
 
       {elapsed > 0 && !running && (
-        <div className="animate-pop flex items-center gap-2 rounded-2xl border border-accent-success/30 bg-accent-success/10 px-4 py-2 text-sm text-accent-success font-medium">
+        <div className="animate-pop flex items-center gap-2 rounded-2xl border border-success/30 bg-success/10 px-4 py-2 text-sm text-success font-medium">
           <Check className="h-4 w-4" />
           {Math.round(elapsed / 60)} minute{Math.round(elapsed / 60) > 1 ? "s" : ""} focused and logged.
         </div>

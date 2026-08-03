@@ -143,7 +143,7 @@ export function TaskDetailClient({
         backHref="/inbox"
         backLabel="Inbox"
         title={
-          <span className={cn("break-words", task.status === "done" && "text-text-disabled line-through")}>
+          <span className={cn("break-words", task.status === "done" && "text-disabled line-through")}>
             {task.title}
           </span>
         }
@@ -154,7 +154,7 @@ export function TaskDetailClient({
               variant={task.status === "done" ? "outline" : "default"}
               size="sm"
               onClick={toggleDone}
-              className={cn(task.status === "done" && "border-accent-primary text-accent-primary hover:bg-accent-primary/10")}
+              className={cn(task.status === "done" && "border-primary text-primary hover:bg-primary/10")}
             >
               {task.status === "done" ? (
                 <>
@@ -172,7 +172,7 @@ export function TaskDetailClient({
             <AlertDialog>
               <AlertDialogTrigger
                 render={
-                  <Button variant="ghost" size="sm" className="text-accent-danger" aria-label="Delete task">
+                  <Button variant="ghost" size="sm" className="text-destructive" aria-label="Delete task">
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 }
@@ -199,9 +199,9 @@ export function TaskDetailClient({
           <Checkbox
             checked={task.status === "done"}
             onCheckedChange={toggleDone}
-            className="h-5 w-5 rounded-md data-[state=checked]:bg-accent-success data-[state=checked]:text-surface-base"
+            className="h-5 w-5 rounded-md data-[state=checked]:bg-success data-[state=checked]:text-success-foreground"
           />
-          <span className={cn("text-sm font-medium", task.status === "done" ? "text-text-disabled" : "text-text-secondary")}>
+          <span className={cn("text-sm font-medium", task.status === "done" ? "text-disabled" : "text-muted-foreground")}>
             {task.status === "done" ? "Reopen task" : "Mark done"}
           </span>
         </div>
@@ -217,31 +217,31 @@ export function TaskDetailClient({
           {project && (
             <Badge
               render={<Link href="/projects" />}
-              className="gap-1.5 bg-surface-2 text-text-secondary hover:border-accent-primary/50"
+              className="gap-1.5 bg-secondary text-muted-foreground hover:border-primary/50"
             >
               <span className="h-2 w-2 rounded-full" style={{ background: project.color ?? "#7C9EFF" }} />
               {project.name}
             </Badge>
           )}
-          <Badge className="bg-surface-2 text-text-secondary">Priority: {task.priority}</Badge>
-          {task.effort && <Badge className="bg-surface-2 text-text-secondary">Effort: {task.effort}</Badge>}
-          {task.dread_level && <Badge className="border-accent-warm/40 text-accent-warm">Dread {task.dread_level}</Badge>}
-          {task.at_risk && <Badge className="border-accent-warm/40 text-accent-warm">At risk</Badge>}
-          {task.is_pinned && <Badge className="bg-surface-2 text-text-secondary">Pinned</Badge>}
+          <Badge className="bg-secondary text-muted-foreground">Priority: {task.priority}</Badge>
+          {task.effort && <Badge className="bg-secondary text-muted-foreground">Effort: {task.effort}</Badge>}
+          {task.dread_level && <Badge className="border-warning/40 text-warning">Dread {task.dread_level}</Badge>}
+          {task.at_risk && <Badge className="border-warning/40 text-warning">At risk</Badge>}
+          {task.is_pinned && <Badge className="bg-secondary text-muted-foreground">Pinned</Badge>}
         </div>
 
         {(parent || blocker) && (
-          <div className="space-y-2 border-t border-border-subtle pt-4 text-sm">
+          <div className="space-y-2 border-t border-border pt-4 text-sm">
             {parent && (
-              <Link href={`/tasks/${parent.id}`} className="flex items-center gap-2 text-text-secondary hover:text-text-primary">
-                <ListTodo className="h-4 w-4" /> Part of: <span className="font-medium text-text-primary">{parent.title}</span>
+              <Link href={`/tasks/${parent.id}`} className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
+                <ListTodo className="h-4 w-4" /> Part of: <span className="font-medium text-foreground">{parent.title}</span>
               </Link>
             )}
             {blocker && (
-              <div className="flex items-center gap-2 text-text-secondary">
+              <div className="flex items-center gap-2 text-muted-foreground">
                 <Link2 className="h-4 w-4" />
                 Blocked by:
-                <Link href={`/tasks/${blocker.id}`} className="font-medium text-accent-warm hover:underline">
+                <Link href={`/tasks/${blocker.id}`} className="font-medium text-warning hover:underline">
                   {blocker.title}
                 </Link>
               </div>
@@ -253,14 +253,14 @@ export function TaskDetailClient({
       <Card>
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold">Subtasks</h2>
-          <span className="text-xs text-text-secondary">{subtasks.filter((s) => s.status === "done").length}/{subtasks.length} done</span>
+          <span className="text-xs text-muted-foreground">{subtasks.filter((s) => s.status === "done").length}/{subtasks.length} done</span>
         </div>
         <form onSubmit={addSubtask} className="flex gap-2">
           <Input
             value={quick}
             onChange={(e) => setQuick(e.target.value)}
             placeholder="Add a smaller first step…"
-            className="flex-1 bg-surface-2"
+            className="flex-1 bg-secondary"
           />
           <Button type="submit" disabled={adding || !quick.trim()}>
             Add
@@ -269,15 +269,15 @@ export function TaskDetailClient({
         {subtasks.length > 0 && (
           <ul className="space-y-1.5">
             {subtasks.map((s) => (
-              <li key={s.id} className="group flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-surface-2">
+              <li key={s.id} className="group flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-secondary">
                 <Checkbox
                   checked={s.status === "done"}
                   onCheckedChange={(v) => toggleSubtask(s.id, !!v)}
                 />
-                <Link href={`/tasks/${s.id}`} className={cn("min-w-0 flex-1 truncate text-sm", s.status === "done" && "text-text-disabled line-through")}>
+                <Link href={`/tasks/${s.id}`} className={cn("min-w-0 flex-1 truncate text-sm", s.status === "done" && "text-disabled line-through")}>
                   {s.title}
                 </Link>
-                <span className="text-xs text-text-disabled">{s.estimated_minutes ? `${s.estimated_minutes}m` : ""}</span>
+                <span className="text-xs text-disabled">{s.estimated_minutes ? `${s.estimated_minutes}m` : ""}</span>
               </li>
             ))}
           </ul>
@@ -290,7 +290,7 @@ export function TaskDetailClient({
           <ul className="space-y-1.5">
             {blocks.map((b) => (
               <li key={b.id}>
-                <Link href={`/tasks/${b.id}`} className="text-sm text-accent-primary hover:underline">
+                <Link href={`/tasks/${b.id}`} className="text-sm text-primary hover:underline">
                   {b.title}
                 </Link>
               </li>
@@ -302,22 +302,22 @@ export function TaskDetailClient({
       <Card>
         <div className="flex items-center justify-between">
           <h2 className="flex items-center gap-2 text-sm font-semibold">
-            <StickyNote className="h-4 w-4 text-accent-primary" /> Notes
+            <StickyNote className="h-4 w-4 text-primary" /> Notes
           </h2>
-          <span className="text-xs text-text-secondary">{notes.length}</span>
+          <span className="text-xs text-muted-foreground">{notes.length}</span>
         </div>
         {notes.length === 0 ? (
-          <p className="text-xs text-text-disabled">
+          <p className="text-xs text-disabled">
             No notes linked yet — write one from the{" "}
-            <Link href="/notes" className="text-accent-primary hover:underline">Notes</Link> page and tag this task with @.
+            <Link href="/notes" className="text-primary hover:underline">Notes</Link> page and tag this task with @.
           </p>
         ) : (
           <ul className="space-y-1.5">
             {notes.map((n) => (
               <li key={n.id}>
-                <Link href={`/notes/${n.id}`} className="block rounded-lg px-2 py-1.5 text-sm hover:bg-surface-2">
+                <Link href={`/notes/${n.id}`} className="block rounded-lg px-2 py-1.5 text-sm hover:bg-secondary">
                   <span className="font-medium">{n.title || "Untitled"}</span>
-                  <span className="ml-2 text-xs text-text-disabled">{format(new Date(n.updated_at), "MMM d")}</span>
+                  <span className="ml-2 text-xs text-disabled">{format(new Date(n.updated_at), "MMM d")}</span>
                 </Link>
               </li>
             ))}
@@ -328,18 +328,18 @@ export function TaskDetailClient({
       <Card>
         <div className="flex items-center justify-between">
           <h2 className="flex items-center gap-2 text-sm font-semibold">
-            <Timer className="h-4 w-4 text-accent-success" /> Focus time
+            <Timer className="h-4 w-4 text-success" /> Focus time
           </h2>
-          <span className="text-xs tabular-nums text-text-secondary">
+          <span className="text-xs tabular-nums text-muted-foreground">
             {totalFocused > 0 ? `${Math.round(totalFocused / 60 * 10) / 10} hr focused` : "no sessions yet"}
           </span>
         </div>
         {sessions.length > 0 && (
           <ul className="space-y-1.5">
             {sessions.slice(0, 10).map((s) => (
-              <li key={s.id} className="flex items-center justify-between rounded-lg px-2 py-1.5 text-sm hover:bg-surface-2">
-                <span className="text-text-secondary">{format(new Date(s.started_at), "EEE, MMM d h:mm a")}</span>
-                <span className={cn("tabular-nums", s.completed ? "text-accent-success" : "text-text-disabled")}>
+              <li key={s.id} className="flex items-center justify-between rounded-lg px-2 py-1.5 text-sm hover:bg-secondary">
+                <span className="text-muted-foreground">{format(new Date(s.started_at), "EEE, MMM d h:mm a")}</span>
+                <span className={cn("tabular-nums", s.completed ? "text-success" : "text-disabled")}>
                   {s.duration_minutes}m {!s.completed && "(abandoned)"}
                 </span>
               </li>
@@ -355,7 +355,7 @@ export function TaskDetailClient({
 
 function Meta({ icon: Icon, label }: { icon?: React.ElementType; label: string }) {
   return (
-    <span className="flex items-center gap-1.5 text-xs text-text-secondary">
+    <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
       {Icon && <Icon className="h-3.5 w-3.5" />}
       {label}
     </span>

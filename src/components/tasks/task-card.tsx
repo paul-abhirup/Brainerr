@@ -17,9 +17,9 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 const priorityColors: Record<TaskRow["priority"], string> = {
-  high: "bg-accent-warm",
-  medium: "bg-accent-primary",
-  low: "bg-accent-success",
+  high: "bg-warning",
+  medium: "bg-primary",
+  low: "bg-success",
 }
 
 export function TaskCard({ task, highlightDue = true }: { task: TaskRow; highlightDue?: boolean }) {
@@ -71,12 +71,12 @@ export function TaskCard({ task, highlightDue = true }: { task: TaskRow; highlig
 
   return (
     <>
-      <Card size="sm" className="group flex-row items-start transition-colors hover:bg-surface-2">
+      <Card size="sm" className="group flex-row items-start transition-colors hover:bg-secondary">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center">
           <Checkbox
             checked={task.status === "done"}
             onCheckedChange={toggleDone}
-            className="h-5 w-5 rounded-md data-[state=checked]:bg-accent-success data-[state=checked]:text-surface-base"
+            className="h-5 w-5 rounded-md data-[state=checked]:bg-success data-[state=checked]:text-success-foreground"
           />
         </div>
 
@@ -91,21 +91,21 @@ export function TaskCard({ task, highlightDue = true }: { task: TaskRow; highlig
           <p
             className={cn(
               "text-sm font-medium leading-snug",
-              task.status === "done" && "text-text-disabled line-through",
+              task.status === "done" && "text-disabled line-through",
             )}
           >
             <Link
               href={`/tasks/${task.id}`}
-              className="hover:text-accent-primary"
+              className="hover:text-primary"
               onClick={(e) => e.stopPropagation()}
             >
               {task.title}
             </Link>
           </p>
 
-          <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-text-secondary">
+          <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
             {overdue && (
-              <span className="flex items-center gap-1 text-accent-warm">
+              <span className="flex items-center gap-1 text-warning">
                 <Calendar className="h-3 w-3" />
                 Overdue · {format(new Date(task.due_date!), "MMM d")}
               </span>
@@ -132,20 +132,20 @@ export function TaskCard({ task, highlightDue = true }: { task: TaskRow; highlig
               </span>
             )}
             {task.blocked_by_task_id && (
-              <Badge variant="outline" className="border-accent-warm/50 text-accent-warm flex items-center gap-1">
+              <Badge variant="outline" className="border-warning/50 text-warning flex items-center gap-1">
                 <Lock className="h-3 w-3" /> Blocked
               </Badge>
             )}
             {task.dread_level && task.dread_level > 2 && (
-              <Badge variant="outline" className="border-accent-warm/40 text-accent-warm">
+              <Badge variant="outline" className="border-warning/40 text-warning">
                 Dread {task.dread_level}
               </Badge>
             )}
             {task.reschedule_count > 0 && (
-              <span className="text-text-disabled">rescheduled ×{task.reschedule_count}</span>
+              <span className="text-disabled">rescheduled ×{task.reschedule_count}</span>
             )}
             {task.status === "in_progress" && (
-              <Badge className="bg-accent-primary/15 text-accent-primary">In progress</Badge>
+              <Badge className="bg-primary/15 text-primary">In progress</Badge>
             )}
             {task.status === "snoozed" && <Badge variant="outline">Snoozed</Badge>}
           </div>
@@ -174,11 +174,11 @@ export function TaskCard({ task, highlightDue = true }: { task: TaskRow; highlig
               <DropdownMenuItem onClick={toggleDone}>
                 {task.status === "done" ? (
                   <>
-                    <RotateCcw className="mr-2 h-4 w-4 text-accent-primary" /> Unmark as done (Reopen)
+                    <RotateCcw className="mr-2 h-4 w-4 text-primary" /> Unmark as done (Reopen)
                   </>
                 ) : (
                   <>
-                    <CheckCircle2 className="mr-2 h-4 w-4 text-accent-success" /> Mark as done
+                    <CheckCircle2 className="mr-2 h-4 w-4 text-success" /> Mark as done
                   </>
                 )}
               </DropdownMenuItem>
@@ -188,7 +188,7 @@ export function TaskCard({ task, highlightDue = true }: { task: TaskRow; highlig
               <DropdownMenuItem onClick={snooze}>
                 <Clock className="mr-2 h-4 w-4" /> Push to tomorrow
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-accent-danger" onClick={remove}>
+              <DropdownMenuItem className="text-destructive" onClick={remove}>
                 <Trash2 className="mr-2 h-4 w-4" /> Delete
               </DropdownMenuItem>
             </DropdownMenuContent>

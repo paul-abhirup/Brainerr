@@ -79,25 +79,25 @@ export function NotificationCenter() {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger className="relative flex h-9 w-9 items-center justify-center rounded-full border border-border-subtle hover:bg-surface-2 cursor-pointer text-text-secondary transition-colors">
+      <PopoverTrigger className="relative flex h-9 w-9 items-center justify-center rounded-full border border-border hover:bg-secondary cursor-pointer text-muted-foreground transition-colors">
         <Bell className="h-4 w-4" />
         {unreadList.length > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent-warm text-xs font-bold text-black animate-pulse">
+          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-warning text-xs font-bold text-black animate-pulse">
             {unreadList.length}
           </span>
         )}
       </PopoverTrigger>
 
-      <PopoverContent align="end" className="w-80 p-0 shadow-2xl border-2 border-border-subtle bg-surface-1 rounded-2xl overflow-hidden">
+      <PopoverContent align="end" className="w-80 p-0 shadow-2xl border-2 border-border bg-card rounded-2xl overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border-subtle bg-surface-2/60">
+        <div className="flex items-center justify-between p-4 border-b border-border bg-secondary/60">
           <div className="flex items-center gap-2">
-            <Bell className="h-4 w-4 text-accent-primary" />
-            <h4 className="text-xs font-bold text-text-primary uppercase tracking-wider">
+            <Bell className="h-4 w-4 text-primary" />
+            <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">
               Notifications
             </h4>
             {unreadList.length > 0 && (
-              <Badge variant="secondary" className="bg-accent-primary/20 text-accent-primary text-xs">
+              <Badge variant="secondary" className="bg-primary/20 text-primary text-xs">
                 {unreadList.length} New
               </Badge>
             )}
@@ -106,7 +106,7 @@ export function NotificationCenter() {
           {unreadList.length > 0 && (
             <button
               onClick={markAllRead}
-              className="text-xs text-accent-primary hover:underline font-medium cursor-pointer"
+              className="text-xs text-primary hover:underline font-medium cursor-pointer"
             >
               Mark all read
             </button>
@@ -114,9 +114,9 @@ export function NotificationCenter() {
         </div>
 
         {/* Notification List */}
-        <div className="max-h-80 overflow-y-auto divide-y divide-border-subtle/50">
+        <div className="max-h-80 overflow-y-auto divide-y divide-border/50">
           {notifications.length === 0 ? (
-            <div className="p-8 text-center text-xs text-text-disabled">
+            <div className="p-8 text-center text-xs text-disabled">
               No notifications right now.
             </div>
           ) : (
@@ -127,19 +127,19 @@ export function NotificationCenter() {
                   key={n.id}
                   className={cn(
                     "p-3.5 transition-colors space-y-1",
-                    isRead ? "bg-surface-1/40 opacity-70" : "bg-surface-2/80 font-medium",
+                    isRead ? "bg-card/40 opacity-70" : "bg-secondary/80 font-medium",
                   )}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-text-primary flex items-center gap-1.5">
-                      {n.type === "overdue" && <AlertTriangle className="h-3.5 w-3.5 text-accent-warm" />}
-                      {n.type === "streak" && <Flame className="h-3.5 w-3.5 text-accent-warm" />}
-                      {n.type === "reminder" && <Clock className="h-3.5 w-3.5 text-accent-primary" />}
+                    <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                      {n.type === "overdue" && <AlertTriangle className="h-3.5 w-3.5 text-warning" />}
+                      {n.type === "streak" && <Flame className="h-3.5 w-3.5 text-warning" />}
+                      {n.type === "reminder" && <Clock className="h-3.5 w-3.5 text-primary" />}
                       {n.title}
                     </span>
-                    <span className="text-xs text-text-disabled">{n.time}</span>
+                    <span className="text-xs text-disabled">{n.time}</span>
                   </div>
-                  <p className="text-xs text-text-secondary leading-snug">{n.body}</p>
+                  <p className="text-xs text-muted-foreground leading-snug">{n.body}</p>
                 </div>
               )
             })

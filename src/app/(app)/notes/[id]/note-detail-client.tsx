@@ -106,30 +106,30 @@ export function NoteDetailClient({
   return (
     <div className="mx-auto w-full max-w-2xl space-y-6">
       <div className="flex items-center justify-between gap-2">
-        <Link href="/notes" className="flex items-center gap-1 text-sm text-text-secondary hover:text-text-primary">
+        <Link href="/notes" className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" /> Notes
         </Link>
         <div className="flex items-center gap-2">
           {status === "saving" && (
-            <span className="flex items-center gap-1 text-xs text-text-secondary">
+            <span className="flex items-center gap-1 text-xs text-muted-foreground">
               <Loader2 className="h-3.5 w-3.5 animate-spin" /> Saving…
             </span>
           )}
           {status === "saved" && (
-            <span className="flex items-center gap-1 text-xs text-text-secondary">
-              <Check className="h-3.5 w-3.5 text-accent-success" /> Saved
+            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Check className="h-3.5 w-3.5 text-success" /> Saved
               {savedAt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
             </span>
           )}
           {status === "error" && (
-            <span className="flex items-center gap-1 text-xs text-accent-danger">
+            <span className="flex items-center gap-1 text-xs text-destructive">
               <AlertTriangle className="h-3.5 w-3.5" /> Save failed
             </span>
           )}
           <AlertDialog>
             <AlertDialogTrigger
               render={
-                <Button variant="outline" size="sm" className="text-accent-danger">
+                <Button variant="outline" size="sm" className="text-destructive">
                   <Trash2 className="mr-1.5 h-4 w-4" /> Delete
                 </Button>
               }
@@ -157,7 +157,7 @@ export function NoteDetailClient({
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Untitled"
         aria-label="Note title"
-        className="w-full bg-transparent text-2xl font-semibold tracking-tight outline-none placeholder:text-text-disabled"
+        className="w-full bg-transparent text-2xl font-semibold tracking-tight outline-none placeholder:text-disabled"
       />
 
       <textarea
@@ -166,11 +166,11 @@ export function NoteDetailClient({
         rows={18}
         placeholder="Write freely…"
         aria-label="Note body"
-        className="w-full resize-y rounded-xl border border-border-subtle bg-surface-1 p-4 text-sm leading-relaxed outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        className="w-full resize-y rounded-xl border border-border bg-card p-4 text-sm leading-relaxed outline-none focus-visible:ring-1 focus-visible:ring-ring"
       />
 
       <div className="space-y-1.5">
-        <label htmlFor="n-detail-tags" className="text-xs font-medium text-text-secondary">
+        <label htmlFor="n-detail-tags" className="text-xs font-medium text-muted-foreground">
           Tags
         </label>
         <Input
@@ -181,7 +181,7 @@ export function NoteDetailClient({
         />
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 text-xs text-text-secondary">
+      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
         {words > 0 && <span>{words} {words === 1 ? "word" : "words"}</span>}
         {body.length > 0 && <span>· {body.length} characters</span>}
         {savedAt && <span>· Updated {savedAt.toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</span>}
@@ -189,14 +189,14 @@ export function NoteDetailClient({
 
       <div className="flex flex-wrap items-center gap-2 text-xs">
         {linkedTask && (
-          <Link href={`/tasks/${linkedTask.id}`} className="flex items-center gap-1.5 rounded-lg border border-border-subtle bg-surface-1 px-3 py-2 hover:border-accent-primary/50">
-            <ListTodo className="h-3.5 w-3.5 text-accent-primary" />
+          <Link href={`/tasks/${linkedTask.id}`} className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 hover:border-primary/50">
+            <ListTodo className="h-3.5 w-3.5 text-primary" />
             Linked task: {linkedTask.title}
           </Link>
         )}
         {linkedGoal && (
-          <Link href={`/goals/${linkedGoal.id}`} className="flex items-center gap-1.5 rounded-lg border border-border-subtle bg-surface-1 px-3 py-2 hover:border-accent-success/50">
-            <Target className="h-3.5 w-3.5 text-accent-success" />
+          <Link href={`/goals/${linkedGoal.id}`} className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 hover:border-success/50">
+            <Target className="h-3.5 w-3.5 text-success" />
             Linked goal: {linkedGoal.title}
           </Link>
         )}

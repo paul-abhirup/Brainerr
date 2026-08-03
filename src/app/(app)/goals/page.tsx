@@ -69,7 +69,7 @@ export default function GoalsPage() {
         actions={
           <>
             <Button variant="outline" onClick={() => setTemplatesOpen(true)}>
-              <Sparkles className="mr-2 h-4 w-4 text-accent-primary" />
+              <Sparkles className="mr-2 h-4 w-4 text-primary" />
               Templates
             </Button>
             <Button onClick={() => setCreating(true)}>
@@ -81,10 +81,10 @@ export default function GoalsPage() {
       />
 
       {isLoading ? (
-        <div className="h-64 animate-pulse rounded-xl bg-surface-2" />
+        <div className="h-64 animate-pulse rounded-xl bg-secondary" />
       ) : !roots.length ? (
         <EmptyState
-          icon={<Flag className="h-8 w-8 text-text-disabled" />}
+          icon={<Flag className="h-8 w-8 text-disabled" />}
           title="No goals yet"
           description="Start with one long-term goal, then break it into monthlies."
           action={
@@ -111,7 +111,7 @@ export default function GoalsPage() {
                 />
                 {isOpen &&
                   childrenOf(goal.id).map((child) => (
-                    <div key={child.id} className="border-t border-border-subtle">
+                    <div key={child.id} className="border-t border-border">
                       <GoalRow
                         goal={child}
                         depth={1}
@@ -153,11 +153,11 @@ function GoalRow({
   forecast?: { projected_completion: string | null; done_per_week: number; remaining_tasks: number }
 }) {
   return (
-    <div className={cn("flex items-center gap-3 p-4", depth > 0 && "bg-surface-1/60 pl-4 sm:pl-10")}>
+    <div className={cn("flex items-center gap-3 p-4", depth > 0 && "bg-card/60 pl-4 sm:pl-10")}>
       {hasChildren ? (
         <button
           onClick={onToggle}
-          className="text-text-secondary cursor-pointer focus-visible:ring-2 focus-visible:ring-ring/60 outline-none rounded"
+          className="text-muted-foreground cursor-pointer focus-visible:ring-2 focus-visible:ring-ring/60 outline-none rounded"
           aria-label={isOpen ? "Collapse" : "Expand"}
         >
           {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
@@ -167,22 +167,22 @@ function GoalRow({
       )}
       <Link href={`/goals/${goal.id}`} className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className="rounded-full bg-surface-2 px-2 py-0.5 text-xs font-medium uppercase tracking-wide text-text-secondary">
+          <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
             {goal.horizon.replace("_", " ")}
           </span>
           <p className="truncate text-sm font-medium">{goal.title}</p>
         </div>
         <div className="mt-2 flex items-center gap-3">
-          <Progress value={progressPct} className="h-1.5 flex-1 max-w-64 bg-surface-2" />
-          <span className="text-xs tabular-nums text-text-secondary">{progressPct}%</span>
+          <Progress value={progressPct} className="h-1.5 flex-1 max-w-64 bg-secondary" />
+          <span className="text-xs tabular-nums text-muted-foreground">{progressPct}%</span>
           {forecast?.projected_completion && forecast.remaining_tasks > 0 && (
-            <span className="hidden items-center gap-1 text-xs text-text-secondary md:flex">
-              <TrendingUp className="h-3 w-3 text-accent-success" />
+            <span className="hidden items-center gap-1 text-xs text-muted-foreground md:flex">
+              <TrendingUp className="h-3 w-3 text-success" />
               At this pace, done around {format(new Date(forecast.projected_completion), "MMM d")}
             </span>
           )}
           {goal.target_date && (
-            <span className="hidden text-xs text-text-secondary md:block">
+            <span className="hidden text-xs text-muted-foreground md:block">
               Target {format(new Date(goal.target_date), "MMM d")}
             </span>
           )}
@@ -214,7 +214,7 @@ function GoalActions({ goal }: { goal: GoalRow }) {
 
   return (
     <div className="flex items-center gap-1.5">
-      <Button variant="ghost" size="sm" onClick={markDone} className="text-accent-success">
+      <Button variant="ghost" size="sm" onClick={markDone} className="text-success">
         Done
       </Button>
       <Button variant="ghost" size="sm" onClick={archive}>
@@ -394,18 +394,18 @@ function TemplatesDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
           <DialogTitle>Goal templates</DialogTitle>
         </DialogHeader>
         {templates === null ? (
-          <div className="h-40 animate-pulse rounded-xl bg-surface-2" />
+          <div className="h-40 animate-pulse rounded-xl bg-secondary" />
         ) : templates.length === 0 ? (
-          <p className="py-8 text-center text-sm text-text-disabled">
+          <p className="py-8 text-center text-sm text-disabled">
             No templates yet. Open a goal and hit “Save as template” to reuse its structure next cycle.
           </p>
         ) : (
           <ul className="max-h-80 space-y-2 overflow-y-auto">
             {templates.map((tpl) => (
-              <li key={tpl.id} className="flex items-center gap-3 rounded-lg border border-border-subtle bg-surface-2 p-3">
+              <li key={tpl.id} className="flex items-center gap-3 rounded-lg border border-border bg-secondary p-3">
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{tpl.name}</p>
-                  <p className="truncate text-xs text-text-secondary">
+                  <p className="truncate text-xs text-muted-foreground">
                     {tpl.goal_title} · {tpl.horizon.replace("_", " ")} · {(tpl.data?.projects ?? []).length} project
                     {(tpl.data?.projects ?? []).length !== 1 ? "s" : ""}
                   </p>
@@ -414,7 +414,7 @@ function TemplatesDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
                   {applying === tpl.id ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <Sparkles className="mr-1.5 h-3.5 w-3.5" />}
                   Use
                 </Button>
-                <Button variant="ghost" size="icon" className="text-accent-danger" onClick={() => remove(tpl.id)}>
+                <Button variant="ghost" size="icon" className="text-destructive" onClick={() => remove(tpl.id)}>
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </li>

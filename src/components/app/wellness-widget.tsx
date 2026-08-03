@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Card, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Droplet, Moon, Utensils, Sparkles, Plus, Minus, Check } from "lucide-react"
+import { Droplet, Moon, Utensils, Sparkles, Plus, Minus, Check, Lightbulb } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 
@@ -59,7 +59,7 @@ export function WellnessWidget() {
     setWaterGlasses((prev) => {
       const next = Math.max(0, Math.min(12, prev + delta))
       saveWellness({ waterGlasses: next })
-      if (next === 8) toast.success("💧 Hydration Goal Reached! 8/8 Glasses.")
+      if (next === 8) toast.success("Hydration goal reached — 8/8 glasses.")
       return next
     })
   }
@@ -73,23 +73,23 @@ export function WellnessWidget() {
   }
 
   return (
-    <Card className="glass-card border-border-subtle shadow-xl p-5 space-y-4">
+    <Card className="border-border shadow-md p-4 sm:p-5 space-y-4">
       <div className="flex items-center justify-between">
-        <CardTitle className="text-sm font-bold flex items-center gap-2 text-text-primary">
-          <Sparkles className="h-4 w-4 text-accent-primary" />
+        <CardTitle className="text-sm font-bold flex items-center gap-2 text-foreground">
+          <Sparkles className="h-4 w-4 text-primary" />
           Body & Wellness Tracker
         </CardTitle>
-        <Badge variant="outline" className="text-xs text-accent-success border-accent-success/30">
+        <Badge variant="outline" className="text-xs text-success border-success/30">
           Daily Fuel
         </Badge>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
         {/* 💧 Water Hydration Tracker */}
-        <div className="p-3.5 rounded-xl bg-surface-2/60 border border-border-subtle/60 space-y-2">
-          <div className="flex items-center justify-between text-xs font-semibold text-text-primary">
-            <span className="flex items-center gap-1.5 text-accent-primary">
-              <Droplet className="h-4 w-4 fill-accent-primary/20" /> Water
+        <div className="p-3.5 rounded-xl bg-secondary/60 border border-border/60 space-y-2">
+          <div className="flex items-center justify-between text-xs font-semibold text-foreground">
+            <span className="flex items-center gap-1.5 text-primary">
+              <Droplet className="h-4 w-4 fill-primary/20" /> Water
             </span>
             <span className="tabular-nums font-bold">{waterGlasses} / 8</span>
           </div>
@@ -99,7 +99,7 @@ export function WellnessWidget() {
               size="icon"
               variant="outline"
               onClick={() => adjustWater(-1)}
-              className="h-8 w-8 rounded-xl text-text-secondary"
+              className="h-9 w-9 sm:h-8 sm:w-8 rounded-xl text-muted-foreground"
             >
               <Minus className="h-3.5 w-3.5" />
             </Button>
@@ -112,8 +112,8 @@ export function WellnessWidget() {
                   className={cn(
                     "h-2.5 w-2.5 rounded-full transition-all",
                     i <= waterGlasses
-                      ? "bg-accent-primary shadow-[0_0_6px_var(--accent-primary)]"
-                      : "bg-surface-3",
+                      ? "bg-primary shadow-[0_0_6px_var(--primary)]"
+                      : "bg-muted",
                   )}
                 />
               ))}
@@ -123,7 +123,7 @@ export function WellnessWidget() {
               size="icon"
               variant="outline"
               onClick={() => adjustWater(1)}
-              className="h-8 w-8 rounded-xl text-accent-primary border-accent-primary/40"
+              className="h-9 w-9 sm:h-8 sm:w-8 rounded-xl text-primary border-primary/40"
             >
               <Plus className="h-3.5 w-3.5" />
             </Button>
@@ -131,10 +131,10 @@ export function WellnessWidget() {
         </div>
 
         {/* 😴 Sleep Hours Tracker */}
-        <div className="p-3.5 rounded-xl bg-surface-2/60 border border-border-subtle/60 space-y-2">
-          <div className="flex items-center justify-between text-xs font-semibold text-text-primary">
-            <span className="flex items-center gap-1.5 text-accent-warm">
-              <Moon className="h-4 w-4 fill-accent-warm/20" /> Sleep
+        <div className="p-3.5 rounded-xl bg-secondary/60 border border-border/60 space-y-2">
+          <div className="flex items-center justify-between text-xs font-semibold text-foreground">
+            <span className="flex items-center gap-1.5 text-warning">
+              <Moon className="h-4 w-4 fill-warning/20" /> Sleep
             </span>
             <span className="tabular-nums font-bold">{sleepHours} Hours</span>
           </div>
@@ -148,10 +148,10 @@ export function WellnessWidget() {
                   saveWellness({ sleepHours: h })
                 }}
                 className={cn(
-                  "py-1 rounded-lg text-xs font-bold border transition-all cursor-pointer",
+                  "py-2 sm:py-1 rounded-lg text-xs font-bold border transition-all cursor-pointer",
                   sleepHours === h
-                    ? "border-accent-warm bg-accent-warm/20 text-accent-warm"
-                    : "border-border-subtle/60 text-text-disabled hover:text-text-secondary",
+                    ? "border-warning bg-warning/20 text-warning"
+                    : "border-border/60 text-disabled hover:text-muted-foreground",
                 )}
               >
                 {h}h
@@ -161,12 +161,12 @@ export function WellnessWidget() {
         </div>
 
         {/* 🍎 Meals Check-in */}
-        <div className="p-3.5 rounded-xl bg-surface-2/60 border border-border-subtle/60 space-y-2">
-          <div className="flex items-center justify-between text-xs font-semibold text-text-primary">
-            <span className="flex items-center gap-1.5 text-accent-success">
+        <div className="p-3.5 rounded-xl bg-secondary/60 border border-border/60 space-y-2">
+          <div className="flex items-center justify-between text-xs font-semibold text-foreground">
+            <span className="flex items-center gap-1.5 text-success">
               <Utensils className="h-4 w-4" /> Meals
             </span>
-            <span className="text-xs text-text-disabled">Fuel check</span>
+            <span className="text-xs text-disabled">Fuel check</span>
           </div>
 
           <div className="flex items-center justify-between pt-1">
@@ -175,10 +175,10 @@ export function WellnessWidget() {
                 key={m}
                 onClick={() => toggleMeal(m)}
                 className={cn(
-                  "px-2 py-1 rounded-lg text-xs font-bold uppercase tracking-wider border transition-all flex items-center gap-1 cursor-pointer",
+                  "px-2 py-2 sm:py-1 rounded-lg text-xs font-bold uppercase tracking-wider border transition-all flex items-center gap-1 cursor-pointer",
                   meals[m]
-                    ? "border-accent-success bg-accent-success/20 text-accent-success"
-                    : "border-border-subtle/60 text-text-disabled",
+                    ? "border-success bg-success/20 text-success"
+                    : "border-border/60 text-disabled",
                 )}
               >
                 {meals[m] && <Check className="h-3 w-3 stroke-[3]" />}
@@ -190,9 +190,10 @@ export function WellnessWidget() {
       </div>
 
       {/* Micro ADHD Insight */}
-      <div className="p-3 rounded-xl bg-surface-1 border border-border-subtle/40 text-center">
-        <p className="text-xs text-text-secondary">
-          💡 <span className="font-semibold text-text-primary">ADHD Insight:</span> Days with 7.5+ hours of sleep and 6+ glasses of water yield <span className="text-accent-success font-bold">+38% higher task completion</span>.
+      <div className="p-3 rounded-xl bg-card border border-border/40 text-center">
+        <p className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+          <Lightbulb className="h-3.5 w-3.5 shrink-0 text-warning" />
+          <span><span className="font-semibold text-foreground">ADHD Insight:</span> Days with 7.5+ hours of sleep and 6+ glasses of water yield <span className="text-success font-bold">+38% higher task completion</span>.</span>
         </p>
       </div>
     </Card>

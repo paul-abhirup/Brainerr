@@ -65,16 +65,16 @@ export function PostFocusBreakModal({ open, onOpenChange, sessionMinutes }: Post
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg p-0 overflow-hidden bg-surface-1 border-2 border-accent-success/50 shadow-2xl rounded-xl">
+      <DialogContent className="max-w-lg p-0 overflow-hidden bg-card border-2 border-success/50 shadow-2xl rounded-xl">
         {/* Header */}
-        <div className="bg-gradient-to-r from-accent-success/20 via-accent-primary/20 to-accent-success/20 p-6 text-center border-b border-accent-success/30">
-          <Badge className="bg-accent-success text-black font-bold uppercase tracking-wider text-xs mb-2 px-3 py-1">
+        <div className="bg-gradient-to-r from-success/20 via-primary/20 to-success/20 p-6 text-center border-b border-success/30">
+          <Badge className="bg-success text-black font-bold uppercase tracking-wider text-xs mb-2 px-3 py-1">
             🎉 Focus Complete ({sessionMinutes} Min)
           </Badge>
-          <h2 className="text-2xl font-black text-text-primary tracking-tight">
+          <h2 className="text-2xl font-black text-foreground tracking-tight">
             Protect Your Brain Energy
           </h2>
-          <p className="text-xs text-text-secondary mt-1 max-w-sm mx-auto">
+          <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
             ADHD hyperfocus is exhausting. Taking a structured 5-15 minute break prevents burnout and keeps your dopamine high for the next sprint.
           </p>
         </div>
@@ -85,56 +85,56 @@ export function PostFocusBreakModal({ open, onOpenChange, sessionMinutes }: Post
               {/* 5m Breathe */}
               <button
                 onClick={() => startBreak(5, "breathe")}
-                className="p-4 rounded-xl border border-border-subtle bg-surface-2 hover:border-accent-primary hover:bg-accent-primary/5 transition-all text-center space-y-2 group cursor-pointer"
+                className="p-4 rounded-xl border border-border bg-secondary hover:border-primary hover:bg-primary/5 transition-all text-center space-y-2 group cursor-pointer"
               >
-                <div className="p-3 rounded-full bg-accent-primary/10 text-accent-primary w-fit mx-auto group-hover:scale-110 transition-transform">
+                <div className="p-3 rounded-full bg-primary/10 text-primary w-fit mx-auto group-hover:scale-110 transition-transform">
                   <HeartPulse className="h-6 w-6" />
                 </div>
-                <h4 className="text-sm font-bold text-text-primary">5-Min Breathe</h4>
-                <p className="text-xs text-text-disabled">Reset nervous system</p>
+                <h4 className="text-sm font-bold text-foreground">5-Min Breathe</h4>
+                <p className="text-xs text-disabled">Reset nervous system</p>
               </button>
 
               {/* 10m Walk */}
               <button
                 onClick={() => startBreak(10, "walk")}
-                className="p-4 rounded-xl border border-border-subtle bg-surface-2 hover:border-accent-warm hover:bg-accent-warm/5 transition-all text-center space-y-2 group cursor-pointer"
+                className="p-4 rounded-xl border border-border bg-secondary hover:border-warning hover:bg-warning/5 transition-all text-center space-y-2 group cursor-pointer"
               >
-                <div className="p-3 rounded-full bg-accent-warm/10 text-accent-warm w-fit mx-auto group-hover:scale-110 transition-transform">
+                <div className="p-3 rounded-full bg-warning/10 text-warning w-fit mx-auto group-hover:scale-110 transition-transform">
                   <Footprints className="h-6 w-6" />
                 </div>
-                <h4 className="text-sm font-bold text-text-primary">10-Min Walk</h4>
-                <p className="text-xs text-text-disabled">Stretch legs & eyes</p>
+                <h4 className="text-sm font-bold text-foreground">10-Min Walk</h4>
+                <p className="text-xs text-disabled">Stretch legs & eyes</p>
               </button>
 
               {/* 15m Hydrate/Snack */}
               <button
                 onClick={() => startBreak(15, "snack")}
-                className="p-4 rounded-xl border border-border-subtle bg-surface-2 hover:border-accent-success hover:bg-accent-success/5 transition-all text-center space-y-2 group cursor-pointer"
+                className="p-4 rounded-xl border border-border bg-secondary hover:border-success hover:bg-success/5 transition-all text-center space-y-2 group cursor-pointer"
               >
-                <div className="p-3 rounded-full bg-accent-success/10 text-accent-success w-fit mx-auto group-hover:scale-110 transition-transform">
+                <div className="p-3 rounded-full bg-success/10 text-success w-fit mx-auto group-hover:scale-110 transition-transform">
                   <Coffee className="h-6 w-6" />
                 </div>
-                <h4 className="text-sm font-bold text-text-primary">15-Min Hydrate</h4>
-                <p className="text-xs text-text-disabled">Water & healthy snack</p>
+                <h4 className="text-sm font-bold text-foreground">15-Min Hydrate</h4>
+                <p className="text-xs text-disabled">Water & healthy snack</p>
               </button>
             </div>
           ) : (
             <div className="text-center py-6 space-y-4">
               {/* Breathing Circle Ring Animation */}
               <div className="relative w-36 h-36 mx-auto flex items-center justify-center">
-                <div className="absolute inset-0 rounded-full border-4 border-accent-success/30 animate-ping opacity-25" />
-                <div className="absolute inset-2 rounded-full border-4 border-accent-primary animate-pulse" />
+                <div className="absolute inset-0 rounded-full border-4 border-success/30 animate-ping opacity-25" />
+                <div className="absolute inset-2 rounded-full border-4 border-primary animate-pulse" />
                 <div className="text-center">
-                  <p className="text-2xl font-mono font-bold text-text-primary">{formatSecs(breakTimer)}</p>
+                  <p className="text-2xl font-mono font-bold text-foreground">{formatSecs(breakTimer)}</p>
                   {breakType === "breathe" && (
-                    <span className="text-xs font-semibold text-accent-primary uppercase tracking-wider block mt-1">
+                    <span className="text-xs font-semibold text-primary uppercase tracking-wider block mt-1">
                       {breathPhase}…
                     </span>
                   )}
                 </div>
               </div>
 
-              <p className="text-xs text-text-secondary">
+              <p className="text-xs text-muted-foreground">
                 {breakType === "breathe" && "Follow the ring. Deep inhales through nose, slow exhales."}
                 {breakType === "walk" && "Step away from screens. Look 20 feet away."}
                 {breakType === "snack" && "Drink a glass of water and grab a healthy snack."}
@@ -155,14 +155,14 @@ export function PostFocusBreakModal({ open, onOpenChange, sessionMinutes }: Post
 
           {/* Gentle Skip Button */}
           {breakTimer === null && (
-            <div className="flex items-center justify-between border-t border-border-subtle pt-4">
-              <span className="text-xs text-text-disabled">
+            <div className="flex items-center justify-between border-t border-border pt-4">
+              <span className="text-xs text-disabled">
                 Skipping breaks increases error rate by 35%
               </span>
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-xs text-text-secondary hover:text-text-primary"
+                className="text-xs text-muted-foreground hover:text-foreground"
                 onClick={() => onOpenChange(false)}
               >
                 Skip Break

@@ -50,11 +50,11 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-surface-base px-4">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center gap-3 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-surface-2">
-            <Brain className="h-6 w-6 text-accent-primary" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary">
+            <Brain className="h-6 w-6 text-primary" />
           </div>
           <div>
             <h1 className="text-2xl font-semibold tracking-tight">Brainer</h1>
@@ -76,9 +76,9 @@ export default function LoginPage() {
           </Button>
 
           <div className="flex items-center gap-3">
-            <div className="h-px flex-1 bg-border-subtle" />
-            <span className="text-xs text-text-disabled">or with email</span>
-            <div className="h-px flex-1 bg-border-subtle" />
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs text-disabled">or with email</span>
+            <div className="h-px flex-1 bg-border" />
           </div>
 
           <form onSubmit={handleEmailAuth} className="space-y-3">
@@ -118,7 +118,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => setMode(mode === "login" ? "signup" : "login")}
-              className="font-medium text-accent-primary hover:underline"
+              className="font-medium text-primary hover:underline"
             >
               {mode === "login" ? "Create an account" : "Sign in"}
             </button>

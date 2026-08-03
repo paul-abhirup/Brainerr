@@ -74,8 +74,8 @@ export function CommandPalette() {
         <DialogHeader className="sr-only">
           <DialogTitle>Quick add</DialogTitle>
         </DialogHeader>
-        <div className="flex items-center gap-3 border-b border-border-subtle px-4">
-          <Plus className="h-4 w-4 text-text-disabled" />
+        <div className="flex items-center gap-3 border-b border-border px-4">
+          <Plus className="h-4 w-4 text-disabled" />
           <Input
             autoFocus
             value={value}
@@ -90,13 +90,13 @@ export function CommandPalette() {
         </div>
 
         <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-4 text-xs text-text-secondary">
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1.5">
               <Inbox className="h-3.5 w-3.5" />
               Task
             </span>
             {parsed?.dueDate && (
-              <span className="flex items-center gap-1.5 text-accent-warm">
+              <span className="flex items-center gap-1.5 text-warning">
                 <CalendarClock className="h-3.5 w-3.5" />
                 {new Date(parsed.dueDate).toLocaleString(undefined, {
                   weekday: "short",

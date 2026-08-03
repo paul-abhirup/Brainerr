@@ -99,36 +99,36 @@ export default function CalendarSettingsPage() {
       <Card>
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-text-secondary" />
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
         ) : integration ? (
           <div className="flex flex-col gap-5">
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="rounded-lg bg-accent-success/10 p-2 text-accent-success shrink-0">
+                <div className="rounded-lg bg-success/10 p-2 text-success shrink-0">
                   <Calendar className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold truncate">Google Calendar connected</p>
-                  <p className="text-xs text-text-secondary truncate">
+                  <p className="text-xs text-muted-foreground truncate">
                     {integration.calendar_id} · {integration.provider}
                   </p>
                 </div>
               </div>
-              <span className="inline-flex items-center gap-1 rounded-full bg-accent-success/10 px-2.5 py-1 text-xs font-medium text-accent-success">
-                <span className="h-1.5 w-1.5 rounded-full bg-accent-success" /> Active
+              <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2.5 py-1 text-xs font-medium text-success">
+                <span className="h-1.5 w-1.5 rounded-full bg-success" /> Active
               </span>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-surface-2 px-4 py-3">
-              <div className="text-xs text-text-secondary">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-secondary px-4 py-3">
+              <div className="text-xs text-muted-foreground">
                 Last synced:{" "}
                 {lastSynced ? (
-                  <span className="text-text-primary" title={format(new Date(lastSynced), "EEE, MMM d, yyyy h:mm a")}>
+                  <span className="text-foreground" title={format(new Date(lastSynced), "EEE, MMM d, yyyy h:mm a")}>
                     {formatDistanceToNow(new Date(lastSynced), { addSuffix: true })}
                   </span>
                 ) : (
-                  <span className="text-text-disabled">never</span>
+                  <span className="text-disabled">never</span>
                 )}
               </div>
               <div className="flex gap-2">
@@ -136,7 +136,7 @@ export default function CalendarSettingsPage() {
                   {working ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="mr-1.5 h-3.5 w-3.5" />}
                   Sync now
                 </Button>
-                <Button variant="ghost" size="sm" className="text-accent-danger" onClick={disconnect} disabled={working}>
+                <Button variant="ghost" size="sm" className="text-destructive" onClick={disconnect} disabled={working}>
                   {working ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <CalendarOff className="mr-1.5 h-3.5 w-3.5" />}
                   Disconnect
                 </Button>
@@ -145,12 +145,12 @@ export default function CalendarSettingsPage() {
           </div>
         ) : (
           <div className="flex flex-col items-center gap-4 py-8 text-center">
-            <div className="rounded-full bg-surface-2 p-4 text-text-secondary">
+            <div className="rounded-full bg-secondary p-4 text-muted-foreground">
               <Calendar className="h-7 w-7" />
             </div>
             <div>
               <p className="text-sm font-semibold">Not connected</p>
-              <p className="mt-1 max-w-sm text-xs text-text-secondary">
+              <p className="mt-1 max-w-sm text-xs text-muted-foreground">
                 Link your Google Calendar so planned tasks show up as events and your other meetings block out focus
                 time.
               </p>
@@ -162,15 +162,15 @@ export default function CalendarSettingsPage() {
         )}
       </Card>
 
-      <div className="flex items-start gap-3 rounded-xl border border-border-subtle bg-surface-1 p-4 text-xs text-text-secondary">
-        <Info className="mt-0.5 h-4 w-4 shrink-0 text-accent-primary" />
+      <div className="flex items-start gap-3 rounded-xl border border-border bg-card p-4 text-xs text-muted-foreground">
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
         <div className="space-y-1">
           <p>
-            <span className="font-medium text-text-primary">App → Calendar:</span> scheduling a task creates a private
+            <span className="font-medium text-foreground">App → Calendar:</span> scheduling a task creates a private
             event in your calendar. Unschedule or delete removes it.
           </p>
           <p>
-            <span className="font-medium text-text-primary">Calendar → App:</span> external events become busy blocks
+            <span className="font-medium text-foreground">Calendar → App:</span> external events become busy blocks
             that the auto-scheduler routes around.
           </p>
         </div>
@@ -182,9 +182,9 @@ export default function CalendarSettingsPage() {
 function StatusBanner({ status, onClose }: { status: Status; onClose: () => void }) {
   if (!status) return null
   const config = {
-    connected: { tone: "border-accent-success/40 bg-accent-success/10 text-accent-success", icon: CheckCircle2, text: "Connected! Scheduled tasks will now mirror to Google Calendar." },
-    denied: { tone: "border-accent-warm/40 bg-accent-warm/10 text-accent-warm", icon: XCircle, text: "Access was denied. You can try again whenever you're ready." },
-    error: { tone: "border-accent-danger/40 bg-accent-danger/10 text-accent-danger", icon: XCircle, text: "Something went wrong during connection. Please try again." },
+    connected: { tone: "border-success/40 bg-success/10 text-success", icon: CheckCircle2, text: "Connected! Scheduled tasks will now mirror to Google Calendar." },
+    denied: { tone: "border-warning/40 bg-warning/10 text-warning", icon: XCircle, text: "Access was denied. You can try again whenever you're ready." },
+    error: { tone: "border-destructive/40 bg-destructive/10 text-destructive", icon: XCircle, text: "Something went wrong during connection. Please try again." },
   }[status]
 
   return (

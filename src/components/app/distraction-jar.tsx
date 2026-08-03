@@ -71,14 +71,14 @@ export function DistractionJar() {
   return (
     <>
       {/* Floating Jar Button (bottom-left above mobile nav, right of the sidebar on desktop) */}
-      <div className="fixed bottom-24 left-4 md:left-72 md:bottom-6 z-40">
+      <div className="fixed bottom-[calc(6rem+env(safe-area-inset-bottom))] left-4 md:left-72 md:bottom-6 z-40">
         <button
           onClick={() => setOpen(true)}
           aria-label="Distraction Jar — Park random thoughts"
-          className="group flex items-center gap-2 rounded-full border border-amber-500/30 bg-surface-1/90 px-3.5 py-2 text-xs font-semibold backdrop-blur-xl shadow-lg transition-all hover:border-amber-500/60 hover:bg-surface-2 active:scale-95"
+          className="group flex items-center gap-2 rounded-full border border-amber-500/30 bg-card/90 px-3.5 py-2 text-xs font-semibold backdrop-blur-xl shadow-lg transition-all hover:border-amber-500/60 hover:bg-secondary active:scale-95"
         >
           <span className="text-base">🫙</span>
-          <span className="hidden sm:inline text-text-primary font-medium">Distraction Jar</span>
+          <span className="hidden sm:inline text-foreground font-medium">Distraction Jar</span>
           {jarItems.length > 0 && (
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500/20 text-amber-400 text-xs font-bold">
               {jarItems.length}
@@ -120,7 +120,7 @@ export function DistractionJar() {
           {/* Parked Thoughts List */}
           <div className="mt-4 space-y-2 max-h-60 overflow-y-auto pr-1">
             {jarItems.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-8 text-center text-text-disabled">
+              <div className="flex flex-col items-center justify-center py-8 text-center text-disabled">
                 <Lightbulb className="h-6 w-6 text-amber-500/40 mb-1" />
                 <p className="text-xs">Your jar is empty. Flow state secured!</p>
               </div>
@@ -128,17 +128,17 @@ export function DistractionJar() {
               jarItems.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-border-subtle/60 bg-surface-2/50 p-3 text-xs"
+                  className="flex items-center justify-between gap-3 rounded-xl border border-border/60 bg-secondary/50 p-3 text-xs"
                 >
                   <div className="flex flex-col min-w-0 flex-1">
-                    <span className="font-medium text-text-primary truncate">{item.text}</span>
-                    <span className="text-xs text-text-disabled">{item.time}</span>
+                    <span className="font-medium text-foreground truncate">{item.text}</span>
+                    <span className="text-xs text-disabled">{item.time}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => convertToInboxTask(item.id, item.text)}
                       title="Move to Inbox Task"
-                      className="flex h-7 w-7 items-center justify-center rounded-lg hover:bg-surface-3 text-accent-primary"
+                      className="flex h-7 w-7 items-center justify-center rounded-lg hover:bg-muted text-primary"
                     >
                       <Inbox className="h-3.5 w-3.5" />
                     </button>
@@ -157,7 +157,7 @@ export function DistractionJar() {
 
           {jarItems.length > 0 && (
             <DialogFooter>
-              <Button variant="ghost" size="sm" onClick={clearJar} className="text-xs text-text-disabled hover:text-text-secondary">
+              <Button variant="ghost" size="sm" onClick={clearJar} className="text-xs text-disabled hover:text-muted-foreground">
                 Empty jar
               </Button>
             </DialogFooter>

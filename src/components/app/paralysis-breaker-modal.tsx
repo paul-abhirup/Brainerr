@@ -99,16 +99,16 @@ export function ParalysisBreakerModal({ open, onOpenChange, tasks }: ParalysisBr
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-xl p-0 overflow-hidden bg-surface-1 border-2 border-accent-warm/50 shadow-2xl rounded-xl">
+      <DialogContent className="max-w-xl p-0 overflow-hidden bg-card border-2 border-warning/50 shadow-2xl rounded-xl">
         {/* Glowing Top Banner */}
-        <div className="bg-gradient-to-r from-accent-warm/20 via-accent-primary/20 to-accent-warm/20 p-6 text-center border-b border-accent-warm/30 relative">
-          <Badge className="bg-accent-warm text-black font-bold uppercase tracking-wider text-xs mb-2 px-3 py-1 animate-pulse">
+        <div className="bg-gradient-to-r from-warning/20 via-primary/20 to-warning/20 p-6 text-center border-b border-warning/30 relative">
+          <Badge className="bg-warning text-black font-bold uppercase tracking-wider text-xs mb-2 px-3 py-1 animate-pulse">
             🧊 ADHD Paralysis Breaker
           </Badge>
-          <h2 className="text-2xl font-black text-text-primary tracking-tight">
+          <h2 className="text-2xl font-black text-foreground tracking-tight">
             Put Blinders On. Just This One.
           </h2>
-          <p className="text-xs text-text-secondary mt-1 max-w-md mx-auto">
+          <p className="text-xs text-muted-foreground mt-1 max-w-md mx-auto">
             Forget your 20 other tasks. We selected the absolute easiest, lowest-dread task on your list to get your dopamine engine started.
           </p>
         </div>
@@ -117,46 +117,46 @@ export function ParalysisBreakerModal({ open, onOpenChange, tasks }: ParalysisBr
           {easiestTask ? (
             <div className="relative group">
               {/* Outer pulsing ring */}
-              <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-accent-warm via-accent-primary to-accent-success opacity-30 group-hover:opacity-60 blur-md transition duration-500 animate-pulse" />
+              <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-warning via-primary to-success opacity-30 group-hover:opacity-60 blur-md transition duration-500 animate-pulse" />
 
-              <div className="relative p-6 rounded-xl bg-surface-2 border border-border-subtle space-y-4">
+              <div className="relative p-6 rounded-xl bg-secondary border border-border space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="border-accent-success/50 text-accent-success bg-accent-success/10 text-xs">
+                    <Badge variant="outline" className="border-success/50 text-success bg-success/10 text-xs">
                       🟢 Easiest Win (Dread {easiestTask.dread_level ?? 1}/5)
                     </Badge>
                     {easiestTask.effort && (
-                      <Badge variant="outline" className="border-border-subtle text-text-secondary text-xs capitalize">
+                      <Badge variant="outline" className="border-border text-muted-foreground text-xs capitalize">
                         Effort: {easiestTask.effort}
                       </Badge>
                     )}
                   </div>
                   {completedCount > 0 && (
-                    <Badge variant="secondary" className="bg-accent-primary/20 text-accent-primary font-semibold text-xs">
+                    <Badge variant="secondary" className="bg-primary/20 text-primary font-semibold text-xs">
                       🔥 {completedCount} Smashed Today
                     </Badge>
                   )}
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-bold text-text-primary leading-snug">
+                  <h3 className="text-xl font-bold text-foreground leading-snug">
                     {easiestTask.title}
                   </h3>
                   {easiestTask.description && (
-                    <p className="text-xs text-text-secondary mt-2 line-clamp-3 bg-surface-1/50 p-3 rounded-lg border border-border-subtle/50">
+                    <p className="text-xs text-muted-foreground mt-2 line-clamp-3 bg-card/50 p-3 rounded-lg border border-border/50">
                       {easiestTask.description}
                     </p>
                   )}
                 </div>
 
                 {/* Micro 2-min Sprint Timer */}
-                <div className="flex items-center justify-between bg-surface-1 p-3 rounded-xl border border-border-subtle">
+                <div className="flex items-center justify-between bg-card p-3 rounded-xl border border-border">
                   <div className="flex items-center gap-2">
-                    <Zap className={cn("h-4 w-4", isTimerRunning ? "text-accent-warm animate-bounce" : "text-text-disabled")} />
-                    <span className="text-xs font-medium text-text-secondary">
+                    <Zap className={cn("h-4 w-4", isTimerRunning ? "text-warning animate-bounce" : "text-disabled")} />
+                    <span className="text-xs font-medium text-muted-foreground">
                       2-Minute Micro-Sprint:
                     </span>
-                    <span className="text-sm font-mono font-bold text-text-primary">
+                    <span className="text-sm font-mono font-bold text-foreground">
                       {formatTime(timerSeconds)}
                     </span>
                   </div>
@@ -176,7 +176,7 @@ export function ParalysisBreakerModal({ open, onOpenChange, tasks }: ParalysisBr
                   size="lg"
                   disabled={completing}
                   onClick={handleCompleteTask}
-                  className="w-full h-14 text-base font-bold bg-gradient-to-r from-accent-warm via-accent-primary to-accent-success text-white shadow-lg hover:opacity-90 transition-all rounded-xl gap-2 cursor-pointer"
+                  className="w-full h-14 text-base font-bold bg-gradient-to-r from-warning via-primary to-success text-primary-foreground shadow-lg hover:opacity-90 transition-all rounded-xl gap-2 cursor-pointer"
                 >
                   <Check className="h-5 w-5 stroke-[3]" />
                   Mark Complete & Smash Paralysis!
@@ -185,11 +185,11 @@ export function ParalysisBreakerModal({ open, onOpenChange, tasks }: ParalysisBr
             </div>
           ) : (
             <div className="text-center py-10 space-y-3">
-              <div className="inline-flex p-4 rounded-full bg-accent-success/10 text-accent-success">
+              <div className="inline-flex p-4 rounded-full bg-success/10 text-success">
                 <Sparkles className="h-8 w-8" />
               </div>
-              <h3 className="text-lg font-bold text-text-primary">No Open Tasks Left!</h3>
-              <p className="text-xs text-text-secondary max-w-sm mx-auto">
+              <h3 className="text-lg font-bold text-foreground">No Open Tasks Left!</h3>
+              <p className="text-xs text-muted-foreground max-w-sm mx-auto">
                 You&apos;ve cleared all open tasks or your backlog is completely empty. Take a breath!
               </p>
               <Button onClick={() => onOpenChange(false)} variant="outline">
@@ -199,8 +199,8 @@ export function ParalysisBreakerModal({ open, onOpenChange, tasks }: ParalysisBr
           )}
 
           {/* Micro Motivational Footer */}
-          <div className="text-center border-t border-border-subtle pt-4">
-            <p className="text-xs text-text-disabled italic">
+          <div className="text-center border-t border-border pt-4">
+            <p className="text-xs text-disabled italic">
               &quot;Action creates motivation, not the other way around. Finishing 1 micro-step breaks the freeze state.&quot;
             </p>
           </div>

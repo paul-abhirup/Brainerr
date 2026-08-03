@@ -41,12 +41,12 @@ export default function HabitsPage() {
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-24 rounded-xl animate-pulse border border-border-subtle/50" />
+            <div key={i} className="h-24 rounded-xl animate-pulse border border-border/50" />
           ))}
         </div>
       ) : !habits?.length ? (
         <EmptyState
-          icon={<Sparkles className="h-8 w-8 text-accent-warm/70" />}
+          icon={<Sparkles className="h-8 w-8 text-warning/70" />}
           title="No habits registered yet"
           description="Start with a tiny low-friction win: “drink a glass of water”, “stretch for 2 minutes”."
           action={
@@ -119,15 +119,15 @@ function HabitCard({
   }
 
   return (
-    <div className="glass-card glass-card-hover flex flex-col sm:flex-row sm:items-center gap-4 rounded-xl p-4 backdrop-blur-md">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-4 rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/40">
       <div className="flex items-center gap-3">
         <button
           onClick={() => toggle(new Date())}
           className={cn(
             "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border transition-all active:scale-95 shadow-sm focus-visible:ring-2 focus-visible:ring-ring/60 outline-none",
             checkedToday
-              ? "border-accent-success bg-accent-success text-surface-base shadow-[0_0_12px_rgba(111,207,151,0.4)]"
-              : "border-border-subtle bg-surface-2/80 text-text-disabled hover:border-accent-success/60 hover:text-accent-success",
+              ? "border-success bg-success text-success-foreground shadow-[0_0_12px_color-mix(in_srgb,var(--success)_40%,transparent)]"
+              : "border-border bg-secondary/80 text-disabled hover:border-success/60 hover:text-success",
             animatingId === format(new Date(), "yyyy-MM-dd") && "animate-pop",
           )}
           aria-label={`Toggle ${habit.title} for today`}
@@ -137,45 +137,45 @@ function HabitCard({
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2.5">
-            <p className={cn("truncate text-base font-semibold text-text-primary", checkedToday && "text-text-secondary opacity-80")}>
+            <p className={cn("truncate text-base font-semibold text-foreground", checkedToday && "text-muted-foreground opacity-80")}>
               {habit.title}
             </p>
             {habit.current_streak > 0 && (
-              <span className="flex items-center gap-1 rounded-full bg-accent-success/15 border border-accent-success/20 px-2.5 py-0.5 text-xs font-semibold text-accent-success">
+              <span className="flex items-center gap-1 rounded-full bg-success/15 border border-success/20 px-2.5 py-0.5 text-xs font-semibold text-success">
                 <Flame className="h-3.5 w-3.5 fill-current" />
                 {habit.current_streak} streak
               </span>
             )}
             {freezeUsedThisWeek && (
-              <span className="flex items-center gap-1 rounded-full bg-accent-primary/10 border border-accent-primary/20 px-2 py-0.5 text-xs text-accent-primary font-medium" title="Streak freeze active for missed day">
+              <span className="flex items-center gap-1 rounded-full bg-primary/10 border border-primary/20 px-2 py-0.5 text-xs text-primary font-medium" title="Streak freeze active for missed day">
                 <Snowflake className="h-3.5 w-3.5" />
                 Freeze active
               </span>
             )}
           </div>
-          <p className="mt-1 text-xs text-text-secondary font-medium">
+          <p className="mt-1 text-xs text-muted-foreground font-medium">
             {doneThisWeek} of {habit.target_days_per_week} days completed this week
           </p>
         </div>
       </div>
 
       {/* Touch-Friendly 7-Day Dot Grid */}
-      <div className="flex items-center justify-between sm:justify-end gap-1.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-border-subtle/40">
+      <div className="flex items-center justify-between sm:justify-end gap-1.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-border/40">
         {weekLogs.map((log, i) => {
           const dayDate = addDays(weekStart, i)
           const isToday = i === todayIndex
           const dayName = format(dayDate, "EEE")
           return (
             <div key={i} className="flex flex-col items-center gap-1">
-              <span className="text-xs font-medium text-text-disabled uppercase">{dayName}</span>
+              <span className="text-xs font-medium text-disabled uppercase">{dayName}</span>
               <button
                 onClick={() => toggle(dayDate)}
                 className={cn(
                   "h-10 w-10 sm:h-9 sm:w-9 rounded-xl border transition-all active:scale-95 flex items-center justify-center text-xs font-semibold focus-visible:ring-2 focus-visible:ring-ring/60 outline-none cursor-pointer",
                   log?.completed
-                    ? "border-accent-success bg-accent-success text-surface-base shadow-[0_0_8px_rgba(111,207,151,0.3)]"
-                    : "border-border-subtle bg-surface-2/60 text-text-disabled hover:border-accent-success/50",
-                  isToday && !log?.completed && "ring-2 ring-accent-primary/50 border-accent-primary",
+                    ? "border-success bg-success text-success-foreground shadow-[0_0_8px_color-mix(in_srgb,var(--success)_30%,transparent)]"
+                    : "border-border bg-secondary/60 text-disabled hover:border-success/50",
+                  isToday && !log?.completed && "ring-2 ring-primary/50 border-primary",
                 )}
                 aria-label={format(dayDate, "EEEE, MMM d")}
                 title={format(dayDate, "EEEE, MMM d")}

@@ -116,12 +116,12 @@ export default function InboxPage() {
       {isLoading ? (
         <div className="space-y-2">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-16 animate-pulse rounded-lg bg-surface-2" />
+            <div key={i} className="h-16 animate-pulse rounded-lg bg-secondary" />
           ))}
         </div>
       ) : openTasks.length === 0 && doneTasks.length === 0 ? (
         <EmptyState
-          icon={<InboxIcon className="h-8 w-8 text-text-disabled" />}
+          icon={<InboxIcon className="h-8 w-8 text-disabled" />}
           title="Your inbox is empty"
           description="Capture the first thing on your mind."
           action={
@@ -141,19 +141,19 @@ export default function InboxPage() {
           )}
 
           {doneTasks.length > 0 && (
-            <div className="pt-4 border-t border-border-subtle space-y-3">
+            <div className="pt-4 border-t border-border space-y-3">
               <button
                 onClick={() => setShowDone((prev) => !prev)}
-                className="flex items-center gap-2 text-xs font-bold text-text-secondary hover:text-text-primary transition-colors cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring/60 rounded"
+                className="flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-foreground transition-colors cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring/60 rounded"
                 aria-expanded={showDone}
               >
                 {showDone ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                <CheckCircle2 className="h-4 w-4 text-accent-success" />
+                <CheckCircle2 className="h-4 w-4 text-success" />
                 <span>Completed Tasks ({doneTasks.length}) — Click to view / unmark</span>
               </button>
 
               {showDone && (
-                <div className="space-y-2 pl-2 border-l-2 border-accent-success/20">
+                <div className="space-y-2 pl-2 border-l-2 border-success/20">
                   {doneTasks.map((task) => (
                     <TaskCard key={task.id} task={task} />
                   ))}

@@ -146,7 +146,7 @@ export function GoalDetailClient({
                 <Button variant="outline" size="sm" onClick={() => setTemplateOpen(true)}>
                   <Save className="mr-1.5 h-3.5 w-3.5" /> Save as template
                 </Button>
-                <Button variant="outline" size="sm" onClick={markDone} disabled={working} className="text-accent-success">
+                <Button variant="outline" size="sm" onClick={markDone} disabled={working} className="text-success">
                   <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" /> Mark done
                 </Button>
               </>
@@ -160,27 +160,27 @@ export function GoalDetailClient({
 
       <Card size="lg" className="gap-4">
         <div className="flex flex-wrap items-center gap-2">
-          <Badge className="bg-surface-2 text-text-secondary">{goal.horizon.replace("_", " ")}</Badge>
-          {goal.status === "done" && <Badge className="bg-accent-success/15 text-accent-success">Done</Badge>}
+          <Badge className="bg-secondary text-muted-foreground">{goal.horizon.replace("_", " ")}</Badge>
+          {goal.status === "done" && <Badge className="bg-success/15 text-success">Done</Badge>}
           {goal.status === "archived" && <Badge variant="outline">Archived</Badge>}
           {goal.target_date && (
-            <span className="text-xs text-text-secondary">Target {format(new Date(goal.target_date), "MMMM d, yyyy")}</span>
+            <span className="text-xs text-muted-foreground">Target {format(new Date(goal.target_date), "MMMM d, yyyy")}</span>
           )}
         </div>
 
-        <div className="rounded-lg bg-surface-2 p-4">
+        <div className="rounded-lg bg-secondary p-4">
           <div className="flex items-center justify-between text-sm">
             <span className="font-medium">Progress</span>
-            <span className="tabular-nums text-text-secondary">
+            <span className="tabular-nums text-muted-foreground">
               {progress ? `${progress.done_tasks}/${progress.total_tasks} tasks · ${progress.progress_pct}%` : "No tasks linked yet"}
             </span>
           </div>
-          <Progress value={progress?.progress_pct ?? 0} className="mt-2 h-2 bg-surface-3" />
+          <Progress value={progress?.progress_pct ?? 0} className="mt-2 h-2 bg-muted" />
           {forecast?.projected_completion && forecast.remaining_tasks > 0 && (
-            <p className="mt-3 flex items-center gap-1.5 text-xs text-text-secondary">
-              <TrendingUp className="h-3.5 w-3.5 text-accent-success" />
+            <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
+              <TrendingUp className="h-3.5 w-3.5 text-success" />
               At {forecast.done_per_week.toFixed(1)} done/week, this finishes around{" "}
-              <span className="font-medium text-text-primary">{format(new Date(forecast.projected_completion), "MMMM d, yyyy")}</span>{" "}
+              <span className="font-medium text-foreground">{format(new Date(forecast.projected_completion), "MMMM d, yyyy")}</span>{" "}
               ({forecast.remaining_tasks} tasks left)
             </p>
           )}
@@ -190,14 +190,14 @@ export function GoalDetailClient({
       {subGoals.length > 0 && (
         <Card>
           <h2 className="flex items-center gap-2 text-sm font-semibold">
-            <Target className="h-4 w-4 text-accent-primary" /> Sub-goals
+            <Target className="h-4 w-4 text-primary" /> Sub-goals
           </h2>
           <ul className="space-y-1.5">
             {subGoals.map((c) => (
               <li key={c.id}>
-                <Link href={`/goals/${c.id}`} className="block rounded-lg px-2 py-1.5 text-sm hover:bg-surface-2">
+                <Link href={`/goals/${c.id}`} className="block rounded-lg px-2 py-1.5 text-sm hover:bg-secondary">
                   <span className="font-medium">{c.title}</span>
-                  <span className="ml-2 text-xs text-text-disabled">{c.horizon}</span>
+                  <span className="ml-2 text-xs text-disabled">{c.horizon}</span>
                 </Link>
               </li>
             ))}
@@ -208,12 +208,12 @@ export function GoalDetailClient({
       <Card>
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold">Projects</h2>
-          <span className="text-xs text-text-secondary">{projects.length}</span>
+          <span className="text-xs text-muted-foreground">{projects.length}</span>
         </div>
         {projects.length === 0 ? (
-          <p className="text-xs text-text-disabled">
+          <p className="text-xs text-disabled">
             No projects linked. Create one and assign it to this goal from{" "}
-            <Link href="/projects" className="text-accent-primary hover:underline">Projects</Link>.
+            <Link href="/projects" className="text-primary hover:underline">Projects</Link>.
           </p>
         ) : (
           <ul className="space-y-3">
@@ -221,19 +221,19 @@ export function GoalDetailClient({
               const pTasks = byProject.get(p.id) ?? []
               const pDone = pTasks.filter((t) => t.status === "done").length
               return (
-                <li key={p.id} className="rounded-lg border border-border-subtle bg-surface-2 p-3">
+                <li key={p.id} className="rounded-lg border border-border bg-secondary p-3">
                   <div className="flex items-center justify-between">
                     <span className="flex items-center gap-2 text-sm font-medium">
                       <span className="h-2.5 w-2.5 rounded-full" style={{ background: p.color ?? "#7C9EFF" }} />
                       {p.name}
                     </span>
-                    <span className="text-xs tabular-nums text-text-secondary">{pDone}/{pTasks.length} done</span>
+                    <span className="text-xs tabular-nums text-muted-foreground">{pDone}/{pTasks.length} done</span>
                   </div>
                   {pTasks.length > 0 && (
                     <ul className="mt-2 space-y-1">
                       {pTasks.map((t) => (
                         <li key={t.id}>
-                          <Link href={`/tasks/${t.id}`} className={cn("block truncate rounded px-2 py-1 text-sm hover:bg-surface-3", t.status === "done" && "text-text-disabled line-through")}>
+                          <Link href={`/tasks/${t.id}`} className={cn("block truncate rounded px-2 py-1 text-sm hover:bg-muted", t.status === "done" && "text-disabled line-through")}>
                             {t.title}
                           </Link>
                         </li>
@@ -250,17 +250,17 @@ export function GoalDetailClient({
       <Card>
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold">Tasks</h2>
-          <span className="text-xs text-text-secondary">{open.length} open · {done.length} done</span>
+          <span className="text-xs text-muted-foreground">{open.length} open · {done.length} done</span>
         </div>
         {tasks.length === 0 ? (
-          <p className="text-xs text-text-disabled">No tasks under this goal yet.</p>
+          <p className="text-xs text-disabled">No tasks under this goal yet.</p>
         ) : (
           <ul className="space-y-1">
             {[...open, ...done].map((t) => (
               <li key={t.id}>
-                <Link href={`/tasks/${t.id}`} className={cn("block truncate rounded px-2 py-1.5 text-sm hover:bg-surface-2", t.status === "done" && "text-text-disabled line-through")}>
+                <Link href={`/tasks/${t.id}`} className={cn("block truncate rounded px-2 py-1.5 text-sm hover:bg-secondary", t.status === "done" && "text-disabled line-through")}>
                   {t.title}
-                  {t.due_date && <span className="ml-2 text-xs text-text-disabled">{format(new Date(t.due_date), "MMM d")}</span>}
+                  {t.due_date && <span className="ml-2 text-xs text-disabled">{format(new Date(t.due_date), "MMM d")}</span>}
                 </Link>
               </li>
             ))}
@@ -274,7 +274,7 @@ export function GoalDetailClient({
             <DialogTitle>Save as template</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <p className="text-sm text-text-secondary">
+            <p className="text-sm text-muted-foreground">
               Reuse this goal&apos;s structure ({projects.length} projects, {tasks.length} tasks, dates stripped) for the next cycle.
             </p>
             <div className="space-y-1.5">

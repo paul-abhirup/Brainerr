@@ -116,12 +116,12 @@ export default function JournalPage() {
         description="Reflect on wins, log your mood, and clear mental static before bed."
         actions={
           <div className="flex items-center gap-2">
-            <CalendarIcon className="h-4 w-4 text-text-disabled" />
+            <CalendarIcon className="h-4 w-4 text-disabled" />
             <Input
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-auto bg-surface-1 text-text-primary"
+              className="w-auto bg-card text-foreground"
             />
           </div>
         }
@@ -131,9 +131,9 @@ export default function JournalPage() {
         {/* Left Column: Energy Check-in & Auto-populated Wins */}
         <div className="space-y-6 md:col-span-1">
           {/* Energy Check-in */}
-          <Card className="glass-card border-border-subtle shadow-md p-5 space-y-3">
+          <Card className="border-border shadow-md p-5 space-y-3">
             <CardTitle className="text-sm font-bold flex items-center gap-2">
-              <HeartPulse className="h-4 w-4 text-accent-warm" />
+              <HeartPulse className="h-4 w-4 text-warning" />
               Daily Energy Level
             </CardTitle>
             <div className="grid grid-cols-3 gap-2 pt-1">
@@ -144,8 +144,8 @@ export default function JournalPage() {
                   className={cn(
                     "p-2.5 rounded-xl border text-xs font-bold capitalize transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
                     energyLevel === level
-                      ? "border-accent-warm bg-accent-warm/15 text-accent-warm shadow-md scale-105"
-                      : "border-border-subtle bg-surface-2 text-text-secondary hover:border-text-secondary",
+                      ? "border-warning bg-warning/15 text-warning shadow-md scale-105"
+                      : "border-border bg-secondary text-muted-foreground hover:border-muted-foreground",
                   )}
                 >
                   {level === "low" ? "⚡ Low" : level === "medium" ? "⚡ Med" : "⚡ High"}
@@ -155,18 +155,18 @@ export default function JournalPage() {
           </Card>
 
           {/* Auto-populated Wins */}
-          <Card className="glass-card border-accent-success/30 bg-accent-success/5 shadow-md p-5 space-y-3">
-            <CardTitle className="text-sm font-bold text-accent-success flex items-center gap-2">
+          <Card className="border-success/30 bg-success/5 shadow-md p-5 space-y-3">
+            <CardTitle className="text-sm font-bold text-success flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4" />
               Today&apos;s Smashed Wins ({completedToday.length})
             </CardTitle>
             <div className="space-y-2 max-h-48 overflow-y-auto pt-1">
               {completedToday.length === 0 ? (
-                <p className="text-xs text-text-disabled py-2">No completed tasks recorded for this date yet.</p>
+                <p className="text-xs text-disabled py-2">No completed tasks recorded for this date yet.</p>
               ) : (
                 completedToday.map((t) => (
-                  <div key={t.id} className="text-xs font-medium text-text-primary flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-accent-success shrink-0" />
+                  <div key={t.id} className="text-xs font-medium text-foreground flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-success shrink-0" />
                     <span className="truncate">{t.title}</span>
                   </div>
                 ))
@@ -175,8 +175,8 @@ export default function JournalPage() {
           </Card>
 
           {/* Mood Trend Chart */}
-          <Card className="glass-card border-border-subtle shadow-md p-4 space-y-2">
-            <CardTitle className="text-xs font-bold text-text-secondary">
+          <Card className="border-border shadow-md p-4 space-y-2">
+            <CardTitle className="text-xs font-bold text-muted-foreground">
               7-Day Energy Trend
             </CardTitle>
             <div className="h-28 w-full">
@@ -184,12 +184,12 @@ export default function JournalPage() {
                 <AreaChart data={moodTrendData}>
                   <defs>
                     <linearGradient id="energyGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--accent-warm)" stopOpacity={0.6} />
-                      <stop offset="95%" stopColor="var(--accent-warm)" stopOpacity={0} />
+                      <stop offset="5%" stopColor="var(--warning)" stopOpacity={0.6} />
+                      <stop offset="95%" stopColor="var(--warning)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <Tooltip />
-                  <Area type="monotone" dataKey="energy" stroke="var(--accent-warm)" fillOpacity={1} fill="url(#energyGrad)" />
+                  <Area type="monotone" dataKey="energy" stroke="var(--warning)" fillOpacity={1} fill="url(#energyGrad)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -198,16 +198,16 @@ export default function JournalPage() {
 
         {/* Right Column: Markdown Journal Reflection Textarea */}
         <div className="space-y-6 md:col-span-2">
-          <Card className="glass-card border-border-subtle shadow-xl p-6 space-y-4">
+          <Card className="border-border shadow-md p-6 space-y-4">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-bold flex items-center gap-2">
-                <BookOpen className="h-4 w-4 text-accent-primary" />
+                <BookOpen className="h-4 w-4 text-primary" />
                 Reflections & Brain Dump
               </CardTitle>
               <Button
                 onClick={handleSaveJournal}
                 disabled={saving}
-                className="bg-accent-primary text-white hover:bg-accent-primary/90 font-bold gap-1.5 cursor-pointer"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold gap-1.5 cursor-pointer"
               >
                 <Save className="h-4 w-4" />
                 {saving ? "Saving…" : "Save Entry"}
@@ -218,19 +218,19 @@ export default function JournalPage() {
             <div className="grid gap-2 sm:grid-cols-3 text-xs">
               <button
                 onClick={() => setJournalText((prev) => prev + "\n\n### 🌟 Big Win Today:\n- ")}
-                className="p-2 rounded-lg border border-border-subtle bg-surface-2 hover:border-accent-primary transition-all text-left text-text-secondary cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+                className="p-2 rounded-lg border border-border bg-secondary hover:border-primary transition-all text-left text-muted-foreground cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
               >
                 + Insert &quot;Big Win&quot;
               </button>
               <button
                 onClick={() => setJournalText((prev) => prev + "\n\n### 🚧 Friction & Blockers:\n- ")}
-                className="p-2 rounded-lg border border-border-subtle bg-surface-2 hover:border-accent-warm transition-all text-left text-text-secondary cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+                className="p-2 rounded-lg border border-border bg-secondary hover:border-warning transition-all text-left text-muted-foreground cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
               >
                 + Insert &quot;Blockers&quot;
               </button>
               <button
                 onClick={() => setJournalText((prev) => prev + "\n\n### 🎯 Victory for Tomorrow:\n- ")}
-                className="p-2 rounded-lg border border-border-subtle bg-surface-2 hover:border-accent-success transition-all text-left text-text-secondary cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+                className="p-2 rounded-lg border border-border bg-secondary hover:border-success transition-all text-left text-muted-foreground cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
               >
                 + Insert &quot;Tomorrow Goal&quot;
               </button>
@@ -240,7 +240,7 @@ export default function JournalPage() {
               value={journalText}
               onChange={(e) => setJournalText(e.target.value)}
               placeholder="What went well today? What caused friction or overwhelm? What's one thing you want to smash tomorrow?"
-              className="min-h-[320px] font-sans text-sm leading-relaxed p-4 rounded-xl bg-surface-2/60 border-border-subtle focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20"
+              className="min-h-[320px] font-sans text-sm leading-relaxed p-4 rounded-xl bg-secondary/60 border-border focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
           </Card>
         </div>

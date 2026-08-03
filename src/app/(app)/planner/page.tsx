@@ -95,7 +95,7 @@ export default function PlannerPage() {
         description="Drag tasks onto a time block. Manually-placed tasks stay put."
         actions={
           <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-1.5 border border-border-subtle/60 rounded-xl p-1 bg-surface-2/40">
+            <div className="flex items-center gap-1.5 border border-border/60 rounded-xl p-1 bg-secondary/40">
               <Button variant="ghost" size="sm" onClick={() => setWeekOffset((o) => o - 1)} className="h-8 w-8 p-0">
                 <ChevronLeft className="h-4 w-4" />
               </Button>
@@ -125,12 +125,12 @@ export default function PlannerPage() {
         </TabsList>
         <TabsContent value="week" className="mt-4">
           {isLoading ? (
-            <div className="h-96 animate-pulse rounded-xl bg-surface-2" />
+            <div className="h-96 animate-pulse rounded-xl bg-secondary" />
           ) : (
             <PlannerWeek weekStart={weekStart} tasks={tasks} busy={busy} onSchedule={handleSchedule} />
           )}
           <div className="mt-2 flex items-center justify-between">
-            <p className="text-xs text-text-secondary">
+            <p className="text-xs text-muted-foreground">
               {tasks.filter((t) => t.scheduled_start).length} scheduled ·{" "}
               {tasks.filter((t) => !t.scheduled_start && t.status !== "done").length} unscheduled
             </p>
@@ -151,24 +151,24 @@ export default function PlannerPage() {
           </DialogHeader>
           {preview && (
             <div className="space-y-4">
-              <p className="text-sm text-text-secondary">
+              <p className="text-sm text-muted-foreground">
                 {preview.moves.length} task{preview.moves.length !== 1 ? "s" : ""} will move. Nothing changes until you confirm.
               </p>
               <div className="max-h-64 space-y-1.5 overflow-y-auto">
                 {preview.moves.length === 0 ? (
-                  <p className="text-sm text-text-secondary">Your schedule already matches the best fit — nothing to move.</p>
+                  <p className="text-sm text-muted-foreground">Your schedule already matches the best fit — nothing to move.</p>
                 ) : (
                   preview.moves.map((m) => (
-                    <div key={m.taskId} className="flex items-center gap-2 rounded-lg bg-surface-2 px-3 py-2 text-sm">
-                      <span className="truncate text-text-secondary">{m.from ? format(new Date(m.from), "EEE h:mm a") : "unscheduled"}</span>
-                      <ArrowRight className="h-3.5 w-3.5 shrink-0 text-accent-primary" />
-                      <span className="truncate text-text-primary">{format(new Date(m.to), "EEE h:mm a")}</span>
+                    <div key={m.taskId} className="flex items-center gap-2 rounded-lg bg-secondary px-3 py-2 text-sm">
+                      <span className="truncate text-muted-foreground">{m.from ? format(new Date(m.from), "EEE h:mm a") : "unscheduled"}</span>
+                      <ArrowRight className="h-3.5 w-3.5 shrink-0 text-primary" />
+                      <span className="truncate text-foreground">{format(new Date(m.to), "EEE h:mm a")}</span>
                     </div>
                   ))
                 )}
               </div>
               {preview.result.atRisk.length > 0 && (
-                <p className="text-xs text-accent-warm">
+                <p className="text-xs text-warning">
                   {preview.result.atRisk.length} task{preview.result.atRisk.length !== 1 ? "s" : ""} couldn&apos;t fit before their due date and will be flagged.
                 </p>
               )}
@@ -200,10 +200,10 @@ function EisenhowerView({ tasks }: { tasks: TaskRow[] }) {
   const important = (t: TaskRow) => t.priority === "high"
 
   const quadrants = [
-    { key: "do", label: "Do now", sub: "urgent + important", items: open.filter((t) => urgent(t) && important(t)), tone: "border-accent-warm" },
-    { key: "schedule", label: "Schedule", sub: "important, not urgent", items: open.filter((t) => !urgent(t) && important(t)), tone: "border-accent-primary" },
-    { key: "delegate", label: "Delegate / shorten", sub: "urgent, not important", items: open.filter((t) => urgent(t) && !important(t)), tone: "border-accent-success" },
-    { key: "later", label: "Later / drop", sub: "neither", items: open.filter((t) => !urgent(t) && !important(t)), tone: "border-border-subtle" },
+    { key: "do", label: "Do now", sub: "urgent + important", items: open.filter((t) => urgent(t) && important(t)), tone: "border-warning" },
+    { key: "schedule", label: "Schedule", sub: "important, not urgent", items: open.filter((t) => !urgent(t) && important(t)), tone: "border-primary" },
+    { key: "delegate", label: "Delegate / shorten", sub: "urgent, not important", items: open.filter((t) => urgent(t) && !important(t)), tone: "border-success" },
+    { key: "later", label: "Later / drop", sub: "neither", items: open.filter((t) => !urgent(t) && !important(t)), tone: "border-border" },
   ]
 
   return (
@@ -212,15 +212,15 @@ function EisenhowerView({ tasks }: { tasks: TaskRow[] }) {
         <Card key={q.key} className={`border-l-2 ${q.tone}`}>
           <div className="flex items-baseline justify-between">
             <h3 className="text-sm font-semibold">{q.label}</h3>
-            <span className="text-xs text-text-secondary">{q.items.length}</span>
+            <span className="text-xs text-muted-foreground">{q.items.length}</span>
           </div>
-          <p className="mt-0.5 text-xs text-text-secondary">{q.sub}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">{q.sub}</p>
           <ul className="mt-3 space-y-1.5">
             {q.items.length === 0 ? (
-              <li className="text-xs text-text-disabled">Nothing here</li>
+              <li className="text-xs text-disabled">Nothing here</li>
             ) : (
               q.items.slice(0, 8).map((t) => (
-                <li key={t.id} className="truncate text-sm text-text-primary">
+                <li key={t.id} className="truncate text-sm text-foreground">
                   {t.title}
                 </li>
               ))

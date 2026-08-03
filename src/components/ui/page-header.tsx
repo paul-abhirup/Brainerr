@@ -24,14 +24,14 @@ export function PageHeader({
       {backHref && (
         <Link
           href={backHref}
-          className="mb-3 flex w-fit items-center gap-1 text-sm text-text-secondary transition-colors hover:text-text-primary"
+          className="mb-3 flex w-fit items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
           {backLabel}
         </Link>
       )}
       {eyebrow && (
-        <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-text-disabled">
+        <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-disabled">
           {eyebrow}
         </div>
       )}
@@ -39,7 +39,7 @@ export function PageHeader({
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{title}</h1>
           {description && (
-            <p className="mt-1 text-sm text-text-secondary">{description}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{description}</p>
           )}
         </div>
         {actions && <div className="flex flex-wrap items-center gap-2 shrink-0">{actions}</div>}

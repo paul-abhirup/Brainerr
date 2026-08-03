@@ -82,7 +82,7 @@ export default function NotesPage() {
         title="Notes"
         description={
           <>
-            Freeform capture. Type <span className="text-accent-primary">@</span> to link a task or goal.
+            Freeform capture. Type <span className="text-primary">@</span> to link a task or goal.
           </>
         }
         actions={
@@ -107,7 +107,7 @@ export default function NotesPage() {
         <>
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
-              <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-text-secondary" />
+              <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -133,8 +133,8 @@ export default function NotesPage() {
                 className={cn(
                   "rounded-full px-3 py-1 text-xs font-medium transition-colors",
                   activeTag === null
-                    ? "bg-accent-primary text-white"
-                    : "bg-surface-2 text-text-secondary hover:bg-surface-3"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-muted-foreground hover:bg-muted"
                 )}
               >
                 All
@@ -146,8 +146,8 @@ export default function NotesPage() {
                   className={cn(
                     "rounded-full px-3 py-1 text-xs font-medium transition-colors",
                     tag === activeTag
-                      ? "bg-accent-primary text-white"
-                      : "bg-surface-2 text-text-secondary hover:bg-surface-3"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-secondary text-muted-foreground hover:bg-muted"
                   )}
                 >
                   #{tag}
@@ -156,7 +156,7 @@ export default function NotesPage() {
             </div>
           )}
 
-          <p className="text-xs text-text-secondary">
+          <p className="text-xs text-muted-foreground">
             {filteredNotes.length} {filteredNotes.length === 1 ? "note" : "notes"}
           </p>
         </>
@@ -165,12 +165,12 @@ export default function NotesPage() {
       {isLoading ? (
         <div className="space-y-2">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-20 animate-pulse rounded-xl bg-surface-2" />
+            <div key={i} className="h-20 animate-pulse rounded-xl bg-secondary" />
           ))}
         </div>
       ) : !notes?.length ? (
         <EmptyState
-          icon={<StickyNote className="h-8 w-8 text-text-disabled" />}
+          icon={<StickyNote className="h-8 w-8 text-disabled" />}
           title="No notes yet"
           description="Jot down ideas, links, or context without committing to a task."
           action={
@@ -181,7 +181,7 @@ export default function NotesPage() {
         />
       ) : filteredNotes.length === 0 ? (
         <EmptyState
-          icon={<Search className="h-8 w-8 text-text-disabled" />}
+          icon={<Search className="h-8 w-8 text-disabled" />}
           title="No matching notes"
           description="Try a different search or clear the tag filter."
           action={
@@ -210,7 +210,7 @@ export default function NotesPage() {
             >
               <div className="flex items-start justify-between gap-2">
                 <Link href={`/notes/${note.id}`} className="min-w-0 flex-1">
-                  <h3 className="truncate text-sm font-medium hover:text-accent-primary">
+                  <h3 className="truncate text-sm font-medium hover:text-primary">
                     {note.title || "Untitled"}
                   </h3>
                 </Link>
@@ -222,12 +222,12 @@ export default function NotesPage() {
                 </div>
               </div>
               {note.body && view === "grid" && (
-                <p className="mt-2 line-clamp-3 whitespace-pre-wrap text-xs text-text-secondary">
+                <p className="mt-2 line-clamp-3 whitespace-pre-wrap text-xs text-muted-foreground">
                   {note.body}
                 </p>
               )}
               {note.body && view === "list" && (
-                <p className="line-clamp-1 whitespace-pre-wrap text-xs text-text-secondary">
+                <p className="line-clamp-1 whitespace-pre-wrap text-xs text-muted-foreground">
                   {note.body}
                 </p>
               )}
@@ -240,7 +240,7 @@ export default function NotesPage() {
                       setSearch("")
                     }}
                   >
-                    <Badge variant="outline" className="text-xs hover:border-accent-primary/50">
+                    <Badge variant="outline" className="text-xs hover:border-primary/50">
                       #{tag}
                     </Badge>
                   </button>
@@ -251,12 +251,12 @@ export default function NotesPage() {
                   </Badge>
                 )}
                 {note.linked_task_id && (
-                  <Badge className="bg-accent-primary/10 text-accent-primary">task</Badge>
+                  <Badge className="bg-primary/10 text-primary">task</Badge>
                 )}
                 {note.linked_goal_id && (
-                  <Badge className="bg-accent-success/10 text-accent-success">goal</Badge>
+                  <Badge className="bg-success/10 text-success">goal</Badge>
                 )}
-                <span className="ml-auto shrink-0 text-xs text-text-disabled" title={format(new Date(note.updated_at), "PPp")}>
+                <span className="ml-auto shrink-0 text-xs text-disabled" title={format(new Date(note.updated_at), "PPp")}>
                   {timeLabel(note.updated_at)}
                 </span>
               </div>
@@ -280,7 +280,7 @@ function DeleteNote({ id }: { id: string }) {
     }
   }
   return (
-    <Button variant="ghost" size="icon-sm" className="text-accent-danger" onClick={remove}>
+    <Button variant="ghost" size="icon-sm" className="text-destructive" onClick={remove}>
       <Trash2 className="h-3.5 w-3.5" />
     </Button>
   )

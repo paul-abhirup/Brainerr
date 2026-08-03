@@ -172,21 +172,21 @@ function NoteEditorForm({
                 placeholder="Write freely. Type @ to link a task or goal…"
               />
               {mentionOpen && (
-                <div className="absolute z-50 mt-1 w-full overflow-hidden rounded-lg border border-border-subtle bg-popover shadow-lg">
+                <div className="absolute z-50 mt-1 w-full overflow-hidden rounded-lg border border-border bg-popover shadow-lg">
                   {mentionMatches.length === 0 ? (
-                    <p className="px-3 py-2 text-xs text-text-disabled">No matches</p>
+                    <p className="px-3 py-2 text-xs text-disabled">No matches</p>
                   ) : (
                     mentionMatches.map((item) => (
                       <button
                         key={item.id}
                         type="button"
                         onClick={() => pickMention(item)}
-                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-surface-3 focus-visible:bg-surface-3 outline-none"
+                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-muted focus-visible:bg-muted outline-none"
                       >
                         {"priority" in item ? (
-                          <ListTodo className="h-3.5 w-3.5 text-accent-primary" />
+                          <ListTodo className="h-3.5 w-3.5 text-primary" />
                         ) : (
-                          <Target className="h-3.5 w-3.5 text-accent-success" />
+                          <Target className="h-3.5 w-3.5 text-success" />
                         )}
                         <span className="truncate">{item.title}</span>
                       </button>

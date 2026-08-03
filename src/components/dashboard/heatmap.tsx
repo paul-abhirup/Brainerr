@@ -5,6 +5,7 @@ import { subDays, format } from "date-fns"
 import CalendarHeatmap, { type HeatmapValue } from "react-calendar-heatmap"
 import "react-calendar-heatmap/dist/styles.css"
 import type { HabitRow } from "@/hooks/use-data"
+import { useIsMobile } from "@/hooks/use-media-query"
 
 interface HeatLog {
   habit_id: string
@@ -14,6 +15,9 @@ interface HeatLog {
 
 export default function Heatmap({ logs, habits }: { logs: HeatLog[]; habits: HabitRow[] }) {
   const habitIds = useMemo(() => new Set((habits ?? []).map((h) => h.id)), [habits])
+  // Compact ~12-week view on phones (fits without scrolling), full ~6 months on desktop.
+  const isMobile = useIsMobile()
+  const days = isMobile ? 83 : 180
 
   const values = useMemo(() => {
     const counts = new Map<string, number>()
@@ -26,7 +30,7 @@ export default function Heatmap({ logs, habits }: { logs: HeatLog[]; habits: Hab
   }, [logs, habitIds])
 
   const today = new Date()
-  const start = subDays(today, 180)
+  const start = subDays(today, days)
 
   const classForValue = (v: HeatmapValue | null) => {
     if (!v || !v.count || v.count === 0) return "heat-empty"
@@ -38,17 +42,17 @@ export default function Heatmap({ logs, habits }: { logs: HeatLog[]; habits: Hab
   return (
     <div className="overflow-x-auto pb-2">
       <style>{`
-        .react-calendar-heatmap .color-empty { fill: var(--surface-2); }
-        .react-calendar-heatmap .color-scale-1 { fill: var(--accent-primary); }
-        .react-calendar-heatmap .color-scale-2 { fill: var(--accent-primary); }
-        .react-calendar-heatmap .color-scale-3 { fill: var(--accent-primary); }
-        .react-calendar-heatmap .color-scale-4 { fill: var(--accent-primary); }
-        .react-calendar-heatmap .color-scale-5 { fill: var(--accent-primary); }
-        .react-calendar-heatmap .heat-empty { fill: var(--surface-2); }
-        .react-calendar-heatmap .heat-1 { fill: color-mix(in srgb, var(--accent-primary) 40%, transparent); }
-        .react-calendar-heatmap .heat-2 { fill: color-mix(in srgb, var(--accent-primary) 70%, transparent); }
-        .react-calendar-heatmap .heat-3 { fill: var(--accent-primary); }
-        .react-calendar-heatmap text { fill: var(--text-disabled); font-size: 10px; }
+        .react-calendar-heatmap .color-empty { fill: var(--secondary); }
+        .react-calendar-heatmap .color-scale-1 { fill: var(--primary); }
+        .react-calendar-heatmap .color-scale-2 { fill: var(--primary); }
+        .react-calendar-heatmap .color-scale-3 { fill: var(--primary); }
+        .react-calendar-heatmap .color-scale-4 { fill: var(--primary); }
+        .react-calendar-heatmap .color-scale-5 { fill: var(--primary); }
+        .react-calendar-heatmap .heat-empty { fill: var(--secondary); }
+        .react-calendar-heatmap .heat-1 { fill: color-mix(in srgb, var(--primary) 40%, transparent); }
+        .react-calendar-heatmap .heat-2 { fill: color-mix(in srgb, var(--primary) 70%, transparent); }
+        .react-calendar-heatmap .heat-3 { fill: var(--primary); }
+        .react-calendar-heatmap text { fill: var(--disabled); font-size: 10px; }
       `}</style>
       <CalendarHeatmap
         startDate={start}
@@ -56,7 +60,7 @@ export default function Heatmap({ logs, habits }: { logs: HeatLog[]; habits: Hab
         values={values}
         classForValue={classForValue}
         titleForValue={(v) => (v ? `${v.count} completed · ${format(new Date(v.date), "MMM d")}` : "")}
-        showMonthLabels
+        showMonthLabels={!isMobile}
         horizontal
       />
     </div>

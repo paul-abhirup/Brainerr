@@ -194,7 +194,7 @@ export default function NowPage() {
     return (
       <div className="mx-auto max-w-xl py-24">
         <EmptyState
-          icon={<Sparkles className="h-8 w-8 text-accent-primary" />}
+          icon={<Sparkles className="h-8 w-8 text-primary" />}
           title="Nothing due right now"
           description="Enjoy it. When something shows up, it'll land here one at a time."
           action={
@@ -236,13 +236,13 @@ export default function NowPage() {
 
   return (
     <div className="mx-auto flex max-w-xl flex-col items-center space-y-8 py-10 text-center">
-      <div className="flex flex-wrap items-center justify-center gap-2 text-xs uppercase tracking-widest text-text-disabled">
+      <div className="flex flex-wrap items-center justify-center gap-2 text-xs uppercase tracking-widest text-disabled">
         <Target className="h-3.5 w-3.5" />
         One thing at a time
         {(dailyFocus?.task_ids.length ?? 0) > 0 && (
           <button
             onClick={openBig3}
-            className="rounded-full border border-border-subtle px-2.5 py-0.5 normal-case tracking-normal text-accent-primary transition-colors hover:border-accent-primary/50"
+            className="rounded-full border border-border px-2.5 py-0.5 normal-case tracking-normal text-primary transition-colors hover:border-primary/50"
           >
             Big 3 · {dailyFocus!.task_ids.length}
           </button>
@@ -250,20 +250,20 @@ export default function NowPage() {
         {(dailyFocus?.task_ids.length ?? 0) === 0 && (
           <button
             onClick={openBig3}
-            className="rounded-full border border-border-subtle px-2.5 py-0.5 normal-case tracking-normal text-text-secondary transition-colors hover:border-accent-primary/50 hover:text-accent-primary"
+            className="rounded-full border border-border px-2.5 py-0.5 normal-case tracking-normal text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
           >
             Set Big 3
           </button>
         )}
         <button
           onClick={handleAIPlanDay}
-          className="rounded-full border border-accent-primary/40 bg-accent-primary/10 px-3 py-0.5 normal-case tracking-normal text-accent-primary font-semibold transition-all hover:bg-accent-primary/20 hover:scale-105 flex items-center gap-1 cursor-pointer"
+          className="rounded-full border border-primary/40 bg-primary/10 px-3 py-0.5 normal-case tracking-normal text-primary font-semibold transition-all hover:bg-primary/20 hover:scale-105 flex items-center gap-1 cursor-pointer"
         >
           🤖 AI Plan Day
         </button>
         <button
           onClick={() => setParalysisBreakerOpen(true)}
-          className="rounded-full border border-accent-warm/40 bg-accent-warm/10 px-3 py-0.5 normal-case tracking-normal text-accent-warm font-semibold transition-all hover:bg-accent-warm/20 hover:scale-105 flex items-center gap-1 cursor-pointer"
+          className="rounded-full border border-warning/40 bg-warning/10 px-3 py-0.5 normal-case tracking-normal text-warning font-semibold transition-all hover:bg-warning/20 hover:scale-105 flex items-center gap-1 cursor-pointer"
         >
           🧊 Smash Paralysis
         </button>
@@ -276,9 +276,9 @@ export default function NowPage() {
 
       <Card size="lg" className="w-full gap-0 p-8 shadow-sm">
         <div className="flex flex-wrap items-center justify-center gap-2">
-          {current.priority === "high" && <Badge className="bg-accent-warm/15 text-accent-warm">High priority</Badge>}
+          {current.priority === "high" && <Badge className="bg-warning/15 text-warning">High priority</Badge>}
           {current.dread_level && current.dread_level > 2 && (
-            <Badge variant="outline" className="border-accent-warm/40 text-accent-warm">Dread {current.dread_level}</Badge>
+            <Badge variant="outline" className="border-warning/40 text-warning">Dread {current.dread_level}</Badge>
           )}
           {current.estimated_minutes && (
             <Badge variant="outline" className="tabular-nums">{current.estimated_minutes} min</Badge>
@@ -288,16 +288,16 @@ export default function NowPage() {
         <h1 className="mt-5 text-3xl font-semibold leading-tight tracking-tight">{current.title}</h1>
 
         {current.due_date && (
-          <p className={cn("mt-3 text-sm", new Date(current.due_date) < new Date() ? "text-accent-warm" : "text-text-secondary")}>
+          <p className={cn("mt-3 text-sm", new Date(current.due_date) < new Date() ? "text-warning" : "text-muted-foreground")}>
             Due {format(new Date(current.due_date), "EEEE, MMM d")}
             {current.due_date && new Date(current.due_date).getHours() < 18 ? ` at ${format(new Date(current.due_date), "h:mm a")}` : ""}
           </p>
         )}
 
         {firstTwo && (
-          <div className="mt-5 rounded-xl border border-accent-primary/30 bg-accent-primary/5 p-4">
-            <p className="text-sm text-text-secondary">Just the first 2 minutes:</p>
-            <p className="mt-1 text-base font-medium text-accent-primary">
+          <div className="mt-5 rounded-xl border border-primary/30 bg-primary/5 p-4">
+            <p className="text-sm text-muted-foreground">Just the first 2 minutes:</p>
+            <p className="mt-1 text-base font-medium text-primary">
               Open it and start the first tiny step. That&apos;s the whole task.
             </p>
           </div>
@@ -313,7 +313,7 @@ export default function NowPage() {
           <SkipForward className="mr-2 h-4 w-4" />
           Not right now
         </Button>
-        <Button size="lg" variant="ghost" onClick={handleComplete} className="w-full sm:w-auto text-accent-success">
+        <Button size="lg" variant="ghost" onClick={handleComplete} className="w-full sm:w-auto text-success">
           <Check className="mr-2 h-4 w-4" />
           Done
         </Button>
@@ -324,15 +324,15 @@ export default function NowPage() {
         className={cn(
           "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition-colors",
           firstTwo
-            ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
-            : "border-border-subtle text-text-secondary hover:text-text-primary",
+            ? "border-primary bg-primary/10 text-primary"
+            : "border-border text-muted-foreground hover:text-foreground",
         )}
       >
         <SplitSquareHorizontal className="h-3.5 w-3.5" />
         {firstTwo ? "First 2 minutes ON" : "Just the first 2 minutes"}
       </button>
 
-      <div className="flex items-center gap-2 text-xs text-text-disabled">
+      <div className="flex items-center gap-2 text-xs text-disabled">
         <Moon className="h-3.5 w-3.5" />
         {userState?.mood_energy === "low"
           ? "Low energy: low-effort tasks surfaced first."
@@ -344,7 +344,7 @@ export default function NowPage() {
 
       <button
         onClick={() => setWindDownOpen(true)}
-        className="flex items-center gap-1.5 rounded-full border border-border-subtle px-3 py-1.5 text-xs text-text-secondary transition-colors hover:border-accent-primary/50 hover:text-accent-primary"
+        className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
       >
         <Sunset className="h-3.5 w-3.5" />
         Done for today? Wind down
@@ -359,14 +359,14 @@ export default function NowPage() {
           </DialogHeader>
           <div className="space-y-4 text-left">
             <div>
-              <p className="mb-1.5 text-xs font-medium uppercase tracking-wider text-accent-success">Done today</p>
+              <p className="mb-1.5 text-xs font-medium uppercase tracking-wider text-success">Done today</p>
               {doneToday.length === 0 ? (
-                <p className="text-sm text-text-disabled">Nothing finished yet — that&apos;s okay.</p>
+                <p className="text-sm text-disabled">Nothing finished yet — that&apos;s okay.</p>
               ) : (
                 <ul className="space-y-1">
                   {doneToday.map((t) => (
-                    <li key={t.id} className="flex items-center gap-2 text-sm text-text-primary">
-                      <Check className="h-3.5 w-3.5 shrink-0 text-accent-success" />
+                    <li key={t.id} className="flex items-center gap-2 text-sm text-foreground">
+                      <Check className="h-3.5 w-3.5 shrink-0 text-success" />
                       <span className="truncate">{t.title}</span>
                     </li>
                   ))}
@@ -374,29 +374,29 @@ export default function NowPage() {
               )}
             </div>
             <div>
-              <p className="mb-1.5 text-xs font-medium uppercase tracking-wider text-accent-warm">Moved, not lost</p>
+              <p className="mb-1.5 text-xs font-medium uppercase tracking-wider text-warning">Moved, not lost</p>
               {movedToday.length === 0 ? (
-                <p className="text-sm text-text-disabled">Nothing got rescheduled today.</p>
+                <p className="text-sm text-disabled">Nothing got rescheduled today.</p>
               ) : (
                 <ul className="space-y-1">
                   {movedToday.map((t) => (
-                    <li key={t.id} className="flex items-center gap-2 text-sm text-text-primary">
-                      <Moon className="h-3.5 w-3.5 shrink-0 text-accent-warm" />
+                    <li key={t.id} className="flex items-center gap-2 text-sm text-foreground">
+                      <Moon className="h-3.5 w-3.5 shrink-0 text-warning" />
                       <span className="truncate">{t.title}</span>
                     </li>
                   ))}
                 </ul>
               )}
             </div>
-            <div className="rounded-xl border border-border-subtle bg-surface-2 p-3">
-              <p className="mb-1.5 text-xs font-medium uppercase tracking-wider text-accent-primary">Tomorrow&apos;s first task</p>
+            <div className="rounded-xl border border-border bg-secondary p-3">
+              <p className="mb-1.5 text-xs font-medium uppercase tracking-wider text-primary">Tomorrow&apos;s first task</p>
               {queue[0] ? (
                 <>
                   <p className="truncate text-sm">{queue[0].title}</p>
-                  <p className="mt-1 text-xs text-text-secondary">Lock it in now so tomorrow starts with a clear win.</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Lock it in now so tomorrow starts with a clear win.</p>
                 </>
               ) : (
-                <p className="text-sm text-text-disabled">No tasks queued for tomorrow.</p>
+                <p className="text-sm text-disabled">No tasks queued for tomorrow.</p>
               )}
             </div>
           </div>
@@ -416,9 +416,9 @@ export default function NowPage() {
           <DialogHeader>
             <DialogTitle>Today&apos;s Big 3</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-text-secondary">Pick 1–3 tasks that are the real win for today. They&apos;ll float to the top of this view.</p>
+          <p className="text-sm text-muted-foreground">Pick 1–3 tasks that are the real win for today. They&apos;ll float to the top of this view.</p>
           <div className="max-h-80 space-y-1.5 overflow-y-auto">
-            {queue.length === 0 && <p className="py-6 text-center text-sm text-text-disabled">No open tasks to pick from.</p>}
+            {queue.length === 0 && <p className="py-6 text-center text-sm text-disabled">No open tasks to pick from.</p>}
             {queue.slice(0, 15).map((t) => {
               const checked = selected.includes(t.id)
               return (
@@ -437,15 +437,15 @@ export default function NowPage() {
                   className={cn(
                     "flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-left text-sm transition-colors",
                     checked
-                      ? "border-accent-primary/50 bg-accent-primary/5"
-                      : "border-border-subtle bg-surface-2 hover:border-accent-primary/30",
+                      ? "border-primary/50 bg-primary/5"
+                      : "border-border bg-secondary hover:border-primary/30",
                     !checked && selected.length >= 3 && "cursor-not-allowed opacity-50",
                   )}
                 >
                   <Checkbox checked={checked} onCheckedChange={() => {}} />
                   <div className="min-w-0 flex-1">
-                    <p className={cn("truncate", checked && "text-accent-primary")}>{t.title}</p>
-                    {t.due_date && <p className="text-xs text-text-secondary">Due {format(new Date(t.due_date), "EEE, MMM d")}</p>}
+                    <p className={cn("truncate", checked && "text-primary")}>{t.title}</p>
+                    {t.due_date && <p className="text-xs text-muted-foreground">Due {format(new Date(t.due_date), "EEE, MMM d")}</p>}
                   </div>
                 </button>
               )
@@ -474,10 +474,10 @@ function ResumeBanner({ taskId, tasks }: { taskId: string; tasks: TaskRow[] }) {
   const task = tasks.find((t) => t.id === taskId)
   if (!task || task.status === "done") return null
   return (
-    <div className="flex items-center gap-2 rounded-xl border border-accent-warm/30 bg-accent-warm/5 px-4 py-3 text-sm">
-      <Timer className="h-4 w-4 shrink-0 text-accent-warm" />
-      <span className="text-text-secondary">Where you left off:</span>
-      <span className="truncate font-medium text-text-primary">{task.title}</span>
+    <div className="flex items-center gap-2 rounded-xl border border-warning/30 bg-warning/5 px-4 py-3 text-sm">
+      <Timer className="h-4 w-4 shrink-0 text-warning" />
+      <span className="text-muted-foreground">Where you left off:</span>
+      <span className="truncate font-medium text-foreground">{task.title}</span>
     </div>
   )
 }
@@ -511,8 +511,8 @@ function ReminderToggle() {
       className={cn(
         "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition-colors",
         status === "on"
-          ? "cursor-default border-accent-success/40 bg-accent-success/10 text-accent-success"
-          : "border-border-subtle text-text-secondary hover:border-accent-primary/50 hover:text-accent-primary",
+          ? "cursor-default border-success/40 bg-success/10 text-success"
+          : "border-border text-muted-foreground hover:border-primary/50 hover:text-primary",
       )}
     >
       <Bell className="h-3.5 w-3.5" />

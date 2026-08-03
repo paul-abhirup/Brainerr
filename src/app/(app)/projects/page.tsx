@@ -114,10 +114,10 @@ export default function ProjectsPage() {
       />
 
       {isLoading ? (
-        <div className="h-64 animate-pulse rounded-xl bg-surface-2" />
+        <div className="h-64 animate-pulse rounded-xl bg-secondary" />
       ) : !projects?.length ? (
         <EmptyState
-          icon={<FolderKanban className="h-8 w-8 text-text-disabled" />}
+          icon={<FolderKanban className="h-8 w-8 text-disabled" />}
           title="No projects yet"
           description="Projects group related tasks — try one per ongoing initiative."
           action={
@@ -146,14 +146,14 @@ export default function ProjectsPage() {
                     <DeleteProject id={p.id} name={p.name} />
                   </div>
                 </div>
-                <div className="mt-2 flex items-center gap-4 text-xs text-text-secondary">
+                <div className="mt-2 flex items-center gap-4 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
-                    <CheckCircle2 className="h-3 w-3 text-accent-success" />
+                    <CheckCircle2 className="h-3 w-3 text-success" />
                     {s.done} done
                   </span>
                   <span>{s.open} open</span>
                   {goal && (
-                    <Link href={`/goals/${goal.id}`} className="flex min-w-0 items-center gap-1 text-accent-primary hover:underline">
+                    <Link href={`/goals/${goal.id}`} className="flex min-w-0 items-center gap-1 text-primary hover:underline">
                       <Target className="h-3 w-3 shrink-0" />
                       <span className="truncate">{goal.title}</span>
                     </Link>
@@ -198,7 +198,7 @@ export default function ProjectsPage() {
                     aria-pressed={color === c}
                     className={cn(
                       "h-10 w-10 sm:h-8 sm:w-8 rounded-full transition-transform cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
-                      color === c && "ring-2 ring-accent-primary ring-offset-2 ring-offset-surface-1",
+                      color === c && "ring-2 ring-primary ring-offset-2 ring-offset-card",
                     )}
                     style={{ background: c }}
                     aria-label={`Color ${c}`}
@@ -234,7 +234,7 @@ function DeleteProject({ id, name }: { id: string; name: string }) {
     <AlertDialog>
       <AlertDialogTrigger
         render={
-          <Button variant="ghost" size="icon-sm" className="text-accent-danger" aria-label="Delete project">
+          <Button variant="ghost" size="icon-sm" className="text-destructive" aria-label="Delete project">
             <Trash2 className="h-3.5 w-3.5" />
           </Button>
         }

@@ -1,7 +1,8 @@
 "use client"
 
 import { useMemo, useState, useEffect } from "react"
-import { format, startOfWeek, addDays } from "date-fns"
+import Link from "next/link"
+import { format, startOfWeek, subDays } from "date-fns"
 import { createClient } from "@/lib/supabase/client"
 import { useQuery } from "@tanstack/react-query"
 import { useTasks, type TaskRow } from "@/hooks/use-tasks"
@@ -9,7 +10,7 @@ import { useHabits, useHabitLogs, useUserState } from "@/hooks/use-data"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { toast } from "sonner"
-import { Flame, Trophy, Moon, Battery, BatteryMedium, BatteryLow, AlertTriangle, Sparkles, CheckCircle2, ListTodo } from "lucide-react"
+import { Flame, Trophy, Moon, Battery, BatteryMedium, BatteryLow, AlertTriangle, Sparkles, CheckCircle2, ListTodo, ArrowRight, BarChart3, Swords, Brain, Lightbulb, Clock, Crosshair } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { WellnessWidget } from "@/components/app/wellness-widget"
 import dynamic from "next/dynamic"
@@ -37,9 +38,11 @@ export default function DashboardPage() {
     return "Good evening"
   }, [today])
 
-  const { data: weekLogs } = useHabitLogs(
-    format(startOfWeek(today, { weekStartsOn: 1 }), "yyyy-MM-dd"),
-    format(addDays(startOfWeek(today, { weekStartsOn: 1 }), 7), "yyyy-MM-dd"),
+  // Fetch ~6 months of logs so the consistency heatmap is fully populated;
+  // today's KPI filters this same result by date.
+  const { data: habitLogs } = useHabitLogs(
+    format(subDays(today, 180), "yyyy-MM-dd"),
+    format(today, "yyyy-MM-dd"),
   )
 
   const points = useQuery({
@@ -63,8 +66,8 @@ export default function DashboardPage() {
 
   const habitsDoneToday = useMemo(() => {
     const todayStr = format(today, "yyyy-MM-dd")
-    return (habits ?? []).filter((h) => weekLogs?.some((l) => l.habit_id === h.id && l.date === todayStr && l.completed)).length
-  }, [habits, weekLogs, today])
+    return (habits ?? []).filter((h) => habitLogs?.some((l) => l.habit_id === h.id && l.date === todayStr && l.completed)).length
+  }, [habits, habitLogs, today])
 
   async function setMoodEnergy(value: Mood) {
     setMood(value)
@@ -89,22 +92,22 @@ export default function DashboardPage() {
         title={
           <span className="flex items-center gap-2">
             {greeting}
-            <Sparkles className="h-5 w-5 text-accent-warm animate-pulse" />
+            <Sparkles className="h-5 w-5 text-warning animate-pulse" />
           </span>
         }
         description="Here is your executive overview. Low pressure, momentum built step-by-step."
         actions={
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 rounded-xl border border-accent-warm/30 bg-surface-1/80 px-3.5 py-2 text-sm backdrop-blur-md shadow-sm">
-              <Trophy className="h-4 w-4 text-accent-warm" />
+            <div className="flex items-center gap-2 rounded-xl border border-warning/30 bg-card/80 px-3.5 py-2 text-sm backdrop-blur-md shadow-sm">
+              <Trophy className="h-4 w-4 text-warning" />
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5 text-xs font-semibold">
                   <span className="tabular-nums">{pts} pts</span>
-                  <span className="text-text-disabled">·</span>
-                  <span className="text-accent-warm">Lv {level}</span>
+                  <span className="text-disabled">·</span>
+                  <span className="text-warning">Lv {level}</span>
                 </div>
-                <div className="mt-1 h-1 w-20 rounded-full bg-surface-3 overflow-hidden">
-                  <div className="h-full bg-accent-warm rounded-full transition-all duration-500" style={{ width: `${levelProgress}%` }} />
+                <div className="mt-1 h-1 w-20 rounded-full bg-muted overflow-hidden">
+                  <div className="h-full bg-warning rounded-full transition-all duration-500" style={{ width: `${levelProgress}%` }} />
                 </div>
               </div>
             </div>
@@ -114,28 +117,28 @@ export default function DashboardPage() {
         }
       />
 
-      {/* Summary KPI Glass Cards */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <GlassStatCard
+      {/* Summary KPI cards — stays 3-up on phones with compact type */}
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
+        <StatCard
           label="Done this week"
           value={doneToday}
           subtitle="Completed tasks"
-          icon={<CheckCircle2 className="h-4 w-4 text-accent-success" />}
-          accentColor="var(--accent-success)"
+          icon={<CheckCircle2 className="h-4 w-4 text-success" />}
+          accentColor="var(--success)"
         />
-        <GlassStatCard
-          label="Habits completed today"
+        <StatCard
+          label="Habits today"
           value={`${habitsDoneToday}/${habits?.length ?? 0}`}
           subtitle={`${Math.round(((habitsDoneToday ?? 0) / Math.max(1, habits?.length ?? 1)) * 100)}% daily rate`}
-          icon={<Flame className="h-4 w-4 text-accent-warm" />}
-          accentColor="var(--accent-warm)"
+          icon={<Flame className="h-4 w-4 text-warning" />}
+          accentColor="var(--warning)"
         />
-        <GlassStatCard
+        <StatCard
           label="Open tasks"
           value={tasks?.filter((t) => t.status !== "done").length ?? 0}
           subtitle="Ready in queue"
-          icon={<ListTodo className="h-4 w-4 text-accent-primary" />}
-          accentColor="var(--accent-primary)"
+          icon={<ListTodo className="h-4 w-4 text-primary" />}
+          accentColor="var(--primary)"
         />
       </div>
 
@@ -150,11 +153,11 @@ export default function DashboardPage() {
 
       {/* Weekly Pace & Surfaced Tasks */}
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="glass-card border-border-subtle/60 shadow-lg">
+        <Card className="border-border/60 shadow-md">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>Weekly pace</span>
-              <span className="text-xs font-normal text-text-disabled">Last 8 weeks</span>
+              <span className="text-xs font-normal text-disabled">Last 8 weeks</span>
             </CardTitle>
             <CardDescription>
               Completed vs. open tasks comparison
@@ -165,10 +168,10 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="glass-card border-border-subtle/60 shadow-lg">
+        <Card className="border-border/60 shadow-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-accent-warm" />
+              <AlertTriangle className="h-4 w-4 text-warning" />
               <span>Gently Surfaced Tasks</span>
             </CardTitle>
             <CardDescription>
@@ -178,9 +181,9 @@ export default function DashboardPage() {
           <CardContent>
             {missed.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10 text-center">
-                <CheckCircle2 className="h-8 w-8 text-accent-success/60 mb-2" />
-                <p className="text-sm font-medium text-text-primary">All caught up!</p>
-                <p className="text-xs text-text-secondary mt-0.5">Nothing overdue. Great rhythm.</p>
+                <CheckCircle2 className="h-8 w-8 text-success/60 mb-2" />
+                <p className="text-sm font-medium text-foreground">All caught up!</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Nothing overdue. Great rhythm.</p>
               </div>
             ) : (
               <ul className="space-y-2.5">
@@ -196,21 +199,21 @@ export default function DashboardPage() {
       {/* 🔮 AI Dread & Avoidance Detector */}
       <AvoidanceAlertCard />
 
-      {/* Activity Heatmap */}
-      <Card className="glass-card border-border-subtle/60 shadow-lg">
+      {/* Activity Heatmap — compact 12-week view on phones, 6 months on desktop */}
+      <Card className="border-border/60 shadow-md">
         <CardHeader>
           <CardTitle>Consistency Heatmap</CardTitle>
-          <CardDescription>Habit check-offs over the last ~6 months</CardDescription>
+          <CardDescription>Habit check-offs — last 12 weeks on mobile, ~6 months on desktop</CardDescription>
         </CardHeader>
         <CardContent>
-          <Heatmap logs={weekLogs ?? []} habits={habits ?? []} />
+          <Heatmap logs={habitLogs ?? []} habits={habits ?? []} />
         </CardContent>
       </Card>
     </div>
   )
 }
 
-function GlassStatCard({
+function StatCard({
   label,
   value,
   subtitle,
@@ -224,19 +227,19 @@ function GlassStatCard({
   accentColor: string
 }) {
   return (
-    <div className="glass-card glass-card-hover rounded-xl p-5 relative overflow-hidden group">
+    <div className="rounded-xl border border-border bg-card p-3 sm:p-5 relative overflow-hidden group transition-all hover:border-primary/40 hover:shadow-md">
       <div
         className="absolute top-0 right-0 w-24 h-24 rounded-full blur-2xl pointer-events-none opacity-20 transition-opacity group-hover:opacity-40"
         style={{ background: accentColor }}
       />
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-text-secondary">{label}</span>
-        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-surface-2/80 border border-white/5">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-[11px] sm:text-xs font-medium text-muted-foreground leading-tight">{label}</span>
+        <div className="hidden sm:flex h-8 w-8 items-center justify-center rounded-xl bg-secondary/80 border border-white/5 shrink-0">
           {icon}
         </div>
       </div>
-      <div className="mt-3 text-3xl font-bold tracking-tight tabular-nums">{value}</div>
-      <p className="mt-1 text-xs text-text-disabled">{subtitle}</p>
+      <div className="mt-2 sm:mt-3 text-2xl sm:text-3xl font-bold tracking-tight tabular-nums">{value}</div>
+      <p className="mt-1 text-[11px] sm:text-xs text-disabled leading-tight">{subtitle}</p>
     </div>
   )
 }
@@ -245,17 +248,17 @@ function MissedRow({ task }: { task: TaskRow }) {
   const repeated = (task.reschedule_count ?? 0) >= 3
   const dread = (task.dread_level ?? 0) >= 3
   return (
-    <li className="rounded-xl border border-border-subtle/70 bg-surface-1/80 p-3 backdrop-blur-sm transition-all hover:border-accent-warm/40">
+    <li className="rounded-xl border border-border/70 bg-card/80 p-3 backdrop-blur-sm transition-all hover:border-warning/40">
       <div className="flex items-center justify-between gap-3">
-        <span className="truncate text-sm font-medium text-text-primary">{task.title}</span>
+        <span className="truncate text-sm font-medium text-foreground">{task.title}</span>
         {task.due_date && (
-          <span className="shrink-0 rounded-full bg-accent-warm/15 px-2 py-0.5 text-xs font-medium tabular-nums text-accent-warm">
+          <span className="shrink-0 rounded-full bg-warning/15 px-2 py-0.5 text-xs font-medium tabular-nums text-warning">
             due {format(new Date(task.due_date), "MMM d")}
           </span>
         )}
       </div>
       {(repeated || dread) && (
-        <p className="mt-2 flex items-center gap-1.5 text-xs text-accent-warm font-medium">
+        <p className="mt-2 flex items-center gap-1.5 text-xs text-warning font-medium">
           <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
           {repeated
             ? `Pushed ${task.reschedule_count}× — consider splitting into smaller steps`
@@ -268,14 +271,14 @@ function MissedRow({ task }: { task: TaskRow }) {
 
 function MoodCheckIn({ mood, onChange }: { mood: Mood | null; onChange: (m: Mood) => void }) {
   const options: { value: Mood; label: string; icon: React.ReactNode }[] = [
-    { value: "low", label: "Low", icon: <BatteryLow className="h-4 w-4 text-accent-danger" /> },
-    { value: "medium", label: "Med", icon: <BatteryMedium className="h-4 w-4 text-accent-warm" /> },
-    { value: "high", label: "High", icon: <Battery className="h-4 w-4 text-accent-success" /> },
+    { value: "low", label: "Low", icon: <BatteryLow className="h-4 w-4 text-destructive" /> },
+    { value: "medium", label: "Med", icon: <BatteryMedium className="h-4 w-4 text-warning" /> },
+    { value: "high", label: "High", icon: <Battery className="h-4 w-4 text-success" /> },
   ]
   return (
-    <div className="flex items-center gap-1 rounded-xl border border-border-subtle/70 bg-surface-1/80 p-1 backdrop-blur-md">
-      <span className="flex items-center gap-1 pl-3 pr-1 text-xs text-text-secondary font-medium">
-        <Moon className="h-3.5 w-3.5 text-accent-primary" />
+    <div className="flex items-center gap-1 rounded-xl border border-border/70 bg-card/80 p-1 backdrop-blur-md">
+      <span className="flex items-center gap-1 pl-3 pr-1 text-xs text-muted-foreground font-medium">
+        <Moon className="h-3.5 w-3.5 text-primary" />
         Energy
       </span>
       {options.map((o) => (
@@ -286,8 +289,8 @@ function MoodCheckIn({ mood, onChange }: { mood: Mood | null; onChange: (m: Mood
           className={cn(
             "flex h-8 items-center gap-1 px-2.5 rounded-xl text-xs font-medium transition-all active:scale-95",
             mood === o.value
-              ? "bg-surface-3 text-text-primary shadow-sm border border-white/10"
-              : "text-text-secondary hover:text-text-primary hover:bg-surface-2/60",
+              ? "bg-muted text-foreground shadow-sm border border-white/10"
+              : "text-muted-foreground hover:text-foreground hover:bg-secondary/60",
           )}
         >
           {o.icon}
@@ -319,19 +322,22 @@ function AvoidanceAlertCard() {
   if (!analysis || !analysis.alerts || analysis.alerts.length === 0) return null
 
   return (
-    <Card className="glass-card border-2 border-accent-warm/40 bg-accent-warm/5 p-5 shadow-xl space-y-3">
+    <Card className="border-2 border-warning/40 bg-warning/5 p-4 sm:p-5 shadow-md space-y-3">
       <div className="flex items-center gap-2">
-        <Sparkles className="h-5 w-5 text-accent-warm" />
-        <h3 className="text-sm font-bold text-text-primary">
-          🔮 {analysis.headline || "Avoidance Alert: Coping Strategies"}
+        <Sparkles className="h-5 w-5 text-warning" />
+        <h3 className="text-sm font-bold text-foreground">
+          {analysis.headline || "Avoidance Alert: Coping Strategies"}
         </h3>
       </div>
 
       <div className="space-y-2">
         {analysis.alerts.map((a) => (
-          <div key={a.taskId} className="p-3 rounded-xl bg-surface-1/90 border border-border-subtle text-xs space-y-1">
-            <p className="font-bold text-accent-warm">{a.taskTitle}</p>
-            <p className="text-text-secondary leading-snug">💡 <span className="font-medium text-text-primary">Micro-Strategy:</span> {a.copingStrategy}</p>
+          <div key={a.taskId} className="p-3 rounded-xl bg-card/90 border border-border text-xs space-y-1">
+            <p className="font-bold text-warning">{a.taskTitle}</p>
+            <p className="flex items-start gap-1.5 text-muted-foreground leading-snug">
+              <Lightbulb className="h-3.5 w-3.5 mt-0.5 shrink-0 text-warning" />
+              <span><span className="font-medium text-foreground">Micro-Strategy:</span> {a.copingStrategy}</span>
+            </p>
           </div>
         ))}
       </div>
@@ -341,50 +347,56 @@ function AvoidanceAlertCard() {
 
 function DashboardAchievementsHub({ pts, level, levelProgress }: { pts: number; level: number; levelProgress: number }) {
   const BADGES = [
-    { title: "7-Day Streak", desc: "Built consistency", icon: "🔥", color: "from-amber-500/20 to-orange-500/20 text-orange-400" },
-    { title: "Task Slayer", desc: "Completed 25+ tasks", icon: "⚔️", color: "from-indigo-500/20 to-purple-500/20 text-indigo-400" },
-    { title: "Focus Initiate", desc: "First 60 mins logged", icon: "🧠", color: "from-emerald-500/20 to-teal-500/20 text-emerald-400" },
-    { title: "Night Owl", desc: "Late night focus sprint", icon: "🦉", color: "from-blue-500/20 to-cyan-500/20 text-cyan-400" },
+    { title: "7-Day Streak", desc: "Built consistency", icon: Flame, color: "from-amber-500/20 to-orange-500/20 text-orange-400" },
+    { title: "Task Slayer", desc: "Completed 25+ tasks", icon: Swords, color: "from-indigo-500/20 to-purple-500/20 text-indigo-400" },
+    { title: "Focus Initiate", desc: "First 60 mins logged", icon: Brain, color: "from-emerald-500/20 to-teal-500/20 text-emerald-400" },
+    { title: "Night Owl", desc: "Late night focus sprint", icon: Moon, color: "from-blue-500/20 to-cyan-500/20 text-cyan-400" },
   ]
 
   return (
-    <Card className="glass-card border-border-subtle/60 p-5 shadow-lg space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border-subtle/50 pb-3">
+    <Card className="border-border/60 p-4 sm:p-5 shadow-md space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/50 pb-3">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-accent-warm/20 text-accent-warm flex items-center justify-center font-black text-lg border border-accent-warm/30">
+          <div className="h-10 w-10 rounded-xl bg-warning/20 text-warning flex items-center justify-center font-black text-lg border border-warning/30 shrink-0">
             {level}
           </div>
           <div>
-            <h3 className="text-sm font-bold text-text-primary flex items-center gap-2">
-              🏆 Level {level} Productivity Warrior
-              <span className="text-xs font-normal text-text-secondary">({pts} XP Total)</span>
+            <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+              <Trophy className="h-4 w-4 text-warning" />
+              Level {level} Productivity Warrior
+              <span className="text-xs font-normal text-muted-foreground">({pts} XP)</span>
             </h3>
-            <p className="text-xs text-text-secondary">Earn XP by checking off tasks, completing habits, and logging focus blocks</p>
+            <p className="text-xs text-muted-foreground">Earn XP from tasks, habits, and focus blocks</p>
           </div>
         </div>
 
         <div className="w-full sm:w-48 space-y-1">
-          <div className="flex justify-between text-xs font-medium text-text-secondary">
+          <div className="flex justify-between text-xs font-medium text-muted-foreground">
             <span>Progress to Lv {level + 1}</span>
-            <span className="tabular-nums font-bold text-accent-warm">{levelProgress}/100 XP</span>
+            <span className="tabular-nums font-bold text-warning">{levelProgress}/100 XP</span>
           </div>
-          <div className="h-2 w-full rounded-full bg-surface-3 overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-accent-warm via-accent-primary to-accent-success rounded-full transition-all duration-500" style={{ width: `${levelProgress}%` }} />
+          <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-warning via-primary to-success rounded-full transition-all duration-500" style={{ width: `${levelProgress}%` }} />
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
         {BADGES.map((b) => (
-          <div key={b.title} className={cn("p-3 rounded-xl border border-border-subtle/60 bg-gradient-to-br flex items-center gap-3 transition-transform hover:scale-[1.02]", b.color)}>
-            <span className="text-2xl shrink-0">{b.icon}</span>
+          <div key={b.title} className={cn("p-3 rounded-xl border border-border/60 bg-gradient-to-br flex items-center gap-3 transition-transform hover:scale-[1.02]", b.color)}>
+            <b.icon className="h-6 w-6 shrink-0" />
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold truncate text-text-primary">{b.title}</p>
-              <p className="text-xs text-text-secondary truncate">{b.desc}</p>
+              <p className="text-xs font-bold truncate text-foreground">{b.title}</p>
+              <p className="text-xs text-muted-foreground truncate">{b.desc}</p>
             </div>
           </div>
         ))}
       </div>
+
+      <Link href="/achievements" className="flex items-center justify-center gap-1.5 rounded-lg border border-border/60 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
+        View all achievements
+        <ArrowRight className="h-3.5 w-3.5" />
+      </Link>
     </Card>
   )
 }
@@ -393,38 +405,53 @@ function DashboardAnalyticsPanel({ doneCount, habitRate }: { doneCount: number; 
   const compositeScore = Math.min(100, Math.round(doneCount * 8 + habitRate * 0.5 + 25))
 
   return (
-    <Card className="glass-card border-border-subtle/60 p-5 shadow-lg space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border-subtle/50 pb-3">
+    <Card className="border-border/60 p-4 sm:p-5 shadow-md space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/50 pb-3">
         <div>
-          <h3 className="text-sm font-bold text-text-primary flex items-center gap-2">
-            📊 Composite Productivity & Focus Analytics
+          <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+            <BarChart3 className="h-4 w-4 text-primary" />
+            Productivity & Focus Analytics
           </h3>
-          <p className="text-xs text-text-secondary">Real-time rhythm calculations and estimate calibrations</p>
+          <p className="text-xs text-muted-foreground">Real-time rhythm calculations and estimate calibrations</p>
         </div>
-        <div className="flex items-center gap-2 shrink-0 rounded-xl bg-accent-primary/10 border border-accent-primary/30 px-3 py-1 text-xs font-bold text-accent-primary w-fit">
+        <div className="flex items-center gap-2 shrink-0 rounded-xl bg-primary/10 border border-primary/30 px-3 py-1 text-xs font-bold text-primary w-fit">
           <span>Score: {compositeScore}/100</span>
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3 text-xs">
-        <div className="p-3.5 rounded-xl bg-surface-2/70 border border-border-subtle space-y-1">
-          <span className="text-xs font-medium text-text-secondary">⏱️ Time Estimation Accuracy</span>
-          <p className="text-base font-black text-text-primary">84% Calibrated</p>
-          <p className="text-xs text-text-disabled">Tasks take ~1.2x estimated duration</p>
+      <div className="grid gap-2 sm:gap-3 sm:grid-cols-3 text-xs">
+        <div className="p-3.5 rounded-xl bg-secondary/70 border border-border space-y-1">
+          <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+            <Clock className="h-3.5 w-3.5" />
+            Time Estimation Accuracy
+          </span>
+          <p className="text-base font-black text-foreground">84% Calibrated</p>
+          <p className="text-xs text-disabled">Tasks take ~1.2x estimated duration</p>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-surface-2/70 border border-border-subtle space-y-1">
-          <span className="text-xs font-medium text-text-secondary">🔥 Peak Focus Hours</span>
-          <p className="text-base font-black text-accent-warm">9:00 AM – 11:30 AM</p>
-          <p className="text-xs text-text-disabled">Highest completion rate of day</p>
+        <div className="p-3.5 rounded-xl bg-secondary/70 border border-border space-y-1">
+          <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+            <Flame className="h-3.5 w-3.5" />
+            Peak Focus Hours
+          </span>
+          <p className="text-base font-black text-warning">9:00 AM – 11:30 AM</p>
+          <p className="text-xs text-disabled">Highest completion rate of day</p>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-surface-2/70 border border-border-subtle space-y-1">
-          <span className="text-xs font-medium text-text-secondary">🎯 Focus Time Goal</span>
-          <p className="text-base font-black text-accent-success">120 / 150 mins</p>
-          <p className="text-xs text-text-disabled">80% of weekly goal achieved</p>
+        <div className="p-3.5 rounded-xl bg-secondary/70 border border-border space-y-1">
+          <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+            <Crosshair className="h-3.5 w-3.5" />
+            Focus Time Goal
+          </span>
+          <p className="text-base font-black text-success">120 / 150 mins</p>
+          <p className="text-xs text-disabled">80% of weekly goal achieved</p>
         </div>
       </div>
+
+      <Link href="/analytics" className="flex items-center justify-center gap-1.5 rounded-lg border border-border/60 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
+        View full analytics
+        <ArrowRight className="h-3.5 w-3.5" />
+      </Link>
     </Card>
   )
 }

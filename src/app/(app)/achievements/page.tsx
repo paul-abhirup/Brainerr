@@ -7,6 +7,7 @@ import { useTasks } from "@/hooks/use-tasks"
 import { useHabits } from "@/hooks/use-data"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { PageHeader } from "@/components/ui/page-header"
 import { Trophy, Flame, Zap, Lock, CheckCircle2, Award, Star, ShieldCheck, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -161,73 +162,60 @@ export default function AchievementsPage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
-      {/* Level Header Banner */}
-      <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-accent-primary/20 via-accent-warm/20 to-accent-success/20 p-6 border-2 border-accent-primary/30 shadow-2xl">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Badge className="bg-accent-primary text-white font-bold uppercase text-xs px-3 py-1">
-                Level {level} Brain Master
-              </Badge>
-            </div>
-            <h1 className="text-3xl font-black text-text-primary tracking-tight sm:text-4xl">
-              Achievement Gallery
-            </h1>
-            <p className="text-xs text-text-secondary max-w-md">
-              Unlock trophies by smashing tasks, protecting streaks, and staying in flow state.
-            </p>
-          </div>
-
-          {/* Level Progress Circular / Bar Gauge */}
-          <div className="w-full bg-surface-1/90 backdrop-blur-md p-5 rounded-xl border border-border-subtle md:w-64 space-y-2 text-center">
+      <PageHeader
+        eyebrow={`Level ${level} Brain Master`}
+        title="Achievement Gallery"
+        description="Unlock trophies by smashing tasks, protecting streaks, and staying in flow state."
+        actions={
+          <Card className="w-full sm:w-64 p-4 space-y-2 shadow-md">
             <div className="flex items-center justify-between text-xs font-bold">
-              <span className="text-text-secondary">Level {level}</span>
-              <span className="text-accent-primary">{levelXP} / 300 XP</span>
+              <span className="text-muted-foreground">Level {level}</span>
+              <span className="text-primary">{levelXP} / 300 XP</span>
             </div>
-            <div className="h-3.5 w-full rounded-full bg-surface-2 overflow-hidden border border-border-subtle/50 p-0.5">
+            <div className="h-3 w-full rounded-full bg-secondary overflow-hidden border border-border/50 p-0.5">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-accent-primary to-accent-success transition-all duration-500"
+                className="h-full rounded-full bg-gradient-to-r from-primary to-success transition-all duration-500"
                 style={{ width: `${levelPct}%` }}
               />
             </div>
-            <p className="text-xs text-text-disabled">
+            <p className="text-xs text-disabled">
               {300 - levelXP} XP to Level {level + 1}
             </p>
-          </div>
-        </div>
-      </div>
+          </Card>
+        }
+      />
 
       {/* Stats KPI Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <Card className="glass-card p-4 text-center border-border-subtle">
-          <Trophy className="h-6 w-6 text-accent-warm mx-auto mb-1" />
-          <p className="text-2xl font-black text-text-primary">{unlockedCount} / {achievementDefs.length}</p>
-          <span className="text-xs text-text-disabled uppercase font-medium">Unlocked</span>
+        <Card className="p-4 text-center border-border">
+          <Trophy className="h-6 w-6 text-warning mx-auto mb-1" />
+          <p className="text-2xl font-black text-foreground">{unlockedCount} / {achievementDefs.length}</p>
+          <span className="text-xs text-disabled uppercase font-medium">Unlocked</span>
         </Card>
 
-        <Card className="glass-card p-4 text-center border-border-subtle">
-          <Zap className="h-6 w-6 text-accent-primary mx-auto mb-1" />
-          <p className="text-2xl font-black text-text-primary">{totalXP}</p>
-          <span className="text-xs text-text-disabled uppercase font-medium">Total XP Points</span>
+        <Card className="p-4 text-center border-border">
+          <Zap className="h-6 w-6 text-primary mx-auto mb-1" />
+          <p className="text-2xl font-black text-foreground">{totalXP}</p>
+          <span className="text-xs text-disabled uppercase font-medium">Total XP Points</span>
         </Card>
 
-        <Card className="glass-card p-4 text-center border-border-subtle">
-          <Flame className="h-6 w-6 text-accent-warm mx-auto mb-1" />
-          <p className="text-2xl font-black text-text-primary">{maxStreak} Days</p>
-          <span className="text-xs text-text-disabled uppercase font-medium">Best Streak</span>
+        <Card className="p-4 text-center border-border">
+          <Flame className="h-6 w-6 text-warning mx-auto mb-1" />
+          <p className="text-2xl font-black text-foreground">{maxStreak} Days</p>
+          <span className="text-xs text-disabled uppercase font-medium">Best Streak</span>
         </Card>
 
-        <Card className="glass-card p-4 text-center border-border-subtle">
-          <CheckCircle2 className="h-6 w-6 text-accent-success mx-auto mb-1" />
-          <p className="text-2xl font-black text-text-primary">{completedTasksCount}</p>
-          <span className="text-xs text-text-disabled uppercase font-medium">Tasks Smashed</span>
+        <Card className="p-4 text-center border-border">
+          <CheckCircle2 className="h-6 w-6 text-success mx-auto mb-1" />
+          <p className="text-2xl font-black text-foreground">{completedTasksCount}</p>
+          <span className="text-xs text-disabled uppercase font-medium">Tasks Smashed</span>
         </Card>
       </div>
 
       {/* Achievement Cards Grid */}
       <div className="space-y-4">
-        <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
-          <Award className="h-5 w-5 text-accent-primary" />
+        <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+          <Award className="h-5 w-5 text-primary" />
           All Trophies ({achievementDefs.length})
         </h3>
 
@@ -240,12 +228,12 @@ export default function AchievementsPage() {
                 className={cn(
                   "border transition-all duration-300 relative overflow-hidden group",
                   a.unlocked
-                    ? "glass-card border-accent-primary/40 bg-surface-1 hover:border-accent-primary hover:shadow-xl"
-                    : "bg-surface-2/40 border-border-subtle/50 opacity-60 grayscale",
+                    ? "border-primary/40 bg-card hover:border-primary hover:shadow-md"
+                    : "bg-secondary/40 border-border/50 opacity-60 grayscale",
                 )}
               >
                 {a.unlocked && (
-                  <div className="absolute -top-12 -right-12 w-24 h-24 bg-accent-primary/10 rounded-full blur-xl group-hover:bg-accent-primary/20 transition-all" />
+                  <div className="absolute -top-12 -right-12 w-24 h-24 bg-primary/10 rounded-full blur-xl group-hover:bg-primary/20 transition-all" />
                 )}
 
                 <div className="flex items-start gap-4">
@@ -253,8 +241,8 @@ export default function AchievementsPage() {
                     className={cn(
                       "p-3 rounded-2xl shrink-0 transition-transform group-hover:scale-110",
                       a.unlocked
-                        ? "bg-gradient-to-br from-accent-primary/20 to-accent-warm/20 text-accent-primary border border-accent-primary/30"
-                        : "bg-surface-3 text-text-disabled",
+                        ? "bg-gradient-to-br from-primary/20 to-warning/20 text-primary border border-primary/30"
+                        : "bg-muted text-disabled",
                     )}
                   >
                     <Icon className="h-6 w-6" />
@@ -262,27 +250,27 @@ export default function AchievementsPage() {
 
                   <div className="space-y-1 flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-sm font-bold text-text-primary truncate">{a.title}</h4>
+                      <h4 className="text-sm font-bold text-foreground truncate">{a.title}</h4>
                       {a.unlocked ? (
-                        <Badge className="bg-accent-success/20 text-accent-success text-xs font-bold">
+                        <Badge variant="success" className="text-xs font-bold">
                           +{a.xp} XP
                         </Badge>
                       ) : (
-                        <Lock className="h-3.5 w-3.5 text-text-disabled" />
+                        <Lock className="h-3.5 w-3.5 text-disabled" />
                       )}
                     </div>
-                    <p className="text-xs text-text-secondary leading-snug">{a.description}</p>
+                    <p className="text-xs text-muted-foreground leading-snug">{a.description}</p>
 
                     {/* Progress Bar for Locked */}
                     {!a.unlocked && a.maxProgress > 1 && (
                       <div className="pt-2">
-                        <div className="flex items-center justify-between text-xs text-text-disabled mb-1">
+                        <div className="flex items-center justify-between text-xs text-disabled mb-1">
                           <span>Progress</span>
                           <span>{a.progress} / {a.maxProgress}</span>
                         </div>
-                        <div className="h-1.5 rounded-full bg-surface-3 overflow-hidden">
+                        <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                           <div
-                            className="h-full bg-accent-primary"
+                            className="h-full bg-primary"
                             style={{ width: `${(a.progress / a.maxProgress) * 100}%` }}
                           />
                         </div>

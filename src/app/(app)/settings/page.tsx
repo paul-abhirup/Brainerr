@@ -36,7 +36,7 @@ export default function SettingsPage() {
       />
 
       {isLoading || !settings ? (
-        <div className="h-64 animate-pulse rounded-xl bg-surface-2" />
+        <div className="h-64 animate-pulse rounded-xl bg-secondary" />
       ) : (
         <SettingsForm key={settings.user_id} settings={settings} />
       )}
@@ -100,7 +100,7 @@ function SettingsForm({ settings }: { settings: UserSettingsRow }) {
     <div className="space-y-6">
       <Card>
         <h2 className="text-sm font-semibold">Working hours</h2>
-        <p className="mt-0.5 text-xs text-text-secondary">
+        <p className="mt-0.5 text-xs text-muted-foreground">
           The scheduler only places tasks inside these windows. Toggle a day off for days you don&apos;t plan.
         </p>
         <div className="mt-4 space-y-2.5">
@@ -113,11 +113,11 @@ function SettingsForm({ settings }: { settings: UserSettingsRow }) {
               {hours[key] ? (
                 <div className="flex items-center gap-2 text-sm">
                   <TimeInput value={hours[key]![0]} onChange={(v) => setTime(key, 0, v)} ariaLabel={`${label} start`} />
-                  <span className="text-text-disabled">–</span>
+                  <span className="text-disabled">–</span>
                   <TimeInput value={hours[key]![1]} onChange={(v) => setTime(key, 1, v)} ariaLabel={`${label} end`} />
                 </div>
               ) : (
-                <span className="text-xs text-text-disabled">Off</span>
+                <span className="text-xs text-disabled">Off</span>
               )}
             </div>
           ))}
@@ -136,18 +136,18 @@ function SettingsForm({ settings }: { settings: UserSettingsRow }) {
       <Card>
         <Link
           href="/settings/calendar"
-          className="flex items-center justify-between rounded-lg px-1 py-1 transition-colors outline-none hover:bg-surface-2 focus-visible:ring-2 focus-visible:ring-ring/60"
+          className="flex items-center justify-between rounded-lg px-1 py-1 transition-colors outline-none hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring/60"
         >
           <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-accent-primary/10 p-2 text-accent-primary">
+            <div className="rounded-lg bg-primary/10 p-2 text-primary">
               <Calendar className="h-4 w-4" />
             </div>
             <div>
               <p className="text-sm font-semibold">Google Calendar</p>
-              <p className="text-xs text-text-secondary">Connect, sync, or disconnect your calendar</p>
+              <p className="text-xs text-muted-foreground">Connect, sync, or disconnect your calendar</p>
             </div>
           </div>
-          <ChevronRight className="h-4 w-4 text-text-secondary" />
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </Link>
       </Card>
 
@@ -168,7 +168,7 @@ function TimeInput({ value, onChange, ariaLabel }: { value: string; onChange: (v
       value={value}
       aria-label={ariaLabel}
       onChange={(e) => onChange(e.target.value)}
-      className="w-auto bg-surface-2 tabular-nums"
+      className="w-auto bg-secondary tabular-nums"
     />
   )
 }

@@ -10,7 +10,7 @@ const inter = Inter({
 })
 
 const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-geist-mono",
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
   display: "swap",
 })
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#121212",
+  themeColor: "#0e0f13",
 }
 
 export default function RootLayout({
