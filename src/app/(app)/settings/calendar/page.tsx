@@ -104,13 +104,13 @@ export default function CalendarSettingsPage() {
         ) : integration ? (
           <div className="flex flex-col gap-5">
             <div className="flex items-start justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="rounded-lg bg-accent-success/10 p-2 text-accent-success">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="rounded-lg bg-accent-success/10 p-2 text-accent-success shrink-0">
                   <Calendar className="h-5 w-5" />
                 </div>
-                <div>
-                  <p className="text-sm font-semibold">Google Calendar connected</p>
-                  <p className="text-xs text-text-secondary">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold truncate">Google Calendar connected</p>
+                  <p className="text-xs text-text-secondary truncate">
                     {integration.calendar_id} · {integration.provider}
                   </p>
                 </div>

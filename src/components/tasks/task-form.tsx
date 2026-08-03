@@ -120,7 +120,7 @@ function TaskFormFields({
   }
 
   return (
-    <DialogContent>
+    <DialogContent className="max-h-[85dvh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>{task ? "Edit task" : "New task"}</DialogTitle>
       </DialogHeader>
@@ -147,7 +147,7 @@ function TaskFormFields({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label>Project</Label>
               <Select value={projectId || "none"} onValueChange={(v) => setProjectId(v === "none" ? "" : (v ?? ""))}>
@@ -205,7 +205,7 @@ function TaskFormFields({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label>Depends on</Label>
               <Select value={blockedBy || "none"} onValueChange={(v) => setBlockedBy(v === "none" ? "" : (v ?? ""))}>

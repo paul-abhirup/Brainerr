@@ -73,25 +73,25 @@ export default function VisualizerPage() {
         }
       />
 
-      {/* View Switcher Tabs */}
-      <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border-subtle/80 bg-surface-1/90 p-1.5 backdrop-blur-md">
+      {/* View Switcher Tabs (Horizontally scrollable on mobile) */}
+      <div className="flex items-center gap-2 rounded-xl border border-border-subtle/80 bg-surface-1/90 p-1.5 backdrop-blur-md overflow-x-auto no-scrollbar">
         <button
           onClick={() => setViewMode("graph")}
           className={cn(
-            "flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition-all active:scale-95",
+            "flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition-all active:scale-95 shrink-0 cursor-pointer",
             viewMode === "graph"
               ? "bg-accent-primary/20 text-accent-primary border border-accent-primary/30 shadow-sm"
               : "text-text-secondary hover:bg-surface-2 hover:text-text-primary",
           )}
         >
           <Network className="h-4 w-4" />
-          Graph / Mindmap View
+          Graph / Mindmap
         </button>
 
         <button
           onClick={() => setViewMode("matrix")}
           className={cn(
-            "flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition-all active:scale-95",
+            "flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition-all active:scale-95 shrink-0 cursor-pointer",
             viewMode === "matrix"
               ? "bg-accent-primary/20 text-accent-primary border border-accent-primary/30 shadow-sm"
               : "text-text-secondary hover:bg-surface-2 hover:text-text-primary",
@@ -104,20 +104,20 @@ export default function VisualizerPage() {
         <button
           onClick={() => setViewMode("dread")}
           className={cn(
-            "flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition-all active:scale-95",
+            "flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition-all active:scale-95 shrink-0 cursor-pointer",
             viewMode === "dread"
               ? "bg-accent-warm/20 text-accent-warm border border-accent-warm/30 shadow-sm"
               : "text-text-secondary hover:bg-surface-2 hover:text-text-primary",
           )}
         >
           <ScatterIcon className="h-4 w-4" />
-          Dread vs. Effort Map
+          Dread vs. Effort
         </button>
 
         <button
           onClick={() => setViewMode("timeline")}
           className={cn(
-            "flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition-all active:scale-95",
+            "flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold transition-all active:scale-95 shrink-0 cursor-pointer",
             viewMode === "timeline"
               ? "bg-accent-success/20 text-accent-success border border-accent-success/30 shadow-sm"
               : "text-text-secondary hover:bg-surface-2 hover:text-text-primary",

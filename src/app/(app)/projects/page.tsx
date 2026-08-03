@@ -197,7 +197,7 @@ export default function ProjectsPage() {
                     onClick={() => setColor(c)}
                     aria-pressed={color === c}
                     className={cn(
-                      "h-7 w-7 rounded-full transition-transform cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
+                      "h-10 w-10 sm:h-8 sm:w-8 rounded-full transition-transform cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
                       color === c && "ring-2 ring-accent-primary ring-offset-2 ring-offset-surface-1",
                     )}
                     style={{ background: c }}

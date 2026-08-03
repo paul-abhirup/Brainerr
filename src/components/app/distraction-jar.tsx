@@ -71,7 +71,7 @@ export function DistractionJar() {
   return (
     <>
       {/* Floating Jar Button (bottom-left above mobile nav, right of the sidebar on desktop) */}
-      <div className="fixed bottom-20 left-4 md:left-72 md:bottom-6 z-40">
+      <div className="fixed bottom-24 left-4 md:left-72 md:bottom-6 z-40">
         <button
           onClick={() => setOpen(true)}
           aria-label="Distraction Jar — Park random thoughts"

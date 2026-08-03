@@ -153,7 +153,7 @@ function GoalRow({
   forecast?: { projected_completion: string | null; done_per_week: number; remaining_tasks: number }
 }) {
   return (
-    <div className={cn("flex items-center gap-3 p-4", depth > 0 && "bg-surface-1/60 pl-10")}>
+    <div className={cn("flex items-center gap-3 p-4", depth > 0 && "bg-surface-1/60 pl-4 sm:pl-10")}>
       {hasChildren ? (
         <button
           onClick={onToggle}

@@ -171,7 +171,7 @@ function HabitCard({
               <button
                 onClick={() => toggle(dayDate)}
                 className={cn(
-                  "h-8 w-8 rounded-xl border transition-all active:scale-95 flex items-center justify-center text-xs font-semibold focus-visible:ring-2 focus-visible:ring-ring/60 outline-none",
+                  "h-10 w-10 sm:h-9 sm:w-9 rounded-xl border transition-all active:scale-95 flex items-center justify-center text-xs font-semibold focus-visible:ring-2 focus-visible:ring-ring/60 outline-none cursor-pointer",
                   log?.completed
                     ? "border-accent-success bg-accent-success text-surface-base shadow-[0_0_8px_rgba(111,207,151,0.3)]"
                     : "border-border-subtle bg-surface-2/60 text-text-disabled hover:border-accent-success/50",

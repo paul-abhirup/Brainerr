@@ -374,11 +374,11 @@ function DashboardAchievementsHub({ pts, level, levelProgress }: { pts: number; 
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {BADGES.map((b) => (
           <div key={b.title} className={cn("p-3 rounded-xl border border-border-subtle/60 bg-gradient-to-br flex items-center gap-3 transition-transform hover:scale-[1.02]", b.color)}>
-            <span className="text-2xl">{b.icon}</span>
-            <div className="min-w-0">
+            <span className="text-2xl shrink-0">{b.icon}</span>
+            <div className="min-w-0 flex-1">
               <p className="text-xs font-bold truncate text-text-primary">{b.title}</p>
               <p className="text-xs text-text-secondary truncate">{b.desc}</p>
             </div>
@@ -394,14 +394,14 @@ function DashboardAnalyticsPanel({ doneCount, habitRate }: { doneCount: number; 
 
   return (
     <Card className="glass-card border-border-subtle/60 p-5 shadow-lg space-y-4">
-      <div className="flex items-center justify-between border-b border-border-subtle/50 pb-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border-subtle/50 pb-3">
         <div>
           <h3 className="text-sm font-bold text-text-primary flex items-center gap-2">
             📊 Composite Productivity & Focus Analytics
           </h3>
           <p className="text-xs text-text-secondary">Real-time rhythm calculations and estimate calibrations</p>
         </div>
-        <div className="flex items-center gap-2 rounded-xl bg-accent-primary/10 border border-accent-primary/30 px-3 py-1 text-xs font-bold text-accent-primary">
+        <div className="flex items-center gap-2 shrink-0 rounded-xl bg-accent-primary/10 border border-accent-primary/30 px-3 py-1 text-xs font-bold text-accent-primary w-fit">
           <span>Score: {compositeScore}/100</span>
         </div>
       </div>

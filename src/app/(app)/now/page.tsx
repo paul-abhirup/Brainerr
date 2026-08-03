@@ -304,16 +304,16 @@ export default function NowPage() {
         )}
       </Card>
 
-      <div className="flex flex-wrap items-center justify-center gap-2">
-        <Button size="lg" onClick={handleFocus}>
+      <div className="flex flex-col sm:flex-row w-full sm:w-auto items-stretch sm:items-center justify-center gap-2.5">
+        <Button size="lg" onClick={handleFocus} className="w-full sm:w-auto">
           <Play className="mr-2 h-4 w-4" />
           Start focus
         </Button>
-        <Button size="lg" variant="outline" onClick={handleSkip}>
+        <Button size="lg" variant="outline" onClick={handleSkip} className="w-full sm:w-auto">
           <SkipForward className="mr-2 h-4 w-4" />
           Not right now
         </Button>
-        <Button size="lg" variant="ghost" onClick={handleComplete} className="text-accent-success">
+        <Button size="lg" variant="ghost" onClick={handleComplete} className="w-full sm:w-auto text-accent-success">
           <Check className="mr-2 h-4 w-4" />
           Done
         </Button>

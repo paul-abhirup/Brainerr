@@ -94,18 +94,21 @@ export default function PlannerPage() {
         title="Planner"
         description="Drag tasks onto a time block. Manually-placed tasks stay put."
         actions={
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => setWeekOffset((o) => o - 1)}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span className="min-w-[130px] text-center text-sm font-medium tabular-nums">
-              {format(weekStart, "MMM d")} – {format(addDays(weekStart, 6), "MMM d")}
-            </span>
-            <Button variant="outline" size="sm" onClick={() => setWeekOffset((o) => o + 1)}>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1.5 border border-border-subtle/60 rounded-xl p-1 bg-surface-2/40">
+              <Button variant="ghost" size="sm" onClick={() => setWeekOffset((o) => o - 1)} className="h-8 w-8 p-0">
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="min-w-[100px] text-center text-xs sm:text-sm font-medium tabular-nums px-1">
+                {format(weekStart, "MMM d")} – {format(addDays(weekStart, 6), "MMM d")}
+              </span>
+              <Button variant="ghost" size="sm" onClick={() => setWeekOffset((o) => o + 1)} className="h-8 w-8 p-0">
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
             <Button variant="outline" size="sm" onClick={() => setWeekOffset(0)}>
-              This week
+              <span className="hidden sm:inline">This week</span>
+              <span className="sm:hidden">Today</span>
             </Button>
             <Button size="sm" onClick={runReoptimize} disabled={running}>
               {running ? <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> : <Sparkles className="mr-1.5 h-4 w-4" />}

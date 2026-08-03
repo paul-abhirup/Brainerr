@@ -27,16 +27,18 @@ export function NoteEditor({
   onOpenChange,
   note,
   onSaved,
+  resetKey = 0,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   note?: NoteInput | null
   onSaved?: () => void
+  resetKey?: number
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <NoteEditorForm
-        key={open ? note?.id ?? "new" : "closed"}
+        key={resetKey}
         note={note}
         onClose={() => onOpenChange(false)}
         onSaved={onSaved}
@@ -144,7 +146,16 @@ function NoteEditorForm({
         <DialogHeader>
           <DialogTitle>{note?.id ? "Edit note" : "New note"}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
+        <form
+          onSubmit={submit}
+          onKeyDown={(e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+              e.preventDefault()
+              submit(e)
+            }
+          }}
+          className="space-y-4"
+        >
           <div className="space-y-1.5">
             <Label htmlFor="n-title">Title</Label>
             <Input id="n-title" autoFocus value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Untitled" />

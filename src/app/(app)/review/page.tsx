@@ -270,11 +270,11 @@ export default function ReviewPage() {
           <ul className="space-y-1.5">
             {rescheduled.map((t) => (
               <li key={t.id} className="flex items-center justify-between gap-3 rounded-lg bg-surface-2 px-3 py-2">
-                <div className="min-w-0">
-                  <p className="truncate text-sm">{t.title}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium">{t.title}</p>
                   <p className="text-xs text-text-secondary">Rescheduled {t.reschedule_count}×</p>
                 </div>
-                <div className="flex shrink-0 gap-2">
+                <div className="flex flex-col sm:flex-row shrink-0 gap-1.5 sm:gap-2">
                   <Button variant="outline" size="sm" onClick={() => router.push(`/inbox?new=1&title=${encodeURIComponent("Break down: " + t.title)}`)}>
                     Break down
                   </Button>
@@ -300,11 +300,11 @@ export default function ReviewPage() {
           <ul className="space-y-1.5">
             {staleBacklog.map((t) => (
               <li key={t.id} className="flex items-center justify-between gap-3 rounded-lg bg-surface-2 px-3 py-2">
-                <div className="min-w-0">
-                  <p className="truncate text-sm">{t.title}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium">{t.title}</p>
                   <p className="text-xs text-text-secondary">Last touched {format(new Date(t.last_touched_at), "MMM d")}</p>
                 </div>
-                <div className="flex shrink-0 gap-2">
+                <div className="flex flex-col sm:flex-row shrink-0 gap-1.5 sm:gap-2">
                   <Button variant="outline" size="sm" onClick={() => touchTask(t.id)}>
                     Still relevant
                   </Button>
@@ -378,7 +378,7 @@ export default function ReviewPage() {
           })}
         </div>
         <div className="mt-4 flex justify-end">
-          <Button onClick={scheduleBig3} disabled={saving}>
+          <Button onClick={scheduleBig3} disabled={saving} className="w-full sm:w-auto">
             <AlertTriangle className="mr-2 h-4 w-4" />
             {saving ? "Scheduling…" : "Schedule Big 3 for next week"}
           </Button>

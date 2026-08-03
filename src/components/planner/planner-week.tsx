@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { DndContext, DragOverlay, PointerSensor, useSensor, useSensors, useDraggable, useDroppable, type DragStartEvent, type DragEndEvent } from "@dnd-kit/core"
 import { format, addDays } from "date-fns"
 import type { TaskRow } from "@/hooks/use-tasks"
@@ -49,14 +49,63 @@ export function PlannerWeek({
     onSchedule(activeTask, start)
   }
 
+  const [viewCount, setViewCount] = useState<1 | 3 | 7>(3)
+
+  const displayedDays = useMemo(() => {
+    if (viewCount === 7) return Array.from({ length: 7 }, (_, i) => i)
+    if (viewCount === 3) return [0, 1, 2]
+    // 1 day (today or selected)
+    return [0]
+  }, [viewCount])
+
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       {/* Unscheduled tray */}
       <UnscheduledTray tasks={unscheduled} />
 
-      <div className="mt-4 overflow-x-auto">
-        <div className="grid min-w-[980px] grid-cols-7 gap-px overflow-hidden rounded-xl border border-border-subtle bg-border-subtle">
-          {Array.from({ length: 7 }).map((_, day) => {
+      {/* Mobile-Friendly View Switcher */}
+      <div className="mt-4 flex items-center justify-between gap-2 flex-wrap">
+        <div className="flex items-center gap-1 bg-surface-2 p-1 rounded-xl border border-border-subtle text-xs font-semibold">
+          <button
+            onClick={() => setViewCount(1)}
+            className={cn(
+              "px-3 py-1.5 rounded-lg transition-all cursor-pointer",
+              viewCount === 1 ? "bg-accent-primary text-white shadow-sm" : "text-text-secondary hover:text-text-primary",
+            )}
+          >
+            1 Day
+          </button>
+          <button
+            onClick={() => setViewCount(3)}
+            className={cn(
+              "px-3 py-1.5 rounded-lg transition-all cursor-pointer",
+              viewCount === 3 ? "bg-accent-primary text-white shadow-sm" : "text-text-secondary hover:text-text-primary",
+            )}
+          >
+            3 Days
+          </button>
+          <button
+            onClick={() => setViewCount(7)}
+            className={cn(
+              "px-3 py-1.5 rounded-lg transition-all cursor-pointer",
+              viewCount === 7 ? "bg-accent-primary text-white shadow-sm" : "text-text-secondary hover:text-text-primary",
+            )}
+          >
+            Full Week (7D)
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-3 overflow-x-auto">
+        <div
+          className={cn(
+            "grid gap-px overflow-hidden rounded-xl border border-border-subtle bg-border-subtle transition-all",
+            viewCount === 1 && "grid-cols-1 w-full min-w-0",
+            viewCount === 3 && "grid-cols-1 sm:grid-cols-3 w-full min-w-0",
+            viewCount === 7 && "grid-cols-7 min-w-[850px]",
+          )}
+        >
+          {displayedDays.map((day) => {
             const date = addDays(weekStart, day)
             const dayTasks = scheduled
               .filter((t) => t.scheduled_start && new Date(t.scheduled_start).getDate() === date.getDate())

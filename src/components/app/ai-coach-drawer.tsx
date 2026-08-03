@@ -175,7 +175,7 @@ export function AICoachDrawer() {
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
               placeholder="Ask coach anything..."
-              className="h-10 text-xs rounded-xl bg-surface-1 border-border-subtle focus:border-accent-primary"
+              className="h-10 text-base sm:text-xs rounded-xl bg-surface-1 border-border-subtle focus:border-accent-primary"
             />
             <Button
               type="submit"

@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client"
 import { useQuickAdd } from "@/components/app/quick-add-provider"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { NotificationCenter } from "@/components/app/notification-center"
 import {
   Zap,
   Inbox,
@@ -127,12 +128,15 @@ export function MobileNav({ userEmail }: { userEmail: string }) {
                   </div>
                   <span className="text-base font-semibold tracking-tight">Brainer</span>
                 </div>
-                <button
-                  onClick={() => setDrawerOpen(false)}
-                  className="rounded-lg p-1.5 text-text-secondary hover:bg-surface-2 hover:text-text-primary"
-                >
-                  <X className="h-5 w-5" />
-                </button>
+                <div className="flex items-center gap-2">
+                  <NotificationCenter />
+                  <button
+                    onClick={() => setDrawerOpen(false)}
+                    className="rounded-lg p-1.5 text-text-secondary hover:bg-surface-2 hover:text-text-primary cursor-pointer"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
               </div>
 
               <div className="space-y-1">
