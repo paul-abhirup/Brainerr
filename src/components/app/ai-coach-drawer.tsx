@@ -73,16 +73,10 @@ export function AICoachDrawer() {
       <button
         onClick={() => setOpen(true)}
         aria-label="Open AI Brain Coach"
-        className="fixed bottom-40 right-4 md:bottom-6 md:right-6 z-40 flex items-center gap-2 rounded-full bg-gradient-to-r from-accent-primary via-accent-warm to-accent-success p-0.5 shadow-2xl transition-all hover:scale-105 active:scale-95 cursor-pointer group"
+        className="fixed bottom-40 right-4 md:bottom-6 md:right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-accent-primary via-accent-warm to-accent-success p-0.5 shadow-2xl transition-all hover:scale-105 active:scale-95 cursor-pointer group"
       >
-        <div className="flex items-center gap-2 rounded-full bg-surface-1 px-4 py-2.5 backdrop-blur-md">
-          <Brain className="h-5 w-5 text-accent-primary animate-pulse group-hover:rotate-12 transition-transform" />
-          <span className="text-xs font-black tracking-tight text-text-primary hidden sm:inline">
-            AI Coach
-          </span>
-          <Badge className="bg-accent-primary text-white text-xs font-bold px-1.5 py-0.5">
-            AI
-          </Badge>
+        <div className="flex h-full w-full items-center justify-center rounded-full bg-surface-1 backdrop-blur-md">
+          <Brain className="h-6 w-6 text-accent-primary animate-pulse group-hover:rotate-12 transition-transform" />
         </div>
       </button>
 
