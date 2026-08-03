@@ -244,7 +244,7 @@ function TaskFormFields({
           )}
 
           <DialogFooter>
-            <DialogClose render={<Button type="button" variant="ghost" onClick={(e) => { e.preventDefault(); onClose(); }} />}>
+            <DialogClose render={<Button type="button" variant="ghost" onClick={onClose} />}>
               Cancel
             </DialogClose>
             <Button type="submit" disabled={saving || !title.trim()}>
