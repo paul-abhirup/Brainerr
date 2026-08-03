@@ -9,7 +9,6 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Trophy, Flame, Zap, Lock, CheckCircle2, Award, Star, ShieldCheck, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
-import confetti from "canvas-confetti"
 
 interface AchievementDef {
   id: string
@@ -160,27 +159,15 @@ export default function AchievementsPage() {
 
   const unlockedCount = achievementDefs.filter((a) => a.unlocked).length
 
-  function triggerLevelConfetti() {
-    confetti({
-      particleCount: 150,
-      spread: 90,
-      origin: { y: 0.5 },
-      colors: ["#6366f1", "#10b981", "#f59e0b", "#ec4899", "#3b82f6"],
-    })
-  }
-
   return (
-    <div className="mx-auto max-w-5xl space-y-8 py-6 px-4">
+    <div className="mx-auto max-w-5xl space-y-6">
       {/* Level Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-accent-primary/20 via-accent-warm/20 to-accent-success/20 p-8 border-2 border-accent-primary/30 shadow-2xl">
+      <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-accent-primary/20 via-accent-warm/20 to-accent-success/20 p-6 border-2 border-accent-primary/30 shadow-2xl">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Badge className="bg-accent-primary text-white font-bold uppercase text-xs px-3 py-1">
                 Level {level} Brain Master
-              </Badge>
-              <Badge variant="outline" className="border-accent-warm text-accent-warm font-semibold text-xs">
-                🔥 {totalXP} Total XP
               </Badge>
             </div>
             <h1 className="text-3xl font-black text-text-primary tracking-tight sm:text-4xl">
@@ -192,7 +179,7 @@ export default function AchievementsPage() {
           </div>
 
           {/* Level Progress Circular / Bar Gauge */}
-          <div className="bg-surface-1/90 backdrop-blur-md p-5 rounded-2xl border border-border-subtle min-w-[240px] space-y-2 text-center">
+          <div className="w-full bg-surface-1/90 backdrop-blur-md p-5 rounded-xl border border-border-subtle md:w-64 space-y-2 text-center">
             <div className="flex items-center justify-between text-xs font-bold">
               <span className="text-text-secondary">Level {level}</span>
               <span className="text-accent-primary">{levelXP} / 300 XP</span>
@@ -250,11 +237,10 @@ export default function AchievementsPage() {
             return (
               <Card
                 key={a.id}
-                onClick={a.unlocked ? triggerLevelConfetti : undefined}
                 className={cn(
-                  "p-5 rounded-2xl border transition-all duration-300 relative overflow-hidden group",
+                  "border transition-all duration-300 relative overflow-hidden group",
                   a.unlocked
-                    ? "glass-card border-accent-primary/40 bg-surface-1 hover:border-accent-primary hover:shadow-xl cursor-pointer"
+                    ? "glass-card border-accent-primary/40 bg-surface-1 hover:border-accent-primary hover:shadow-xl"
                     : "bg-surface-2/40 border-border-subtle/50 opacity-60 grayscale",
                 )}
               >

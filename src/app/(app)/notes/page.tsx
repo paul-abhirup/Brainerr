@@ -13,7 +13,7 @@ import { Card } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { EmptyState } from "@/components/ui/empty-state"
 import { toast } from "sonner"
-import { Plus, StickyNote, Trash2 } from "lucide-react"
+import { Plus, Pencil, StickyNote, Trash2 } from "lucide-react"
 
 export default function NotesPage() {
   const { data: notes, isLoading } = useNotes()
@@ -72,9 +72,9 @@ export default function NotesPage() {
                     {note.title || "Untitled"}
                   </h3>
                 </Link>
-                <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                  <Button variant="ghost" size="icon-sm" className="text-xs" onClick={() => setEditingId(note.id)}>
-                    Edit
+                <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+                  <Button variant="ghost" size="icon-sm" aria-label="Edit note" onClick={() => setEditingId(note.id)}>
+                    <Pencil className="h-3.5 w-3.5" />
                   </Button>
                   <DeleteNote id={note.id} />
                 </div>
@@ -90,6 +90,11 @@ export default function NotesPage() {
                     #{tag}
                   </Badge>
                 ))}
+                {note.tags.length > 3 && (
+                  <Badge variant="outline" className="text-xs">
+                    +{note.tags.length - 3}
+                  </Badge>
+                )}
                 {note.linked_task_id && (
                   <Badge className="bg-accent-primary/10 text-accent-primary">task</Badge>
                 )}

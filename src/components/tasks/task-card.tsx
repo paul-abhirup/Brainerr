@@ -12,7 +12,7 @@ import { Card } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
-import { Calendar, Clock, MoreHorizontal, Pencil, Trash2, AlarmClockOff } from "lucide-react"
+import { Calendar, Clock, MoreHorizontal, Pencil, Trash2, SplitSquareHorizontal, Lock, RotateCcw, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 
@@ -71,7 +71,7 @@ export function TaskCard({ task, highlightDue = true }: { task: TaskRow; highlig
 
   return (
     <>
-      <Card size="sm" className="group flex-row items-start gap-3 transition-colors hover:bg-surface-2">
+      <Card size="sm" className="group flex-row items-start transition-colors hover:bg-surface-2">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center">
           <Checkbox
             checked={task.status === "done"}
@@ -131,6 +131,11 @@ export function TaskCard({ task, highlightDue = true }: { task: TaskRow; highlig
                 {project.name}
               </span>
             )}
+            {task.blocked_by_task_id && (
+              <Badge variant="outline" className="border-accent-warm/50 text-accent-warm flex items-center gap-1">
+                <Lock className="h-3 w-3" /> Blocked
+              </Badge>
+            )}
             {task.dread_level && task.dread_level > 2 && (
               <Badge variant="outline" className="border-accent-warm/40 text-accent-warm">
                 Dread {task.dread_level}
@@ -146,15 +151,16 @@ export function TaskCard({ task, highlightDue = true }: { task: TaskRow; highlig
           </div>
         </div>
 
-        <div className="flex items-center gap-0.5 opacity-100 md:opacity-0 md:transition-opacity md:group-hover:opacity-100">
+        <div className="flex items-center gap-0.5 opacity-100 md:opacity-0 md:transition-opacity md:group-hover:opacity-100 md:group-focus-within:opacity-100">
           <Button
             variant="ghost"
             size="sm"
             className="h-8 w-8 p-0"
             onClick={() => openQuickAdd()}
             title="Break this down (quick add a first step)"
+            aria-label="Break down task"
           >
-            <AlarmClockOff className="h-4 w-4" />
+            <SplitSquareHorizontal className="h-4 w-4" />
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger
@@ -165,6 +171,17 @@ export function TaskCard({ task, highlightDue = true }: { task: TaskRow; highlig
               }
             />
             <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={toggleDone}>
+                {task.status === "done" ? (
+                  <>
+                    <RotateCcw className="mr-2 h-4 w-4 text-accent-primary" /> Unmark as done (Reopen)
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="mr-2 h-4 w-4 text-accent-success" /> Mark as done
+                  </>
+                )}
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setEditing(true)}>
                 <Pencil className="mr-2 h-4 w-4" /> Edit
               </DropdownMenuItem>

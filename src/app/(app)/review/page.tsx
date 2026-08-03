@@ -7,11 +7,10 @@ import { useTasks, type TaskRow } from "@/hooks/use-tasks"
 import { useGoals, useProjects } from "@/hooks/use-data"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Card } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { toast } from "sonner"
-import { CalendarClock, Flag, AlarmClock, AlertTriangle, CheckCircle2, GitBranch, Target } from "lucide-react"
+import { CalendarClock, Flag, AlarmClock, AlertTriangle, CheckCircle2, GitBranch, Target, Sparkles, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const RESCHEDULE_THRESHOLD = 3
@@ -150,14 +149,75 @@ export default function ReviewPage() {
     }
   }
 
+  const [aiReview, setAiReview] = useState<{ headline: string; summary: string; recommendations: string[] } | null>(null)
+  const [loadingAi, setLoadingAi] = useState(false)
+
+  async function handleGenerateAiReview() {
+    setLoadingAi(true)
+    try {
+      const res = await fetch("/api/ai/weekly-review", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          completedCount: lastWeekStats.completed,
+          habitRate: lastWeekStats.rate || 50,
+          focusMinutes: 120,
+          rescheduleCount: rescheduled.length,
+        }),
+      })
+      const data = await res.json()
+      if (data.error) throw new Error(data.error)
+      setAiReview(data)
+      toast.success("✨ AI Executive Brief generated!")
+    } catch (err) {
+      toast.error((err as Error).message)
+    } finally {
+      setLoadingAi(false)
+    }
+  }
+
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <PageHeader
-        title="Weekly review"
-        description="A 2-minute pass to catch drift. Nothing to fill in — just look."
-      />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <PageHeader
+          title="Weekly review"
+          description="A 2-minute pass to catch drift. Nothing to fill in — just look."
+        />
+        <Button
+          onClick={handleGenerateAiReview}
+          disabled={loadingAi}
+          className="font-bold gap-1.5 shrink-0 cursor-pointer"
+        >
+          <Sparkles className="h-4 w-4" />
+          {loadingAi ? "Analyzing…" : "AI Weekly Brief"}
+        </Button>
+      </div>
 
-      <Card className="flex-row items-center justify-between">
+      {/* AI Review Summary Card */}
+      {aiReview && (
+        <Card className="glass-card border-2 border-accent-primary/40 bg-accent-primary/5 p-6 shadow-xl space-y-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-accent-primary" />
+            <h3 className="text-base font-bold text-text-primary">{aiReview.headline}</h3>
+          </div>
+          <p className="text-xs text-text-secondary leading-relaxed">{aiReview.summary}</p>
+          <div className="pt-2 space-y-1.5">
+            <span className="text-xs font-bold uppercase tracking-wider text-accent-primary block">
+              Coach Recommendations for Next Week:
+            </span>
+            <ul className="space-y-1 text-xs text-text-primary">
+              {aiReview.recommendations.map((rec, i) => (
+                <li key={i} className="flex items-start gap-2">
+                  <span className="text-accent-primary font-bold">•</span>
+                  <span>{rec}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Card>
+      )}
+
+      <Card className="flex-row items-center">
         <div className="flex items-center gap-3">
           <div className="rounded-lg bg-surface-2 p-2 text-accent-success">
             <CheckCircle2 className="h-5 w-5" />
@@ -202,7 +262,7 @@ export default function ReviewPage() {
         icon={<GitBranch className="h-4 w-4" />}
         title="Repeatedly rescheduled"
         tone="text-accent-warm"
-        body="Rescheduled 3+ times — usually needs breaking into a smaller first step, or dropping."
+        body="Rescheduled 3+ times — usually needs breaking into a smaller first step, or snoozing it for later."
       >
         {rescheduled.length === 0 ? (
           <p className="text-sm text-text-disabled">Nothing here — nice.</p>
@@ -219,7 +279,7 @@ export default function ReviewPage() {
                     Break down
                   </Button>
                   <Button variant="ghost" size="sm" onClick={() => snoozeTask(t.id)}>
-                    Drop
+                    Snooze
                   </Button>
                 </div>
               </li>
@@ -291,11 +351,19 @@ export default function ReviewPage() {
                           })
                         }
                         className={cn(
-                          "flex w-full items-center gap-3 rounded-lg border px-3 py-2 text-left text-sm transition-colors",
+                          "flex w-full items-center gap-3 rounded-lg border px-3 py-2 text-left text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring/60 outline-none",
                           isChecked ? "border-accent-primary/50 bg-accent-primary/5" : "border-border-subtle hover:border-accent-primary/30",
                         )}
+                        aria-pressed={isChecked}
                       >
-                        <Checkbox checked={isChecked} onCheckedChange={() => {}} />
+                        <span
+                          className={cn(
+                            "flex h-4 w-4 shrink-0 items-center justify-center rounded border",
+                            isChecked ? "border-accent-primary bg-accent-primary text-surface-base" : "border-border-subtle bg-surface-2",
+                          )}
+                        >
+                          {isChecked && <Check className="h-3 w-3 stroke-[3]" />}
+                        </span>
                         <span className={cn("min-w-0 flex-1 truncate", isChecked && "text-accent-primary")}>{t.title}</span>
                         <span className="text-xs text-text-secondary">
                           {t.priority === "high" && <Flag className="mr-1 inline h-3 w-3" />}

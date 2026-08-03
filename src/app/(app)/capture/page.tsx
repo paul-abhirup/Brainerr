@@ -90,7 +90,7 @@ export default function CapturePage() {
     }
   }
 
-  async function handleDumpSubmit(e?: React.FormEvent) {
+  async function handleDumpSubmit(e?: React.FormEvent, useAI = true) {
     if (e) e.preventDefault()
     const trimmed = inputVal.trim()
     if (!trimmed || submitting) return
@@ -100,22 +100,56 @@ export default function CapturePage() {
       const user = (await supabase.auth.getUser()).data.user
       if (!user) throw new Error("Not authenticated")
 
-      const { error } = await supabase.from("tasks").insert({
+      let taskPayload: {
+        user_id: string
+        title: string
+        status: "todo" | "done" | "in_progress" | "snoozed"
+        priority: "low" | "medium" | "high"
+        effort: "low" | "medium" | "high"
+        dread_level: number
+        due_date?: string | null
+        estimated_minutes?: number | null
+      } = {
         user_id: user.id,
         title: trimmed,
         status: "todo",
         priority: "medium",
         effort: "low",
         dread_level: 1,
-      })
+      }
 
+      if (useAI) {
+        try {
+          const aiRes = await fetch("/api/ai/parse-task", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: trimmed }),
+          })
+          const aiData = await aiRes.json()
+          if (aiData.title) {
+            taskPayload = {
+              ...taskPayload,
+              title: aiData.title,
+              due_date: aiData.dueDate || null,
+              priority: aiData.priority || "medium",
+              effort: aiData.effort || "low",
+              dread_level: aiData.dreadLevel || 1,
+              estimated_minutes: aiData.estimatedMinutes || null,
+            }
+          }
+        } catch {
+          // Fallback to basic payload if AI parsing fails
+        }
+      }
+
+      const { error } = await supabase.from("tasks").insert(taskPayload)
       if (error) throw error
 
       setInputVal("")
       setDumpedCount((prev) => prev + 1)
       await qc.invalidateQueries({ queryKey: ["tasks"] })
-      toast.success(`Captured: "${trimmed.length > 25 ? trimmed.slice(0, 24) + "…" : trimmed}"`, {
-        duration: 2000,
+      toast.success(`✨ AI Captured: "${taskPayload.title.length > 25 ? taskPayload.title.slice(0, 24) + "…" : taskPayload.title}"`, {
+        duration: 2500,
       })
     } catch (err) {
       toast.error((err as Error).message)
@@ -131,7 +165,7 @@ export default function CapturePage() {
     .slice(0, 10)
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8 py-6 px-4">
+    <div className="mx-auto max-w-3xl space-y-6">
       {/* Hero Header */}
       <div className="text-center space-y-2">
         <Badge className="bg-accent-primary/15 text-accent-primary border-accent-primary/30 font-bold uppercase tracking-wider text-xs px-3 py-1">
@@ -154,7 +188,7 @@ export default function CapturePage() {
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
               placeholder="What's on your mind? (e.g., Email Sarah, Buy batteries, Fix CSS bug)"
-              className="h-16 text-lg font-medium pl-5 pr-28 rounded-2xl bg-surface-2/90 border-border-subtle focus:border-accent-primary focus:ring-4 focus:ring-accent-primary/20 transition-all"
+              className="h-16 text-lg font-medium pl-5 pr-28 rounded-xl bg-surface-2/90 border-border-subtle focus:border-accent-primary focus:ring-4 focus:ring-accent-primary/20 transition-all"
             />
 
             <div className="absolute right-3 flex items-center gap-2">
@@ -163,7 +197,7 @@ export default function CapturePage() {
                 type="button"
                 onClick={toggleVoiceInput}
                 className={cn(
-                  "p-2.5 rounded-xl transition-all cursor-pointer",
+                  "p-2.5 rounded-xl transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-ring/60 outline-none",
                   isListening
                     ? "bg-accent-warm text-black animate-pulse"
                     : "bg-surface-1 text-text-secondary hover:text-accent-primary hover:bg-surface-3",
@@ -197,7 +231,7 @@ export default function CapturePage() {
       </Card>
 
       {/* Captured Items Triage Stack */}
-      <Card className="glass-card border-border-subtle shadow-lg p-6 space-y-4">
+      <Card className="glass-card border-border-subtle shadow-lg p-4 space-y-4">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base font-bold flex items-center gap-2">
             <Inbox className="h-4 w-4 text-accent-primary" />

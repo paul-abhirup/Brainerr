@@ -26,8 +26,6 @@ import {
   Network,
   Sparkles,
   BookOpen,
-  Trophy,
-  BarChart3,
 } from "lucide-react"
 
 const primaryNav = [
@@ -41,8 +39,6 @@ const primaryNav = [
 const secondaryNav = [
   { href: "/capture", label: "Rapid Dump", icon: Sparkles },
   { href: "/journal", label: "Daily Journal", icon: BookOpen },
-  { href: "/achievements", label: "Achievements", icon: Trophy },
-  { href: "/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/visualizer", label: "Task Visualizers", icon: Network },
   { href: "/planner", label: "Planner", icon: CalendarDays },
   { href: "/goals", label: "Goals", icon: Target },

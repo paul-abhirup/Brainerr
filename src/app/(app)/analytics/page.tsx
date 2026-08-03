@@ -46,6 +46,14 @@ export default function AnalyticsPage() {
       }))
   }, [completedTasks])
 
+  // Average actual ÷ estimated ratio across completed tasks
+  const estimationBuffer = useMemo(() => {
+    const withBoth = completedTasks.filter((t) => t.estimated_minutes && t.actual_minutes)
+    if (withBoth.length === 0) return null
+    const ratio = withBoth.reduce((sum, t) => sum + t.actual_minutes! / t.estimated_minutes!, 0) / withBoth.length
+    return `${ratio.toFixed(1)}x`
+  }, [completedTasks])
+
   // Hourly completion distribution
   const hourlyData = useMemo(() => {
     const hoursCount: Record<number, number> = {}
@@ -76,7 +84,7 @@ export default function AnalyticsPage() {
   }, [completedTasks, totalFocusMinutes, habits])
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8 py-6 px-4">
+    <div className="mx-auto max-w-5xl space-y-6">
       {/* Hero Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
@@ -92,7 +100,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Composite Score Ring Gauge */}
-        <Card className="glass-card border-2 border-accent-primary/40 p-5 flex items-center gap-4 shadow-2xl min-w-[240px]">
+        <Card className="glass-card border-2 border-accent-primary/40 p-5 flex items-center gap-4 shadow-2xl shrink-0">
           <div className="relative flex items-center justify-center h-16 w-16 rounded-full bg-accent-primary/10 border-2 border-accent-primary text-accent-primary">
             <span className="text-2xl font-black">{productivityScore}</span>
           </div>
@@ -131,7 +139,7 @@ export default function AnalyticsPage() {
 
         <Card className="glass-card p-4 text-center border-border-subtle">
           <Zap className="h-5 w-5 text-accent-primary mx-auto mb-1" />
-          <p className="text-2xl font-black text-text-primary">1.2x</p>
+          <p className="text-2xl font-black text-text-primary">{estimationBuffer ?? "—"}</p>
           <span className="text-xs text-text-disabled uppercase font-medium">Estimation Buffer</span>
         </Card>
       </div>
@@ -180,27 +188,31 @@ export default function AnalyticsPage() {
           </div>
 
           <div className="h-64 w-full pt-2">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={hourlyData}>
-                <defs>
-                  <linearGradient id="hourGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="var(--accent-success)" stopOpacity={0.6} />
-                    <stop offset="95%" stopColor="var(--accent-success)" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <XAxis dataKey="hour" stroke="var(--text-disabled)" fontSize={11} />
-                <YAxis stroke="var(--text-disabled)" fontSize={11} />
-                <Tooltip />
-                <Area type="monotone" dataKey="tasks" stroke="var(--accent-success)" fillOpacity={1} fill="url(#hourGrad)" />
-              </AreaChart>
-            </ResponsiveContainer>
+            {hourlyData.length === 0 ? (
+              <p className="text-xs text-text-disabled py-20 text-center">Complete tasks to reveal your peak hours</p>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={hourlyData}>
+                  <defs>
+                    <linearGradient id="hourGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="var(--accent-success)" stopOpacity={0.6} />
+                      <stop offset="95%" stopColor="var(--accent-success)" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="hour" stroke="var(--text-disabled)" fontSize={11} />
+                  <YAxis stroke="var(--text-disabled)" fontSize={11} />
+                  <Tooltip />
+                  <Area type="monotone" dataKey="tasks" stroke="var(--accent-success)" fillOpacity={1} fill="url(#hourGrad)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </Card>
       </div>
 
       {/* ADHD Dread Pattern Insight */}
       <Card className="glass-card border-accent-warm/40 bg-accent-warm/5 shadow-xl p-6 flex flex-col sm:flex-row items-center gap-4">
-        <div className="p-4 rounded-2xl bg-accent-warm/10 text-accent-warm shrink-0">
+        <div className="p-4 rounded-xl bg-accent-warm/10 text-accent-warm shrink-0">
           <Brain className="h-8 w-8" />
         </div>
         <div className="space-y-1">

@@ -12,7 +12,6 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
 import { Loader2, Save, Calendar, ChevronRight } from "lucide-react"
-import { cn } from "@/lib/utils"
 
 const DAYS: { key: string; label: string }[] = [
   { key: "mon", label: "Mon" },
@@ -106,7 +105,7 @@ function SettingsForm({ settings }: { settings: UserSettingsRow }) {
         </p>
         <div className="mt-4 space-y-2.5">
           {DAYS.map(({ key, label }) => (
-            <div key={key} className="flex items-center justify-between gap-4">
+            <div key={key} className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <Switch checked={!!hours[key]} onCheckedChange={(v) => setDay(key, v)} />
                 <span className="w-12 text-sm font-medium">{label}</span>
@@ -137,7 +136,7 @@ function SettingsForm({ settings }: { settings: UserSettingsRow }) {
       <Card>
         <Link
           href="/settings/calendar"
-          className="flex items-center justify-between rounded-lg px-1 py-1 transition-colors hover:bg-surface-2"
+          className="flex items-center justify-between rounded-lg px-1 py-1 transition-colors outline-none hover:bg-surface-2 focus-visible:ring-2 focus-visible:ring-ring/60"
         >
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-accent-primary/10 p-2 text-accent-primary">
@@ -164,15 +163,12 @@ function SettingsForm({ settings }: { settings: UserSettingsRow }) {
 
 function TimeInput({ value, onChange, ariaLabel }: { value: string; onChange: (v: string) => void; ariaLabel: string }) {
   return (
-    <input
+    <Input
       type="time"
       value={value}
       aria-label={ariaLabel}
       onChange={(e) => onChange(e.target.value)}
-      className={cn(
-        "rounded-lg border border-border-subtle bg-surface-2 px-2 py-1.5 text-sm tabular-nums outline-none",
-        "focus-visible:ring-1 focus-visible:ring-ring",
-      )}
+      className="w-auto bg-surface-2 tabular-nums"
     />
   )
 }
@@ -192,8 +188,8 @@ function Field({
 }) {
   return (
     <div className="space-y-1.5">
-      <Label>{label}</Label>
-      <Input type="number" min={min} max={max} value={value} onChange={(e) => onChange(e.target.value)} />
+      <Label htmlFor={label}>{label}</Label>
+      <Input id={label} type="number" min={min} max={max} value={value} onChange={(e) => onChange(e.target.value)} />
     </div>
   )
 }

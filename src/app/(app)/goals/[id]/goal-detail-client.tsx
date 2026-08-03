@@ -140,13 +140,13 @@ export function GoalDetailClient({
         title={goal.title}
         description={goal.description ?? undefined}
         actions={
-          <div className="flex shrink-0 gap-2">
+          <div className="flex flex-wrap shrink-0 gap-2">
             {goal.status === "active" && (
               <>
                 <Button variant="outline" size="sm" onClick={() => setTemplateOpen(true)}>
                   <Save className="mr-1.5 h-3.5 w-3.5" /> Save as template
                 </Button>
-                <Button size="sm" onClick={markDone} disabled={working} className="text-accent-success">
+                <Button variant="outline" size="sm" onClick={markDone} disabled={working} className="text-accent-success">
                   <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" /> Mark done
                 </Button>
               </>

@@ -11,8 +11,20 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
-import { Calendar, Clock, Link2, ListTodo, Pencil, StickyNote, Timer, Trash2 } from "lucide-react"
+import { Calendar, Clock, Link2, ListTodo, Pencil, StickyNote, Timer, Trash2, RotateCcw, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type Row = {
@@ -138,12 +150,46 @@ export function TaskDetailClient({
         description={task.description ?? undefined}
         actions={
           <div className="flex shrink-0 gap-1.5">
+            <Button
+              variant={task.status === "done" ? "outline" : "default"}
+              size="sm"
+              onClick={toggleDone}
+              className={cn(task.status === "done" && "border-accent-primary text-accent-primary hover:bg-accent-primary/10")}
+            >
+              {task.status === "done" ? (
+                <>
+                  <RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Unmark as Done (Reopen)
+                </>
+              ) : (
+                <>
+                  <Check className="mr-1.5 h-3.5 w-3.5" /> Mark Done
+                </>
+              )}
+            </Button>
             <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
               <Pencil className="mr-1.5 h-3.5 w-3.5" /> Edit
             </Button>
-            <Button variant="ghost" size="sm" className="text-accent-danger" onClick={remove}>
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger
+                render={
+                  <Button variant="ghost" size="sm" className="text-accent-danger" aria-label="Delete task">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                }
+              />
+              <AlertDialogContent size="sm">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete this task?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    “{task.title}” will be permanently removed. This can&apos;t be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction variant="destructive" onClick={remove}>Delete</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         }
       />
@@ -169,10 +215,13 @@ export function TaskDetailClient({
 
         <div className="flex flex-wrap gap-2">
           {project && (
-            <Link href={`/projects`} className="flex items-center gap-1.5 rounded-lg border border-border-subtle bg-surface-2 px-2.5 py-1 text-xs hover:border-accent-primary/50">
+            <Badge
+              render={<Link href="/projects" />}
+              className="gap-1.5 bg-surface-2 text-text-secondary hover:border-accent-primary/50"
+            >
               <span className="h-2 w-2 rounded-full" style={{ background: project.color ?? "#7C9EFF" }} />
               {project.name}
-            </Link>
+            </Badge>
           )}
           <Badge className="bg-surface-2 text-text-secondary">Priority: {task.priority}</Badge>
           {task.effort && <Badge className="bg-surface-2 text-text-secondary">Effort: {task.effort}</Badge>}
@@ -207,13 +256,13 @@ export function TaskDetailClient({
           <span className="text-xs text-text-secondary">{subtasks.filter((s) => s.status === "done").length}/{subtasks.length} done</span>
         </div>
         <form onSubmit={addSubtask} className="flex gap-2">
-          <input
+          <Input
             value={quick}
             onChange={(e) => setQuick(e.target.value)}
             placeholder="Add a smaller first step…"
-            className="h-9 flex-1 rounded-lg border border-border-subtle bg-surface-2 px-3 text-sm outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            className="flex-1 bg-surface-2"
           />
-          <Button type="submit" size="sm" disabled={adding || !quick.trim()}>
+          <Button type="submit" disabled={adding || !quick.trim()}>
             Add
           </Button>
         </form>
@@ -224,7 +273,6 @@ export function TaskDetailClient({
                 <Checkbox
                   checked={s.status === "done"}
                   onCheckedChange={(v) => toggleSubtask(s.id, !!v)}
-                  className="h-4 w-4 rounded"
                 />
                 <Link href={`/tasks/${s.id}`} className={cn("min-w-0 flex-1 truncate text-sm", s.status === "done" && "text-text-disabled line-through")}>
                   {s.title}

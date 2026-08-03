@@ -207,6 +207,33 @@ export default function NowPage() {
     )
   }
 
+  async function handleAIPlanDay() {
+    try {
+      toast.loading("🤖 AI is analyzing your schedule and energy...", { id: "plan-day" })
+      const res = await fetch("/api/ai/plan-day", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ energyLevel: userState?.mood_energy || "medium" }),
+      })
+      const data = await res.json()
+      if (data.error) throw new Error(data.error)
+
+      if (data.big3TaskIds && data.big3TaskIds.length > 0) {
+        const userId = (await supabase.auth.getUser()).data.user!.id
+        await supabase.from("daily_focus").upsert(
+          { user_id: userId, date: todayStr, task_ids: data.big3TaskIds },
+          { onConflict: "user_id,date" },
+        )
+        await qc.invalidateQueries({ queryKey: ["daily_focus"] })
+        toast.success(`✨ AI Planned Day: ${data.strategyReasoning}`, { id: "plan-day", duration: 5000 })
+      } else {
+        toast.info(data.message || "No tasks available to schedule", { id: "plan-day" })
+      }
+    } catch (err) {
+      toast.error((err as Error).message, { id: "plan-day" })
+    }
+  }
+
   return (
     <div className="mx-auto flex max-w-xl flex-col items-center space-y-8 py-10 text-center">
       <div className="flex flex-wrap items-center justify-center gap-2 text-xs uppercase tracking-widest text-text-disabled">
@@ -228,6 +255,12 @@ export default function NowPage() {
             Set Big 3
           </button>
         )}
+        <button
+          onClick={handleAIPlanDay}
+          className="rounded-full border border-accent-primary/40 bg-accent-primary/10 px-3 py-0.5 normal-case tracking-normal text-accent-primary font-semibold transition-all hover:bg-accent-primary/20 hover:scale-105 flex items-center gap-1 cursor-pointer"
+        >
+          🤖 AI Plan Day
+        </button>
         <button
           onClick={() => setParalysisBreakerOpen(true)}
           className="rounded-full border border-accent-warm/40 bg-accent-warm/10 px-3 py-0.5 normal-case tracking-normal text-accent-warm font-semibold transition-all hover:bg-accent-warm/20 hover:scale-105 flex items-center gap-1 cursor-pointer"

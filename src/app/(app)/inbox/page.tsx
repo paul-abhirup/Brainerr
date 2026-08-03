@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input"
 import { PageHeader } from "@/components/ui/page-header"
 import { EmptyState } from "@/components/ui/empty-state"
 import { toast } from "sonner"
-import { Plus, Dices, Loader2, Inbox as InboxIcon } from "lucide-react"
+import { Plus, Dices, Loader2, Inbox as InboxIcon, ChevronDown, ChevronRight, CheckCircle2 } from "lucide-react"
 
 export default function InboxPage() {
   const { data: tasks, isLoading } = useTasks()
@@ -22,8 +22,10 @@ export default function InboxPage() {
   const [adding, setAdding] = useState(false)
   const [formOpen, setFormOpen] = useState(false)
 
-  const sorted = useMemo(() => {
-    if (!tasks) return []
+  const [showDone, setShowDone] = useState(false)
+
+  const { openTasks, doneTasks } = useMemo(() => {
+    if (!tasks) return { openTasks: [], doneTasks: [] }
     const open = tasks
       .filter((t) => t.status !== "done" && !t.parent_task_id)
       .sort((a, b) => {
@@ -32,7 +34,7 @@ export default function InboxPage() {
         return aDue - bDue
       })
     const done = tasks.filter((t) => t.status === "done" && !t.parent_task_id)
-    return [...open, ...done]
+    return { openTasks: open, doneTasks: done }
   }, [tasks])
 
   async function handleQuickAdd(e: React.FormEvent) {
@@ -58,7 +60,7 @@ export default function InboxPage() {
   }
 
   async function pickForMe() {
-    const candidates = sorted.filter((t) => t.status !== "done")
+    const candidates = openTasks
     if (!candidates.length) {
       toast("Nothing to pick from yet")
       return
@@ -103,10 +105,10 @@ export default function InboxPage() {
         <Input
           value={quickText}
           onChange={(e) => setQuickText(e.target.value)}
-          placeholder="Quick add… “finish slides tomorrow 5pm” (⌘K anywhere)"
-          className="h-12"
+          placeholder="Quick add… try “finish slides tomorrow 5pm”"
+          className="flex-1"
         />
-        <Button type="submit" className="h-12 px-6" disabled={adding || !quickText.trim()}>
+        <Button type="submit" disabled={adding || !quickText.trim()}>
           {adding ? <Loader2 className="h-4 w-4 animate-spin" /> : "Add"}
         </Button>
       </form>
@@ -117,7 +119,7 @@ export default function InboxPage() {
             <div key={i} className="h-16 animate-pulse rounded-lg bg-surface-2" />
           ))}
         </div>
-      ) : sorted.length === 0 ? (
+      ) : openTasks.length === 0 && doneTasks.length === 0 ? (
         <EmptyState
           icon={<InboxIcon className="h-8 w-8 text-text-disabled" />}
           title="Your inbox is empty"
@@ -129,10 +131,36 @@ export default function InboxPage() {
           }
         />
       ) : (
-        <div className="space-y-2">
-          {sorted.map((task) => (
-            <TaskCard key={task.id} task={task} />
-          ))}
+        <div className="space-y-6">
+          {openTasks.length > 0 && (
+            <div className="space-y-2">
+              {openTasks.map((task) => (
+                <TaskCard key={task.id} task={task} />
+              ))}
+            </div>
+          )}
+
+          {doneTasks.length > 0 && (
+            <div className="pt-4 border-t border-border-subtle space-y-3">
+              <button
+                onClick={() => setShowDone((prev) => !prev)}
+                className="flex items-center gap-2 text-xs font-bold text-text-secondary hover:text-text-primary transition-colors cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring/60 rounded"
+                aria-expanded={showDone}
+              >
+                {showDone ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                <CheckCircle2 className="h-4 w-4 text-accent-success" />
+                <span>Completed Tasks ({doneTasks.length}) — Click to view / unmark</span>
+              </button>
+
+              {showDone && (
+                <div className="space-y-2 pl-2 border-l-2 border-accent-success/20">
+                  {doneTasks.map((task) => (
+                    <TaskCard key={task.id} task={task} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 

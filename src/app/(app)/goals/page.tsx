@@ -67,19 +67,18 @@ export default function GoalsPage() {
         title="Goals"
         description="Long-term → monthly → weekly. Progress rolls up from linked tasks."
         actions={
-          <Button onClick={() => setCreating(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            New goal
-          </Button>
+          <>
+            <Button variant="outline" onClick={() => setTemplatesOpen(true)}>
+              <Sparkles className="mr-2 h-4 w-4 text-accent-primary" />
+              Templates
+            </Button>
+            <Button onClick={() => setCreating(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              New goal
+            </Button>
+          </>
         }
       />
-
-      <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" onClick={() => setTemplatesOpen(true)}>
-          <Sparkles className="mr-1.5 h-4 w-4 text-accent-primary" />
-          Templates
-        </Button>
-      </div>
 
       {isLoading ? (
         <div className="h-64 animate-pulse rounded-xl bg-surface-2" />
@@ -156,7 +155,11 @@ function GoalRow({
   return (
     <div className={cn("flex items-center gap-3 p-4", depth > 0 && "bg-surface-1/60 pl-10")}>
       {hasChildren ? (
-        <button onClick={onToggle} className="text-text-secondary">
+        <button
+          onClick={onToggle}
+          className="text-text-secondary cursor-pointer focus-visible:ring-2 focus-visible:ring-ring/60 outline-none rounded"
+          aria-label={isOpen ? "Collapse" : "Expand"}
+        >
           {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </button>
       ) : (
@@ -170,7 +173,7 @@ function GoalRow({
           <p className="truncate text-sm font-medium">{goal.title}</p>
         </div>
         <div className="mt-2 flex items-center gap-3">
-          <Progress value={progressPct} className="h-1.5 w-40 bg-surface-2" />
+          <Progress value={progressPct} className="h-1.5 flex-1 max-w-64 bg-surface-2" />
           <span className="text-xs tabular-nums text-text-secondary">{progressPct}%</span>
           {forecast?.projected_completion && forecast.remaining_tasks > 0 && (
             <span className="hidden items-center gap-1 text-xs text-text-secondary md:flex">

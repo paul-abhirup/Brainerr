@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { toast } from "sonner"
-import { Calendar, CalendarOff, Link2, Loader2, RefreshCw, CheckCircle2, XCircle, Info } from "lucide-react"
+import { Calendar, CalendarOff, Link2, Loader2, RefreshCw, CheckCircle2, XCircle, Info, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type Status = "connected" | "denied" | "error" | null
@@ -27,13 +27,11 @@ export default function CalendarSettingsPage() {
 
   useEffect(() => {
     if (!status) return
-    const t = setTimeout(() => {
-      setStatus(null)
-      const url = new URL(window.location.href)
+    const url = new URL(window.location.href)
+    if (url.searchParams.get("status")) {
       url.searchParams.delete("status")
       router.replace(url.pathname, { scroll: false })
-    }, 4000)
-    return () => clearTimeout(t)
+    }
   }, [status, router])
 
   const { data: integration, isLoading, refetch } = useQuery({
@@ -138,9 +136,6 @@ export default function CalendarSettingsPage() {
                   {working ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="mr-1.5 h-3.5 w-3.5" />}
                   Sync now
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => refetch()}>
-                  <RefreshCw className="mr-1.5 h-3.5 w-3.5" /> Refresh status
-                </Button>
                 <Button variant="ghost" size="sm" className="text-accent-danger" onClick={disconnect} disabled={working}>
                   {working ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : <CalendarOff className="mr-1.5 h-3.5 w-3.5" />}
                   Disconnect
@@ -198,8 +193,8 @@ function StatusBanner({ status, onClose }: { status: Status; onClose: () => void
         <config.icon className="h-4 w-4 shrink-0" />
         {config.text}
       </span>
-      <button onClick={onClose} className="rounded p-0.5 opacity-70 hover:opacity-100" aria-label="Dismiss">
-        <XCircle className="h-4 w-4" />
+      <button onClick={onClose} className="rounded p-0.5 opacity-70 hover:opacity-100 focus-visible:ring-2 focus-visible:ring-ring/60 outline-none" aria-label="Dismiss">
+        <X className="h-4 w-4" />
       </button>
     </div>
   )

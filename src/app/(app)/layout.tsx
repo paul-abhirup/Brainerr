@@ -7,6 +7,8 @@ import { QuickAddProvider } from "@/components/app/quick-add-provider"
 import { CommandPalette } from "@/components/app/command-palette"
 import { ReminderProvider } from "@/components/app/reminder-provider"
 import { DistractionJar } from "@/components/app/distraction-jar"
+import { AICoachDrawer } from "@/components/app/ai-coach-drawer"
+import { OfflineIndicator } from "@/components/app/offline-indicator"
 
 export default async function AppLayout({
   children,
@@ -26,6 +28,7 @@ export default async function AppLayout({
     <QueryProvider>
       <QuickAddProvider>
         <ReminderProvider />
+        <OfflineIndicator />
         <div className="flex min-h-dvh">
           <AppSidebar userEmail={email} />
           <MobileNav userEmail={email} />
@@ -37,6 +40,7 @@ export default async function AppLayout({
         </div>
         <CommandPalette />
         <DistractionJar />
+        <AICoachDrawer />
       </QuickAddProvider>
     </QueryProvider>
   )

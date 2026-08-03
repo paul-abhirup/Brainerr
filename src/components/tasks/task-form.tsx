@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useCreateTask, useUpdateTask, useTasks, type TaskRow } from "@/hooks/use-tasks"
 import { useProjects } from "@/hooks/use-data"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -244,7 +244,9 @@ function TaskFormFields({
           )}
 
           <DialogFooter>
-            <Button type="button" variant="ghost" onClick={onClose}>Cancel</Button>
+            <DialogClose render={<Button type="button" variant="ghost" onClick={(e) => { e.preventDefault(); onClose(); }} />}>
+              Cancel
+            </DialogClose>
             <Button type="submit" disabled={saving || !title.trim()}>
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {task ? "Save changes" : "Add task"}

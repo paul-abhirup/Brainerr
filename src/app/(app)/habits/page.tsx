@@ -41,7 +41,7 @@ export default function HabitsPage() {
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-24 rounded-xl shimmer border border-border-subtle/50" />
+            <div key={i} className="h-24 rounded-xl animate-pulse border border-border-subtle/50" />
           ))}
         </div>
       ) : !habits?.length ? (
@@ -89,7 +89,8 @@ function HabitCard({
   }, [habit.id, weekStart, logs])
 
   const doneThisWeek = weekLogs.filter((l) => l?.completed).length
-  const todayLog = weekLogs[6]
+  const todayIndex = (new Date().getDay() + 6) % 7
+  const todayLog = weekLogs[todayIndex]
   const checkedToday = todayLog?.completed ?? false
   const freezeUsedThisWeek = weekLogs.filter((l) => l && !l.completed).length >= 1
 
@@ -118,12 +119,12 @@ function HabitCard({
   }
 
   return (
-    <div className="glass-card glass-card-hover flex flex-col sm:flex-row sm:items-center gap-4 rounded-xl p-4 sm:p-5 backdrop-blur-md">
+    <div className="glass-card glass-card-hover flex flex-col sm:flex-row sm:items-center gap-4 rounded-xl p-4 backdrop-blur-md">
       <div className="flex items-center gap-3">
         <button
           onClick={() => toggle(new Date())}
           className={cn(
-            "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border transition-all active:scale-95 shadow-sm",
+            "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border transition-all active:scale-95 shadow-sm focus-visible:ring-2 focus-visible:ring-ring/60 outline-none",
             checkedToday
               ? "border-accent-success bg-accent-success text-surface-base shadow-[0_0_12px_rgba(111,207,151,0.4)]"
               : "border-border-subtle bg-surface-2/80 text-text-disabled hover:border-accent-success/60 hover:text-accent-success",
@@ -134,52 +135,35 @@ function HabitCard({
           <Check className="h-6 w-6 stroke-[2.5]" />
         </button>
 
-        <div className="min-w-0 flex-1 sm:hidden">
-          <div className="flex items-center gap-2">
-            <p className={cn("truncate text-base font-semibold", checkedToday && "text-text-secondary line-through opacity-70")}>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2.5">
+            <p className={cn("truncate text-base font-semibold text-text-primary", checkedToday && "text-text-secondary opacity-80")}>
               {habit.title}
             </p>
             {habit.current_streak > 0 && (
-              <span className="flex items-center gap-0.5 rounded-full bg-accent-success/15 px-2 py-0.5 text-xs font-semibold text-accent-success">
+              <span className="flex items-center gap-1 rounded-full bg-accent-success/15 border border-accent-success/20 px-2.5 py-0.5 text-xs font-semibold text-accent-success">
                 <Flame className="h-3.5 w-3.5 fill-current" />
-                {habit.current_streak}
+                {habit.current_streak} streak
+              </span>
+            )}
+            {freezeUsedThisWeek && (
+              <span className="flex items-center gap-1 rounded-full bg-accent-primary/10 border border-accent-primary/20 px-2 py-0.5 text-xs text-accent-primary font-medium" title="Streak freeze active for missed day">
+                <Snowflake className="h-3.5 w-3.5" />
+                Freeze active
               </span>
             )}
           </div>
-          <p className="mt-0.5 text-xs text-text-secondary">
-            {doneThisWeek} of {habit.target_days_per_week} target days
+          <p className="mt-1 text-xs text-text-secondary font-medium">
+            {doneThisWeek} of {habit.target_days_per_week} days completed this week
           </p>
         </div>
-      </div>
-
-      <div className="min-w-0 flex-1 hidden sm:block">
-        <div className="flex items-center gap-2.5">
-          <p className={cn("truncate text-base font-semibold text-text-primary", checkedToday && "text-text-secondary opacity-80")}>
-            {habit.title}
-          </p>
-          {habit.current_streak > 0 && (
-            <span className="flex items-center gap-1 rounded-full bg-accent-success/15 border border-accent-success/20 px-2.5 py-0.5 text-xs font-semibold text-accent-success">
-              <Flame className="h-3.5 w-3.5 fill-current" />
-              {habit.current_streak} streak
-            </span>
-          )}
-          {freezeUsedThisWeek && (
-            <span className="flex items-center gap-1 rounded-full bg-accent-primary/10 border border-accent-primary/20 px-2 py-0.5 text-xs text-accent-primary font-medium" title="Streak freeze active for missed day">
-              <Snowflake className="h-3.5 w-3.5" />
-              Freeze active
-            </span>
-          )}
-        </div>
-        <p className="mt-1 text-xs text-text-secondary font-medium">
-          {doneThisWeek} of {habit.target_days_per_week} days completed this week
-        </p>
       </div>
 
       {/* Touch-Friendly 7-Day Dot Grid */}
       <div className="flex items-center justify-between sm:justify-end gap-1.5 pt-2 sm:pt-0 border-t sm:border-t-0 border-border-subtle/40">
         {weekLogs.map((log, i) => {
           const dayDate = addDays(weekStart, i)
-          const isToday = i === 6
+          const isToday = i === todayIndex
           const dayName = format(dayDate, "EEE")
           return (
             <div key={i} className="flex flex-col items-center gap-1">
@@ -187,7 +171,7 @@ function HabitCard({
               <button
                 onClick={() => toggle(dayDate)}
                 className={cn(
-                  "h-7 w-7 sm:h-8 sm:w-8 rounded-xl border transition-all active:scale-95 flex items-center justify-center text-xs font-semibold",
+                  "h-8 w-8 rounded-xl border transition-all active:scale-95 flex items-center justify-center text-xs font-semibold focus-visible:ring-2 focus-visible:ring-ring/60 outline-none",
                   log?.completed
                     ? "border-accent-success bg-accent-success text-surface-base shadow-[0_0_8px_rgba(111,207,151,0.3)]"
                     : "border-border-subtle bg-surface-2/60 text-text-disabled hover:border-accent-success/50",

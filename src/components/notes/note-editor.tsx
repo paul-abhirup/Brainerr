@@ -140,7 +140,7 @@ function NoteEditorForm({
   }
 
   return (
-    <DialogContent className="max-w-lg">
+    <DialogContent size="lg">
         <DialogHeader>
           <DialogTitle>{note?.id ? "Edit note" : "New note"}</DialogTitle>
         </DialogHeader>
@@ -170,7 +170,7 @@ function NoteEditorForm({
                         key={item.id}
                         type="button"
                         onClick={() => pickMention(item)}
-                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-surface-3"
+                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-surface-3 focus-visible:bg-surface-3 outline-none"
                       >
                         {"priority" in item ? (
                           <ListTodo className="h-3.5 w-3.5 text-accent-primary" />

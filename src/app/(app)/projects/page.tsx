@@ -12,6 +12,17 @@ import { Card } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
 import { FolderKanban, Plus, Pencil, Trash2, Target, CheckCircle2 } from "lucide-react"
@@ -81,16 +92,6 @@ export default function ProjectsPage() {
     }
   }
 
-  async function remove(projectId: string, name: string) {
-    if (!confirm(`Delete project "${name}"? Tasks keep their project assignment cleared.`)) return
-    const { error } = await supabase.from("projects").delete().eq("id", projectId)
-    if (error) toast.error(error.message)
-    else {
-      await qc.invalidateQueries({ queryKey: ["projects"] })
-      toast.success("Project deleted")
-    }
-  }
-
   const stats = (projectId: string) => {
     const list = (tasks ?? []).filter((t) => t.project_id === projectId)
     return {
@@ -138,13 +139,11 @@ export default function ProjectsPage() {
                     <h3 className="truncate text-sm font-semibold">{p.name}</h3>
                   </div>
                   <div className="flex shrink-0 gap-1">
-                    <Button variant="ghost" size="icon-sm"
+                    <Button variant="ghost" size="icon-sm" aria-label="Edit project"
                       onClick={() => openEdit(p)}>
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
-                    <Button variant="ghost" size="icon-sm" className="text-accent-danger" onClick={() => remove(p.id, p.name)}>
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
+                    <DeleteProject id={p.id} name={p.name} />
                   </div>
                 </div>
                 <div className="mt-2 flex items-center gap-4 text-xs text-text-secondary">
@@ -154,9 +153,9 @@ export default function ProjectsPage() {
                   </span>
                   <span>{s.open} open</span>
                   {goal && (
-                    <Link href={`/goals/${goal.id}`} className="flex items-center gap-1 text-accent-primary hover:underline">
-                      <Target className="h-3 w-3" />
-                      {goal.title}
+                    <Link href={`/goals/${goal.id}`} className="flex min-w-0 items-center gap-1 text-accent-primary hover:underline">
+                      <Target className="h-3 w-3 shrink-0" />
+                      <span className="truncate">{goal.title}</span>
                     </Link>
                   )}
                 </div>
@@ -196,7 +195,11 @@ export default function ProjectsPage() {
                     key={c}
                     type="button"
                     onClick={() => setColor(c)}
-                    className={cn("h-7 w-7 rounded-full transition-transform", color === c && "ring-2 ring-accent-primary ring-offset-2 ring-offset-surface-1")}
+                    aria-pressed={color === c}
+                    className={cn(
+                      "h-7 w-7 rounded-full transition-transform cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
+                      color === c && "ring-2 ring-accent-primary ring-offset-2 ring-offset-surface-1",
+                    )}
                     style={{ background: c }}
                     aria-label={`Color ${c}`}
                   />
@@ -211,5 +214,43 @@ export default function ProjectsPage() {
         </DialogContent>
       </Dialog>
     </div>
+  )
+}
+
+function DeleteProject({ id, name }: { id: string; name: string }) {
+  const supabase = createClient()
+  const qc = useQueryClient()
+
+  async function remove() {
+    const { error } = await supabase.from("projects").delete().eq("id", id)
+    if (error) toast.error(error.message)
+    else {
+      await qc.invalidateQueries({ queryKey: ["projects"] })
+      toast.success("Project deleted")
+    }
+  }
+
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger
+        render={
+          <Button variant="ghost" size="icon-sm" className="text-accent-danger" aria-label="Delete project">
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        }
+      />
+      <AlertDialogContent size="sm">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete this project?</AlertDialogTitle>
+          <AlertDialogDescription>
+            “{name}” will be removed. Tasks keep their project assignment cleared.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction variant="destructive" onClick={remove}>Delete</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }

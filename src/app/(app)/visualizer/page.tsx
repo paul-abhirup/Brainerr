@@ -22,6 +22,7 @@ import {
   Clock,
   Layers,
   ArrowRight,
+  X,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
@@ -171,8 +172,8 @@ export default function VisualizerPage() {
                 </Badge>
                 <h3 className="text-xl font-bold text-text-primary">{selectedTask.title}</h3>
               </div>
-              <Button variant="ghost" size="sm" onClick={() => setSelectedTask(null)} className="rounded-xl">
-                ✕
+              <Button variant="ghost" size="sm" onClick={() => setSelectedTask(null)} aria-label="Close task details" className="rounded-xl">
+                <X className="h-4 w-4" />
               </Button>
             </div>
 
@@ -197,12 +198,6 @@ export default function VisualizerPage() {
                   {selectedTask.due_date ? format(new Date(selectedTask.due_date), "MMM d, yyyy") : "No due date"}
                 </span>
               </div>
-            </div>
-
-            <div className="flex justify-end pt-2">
-              <Button onClick={() => setSelectedTask(null)} className="rounded-xl bg-accent-primary text-surface-base">
-                Close
-              </Button>
             </div>
           </Card>
         </div>
@@ -255,8 +250,10 @@ function TaskGraphVisualizer({
         <div className="flex items-center gap-1.5 rounded-xl border border-border-subtle bg-surface-2/80 p-1">
           <button
             onClick={() => setZoom((z) => Math.min(1.8, z + 0.15))}
-            className="p-1 text-text-secondary hover:text-text-primary"
+            disabled={zoom >= 1.8}
+            className="p-1 text-text-secondary hover:text-text-primary disabled:opacity-40 disabled:pointer-events-none focus-visible:ring-2 focus-visible:ring-ring/60 outline-none rounded"
             title="Zoom In"
+            aria-label="Zoom in"
           >
             <ZoomIn className="h-4 w-4" />
           </button>
@@ -265,22 +262,25 @@ function TaskGraphVisualizer({
           </span>
           <button
             onClick={() => setZoom((z) => Math.max(0.5, z - 0.15))}
-            className="p-1 text-text-secondary hover:text-text-primary"
+            disabled={zoom <= 0.5}
+            className="p-1 text-text-secondary hover:text-text-primary disabled:opacity-40 disabled:pointer-events-none focus-visible:ring-2 focus-visible:ring-ring/60 outline-none rounded"
             title="Zoom Out"
+            aria-label="Zoom out"
           >
             <ZoomOut className="h-4 w-4" />
           </button>
           <button
             onClick={() => setZoom(1)}
-            className="p-1 text-text-secondary hover:text-text-primary border-l border-border-subtle pl-1.5"
+            className="p-1 text-text-secondary hover:text-text-primary border-l border-border-subtle pl-1.5 focus-visible:ring-2 focus-visible:ring-ring/60 outline-none rounded"
             title="Reset Zoom"
+            aria-label="Reset zoom"
           >
             <RotateCcw className="h-3.5 w-3.5" />
           </button>
         </div>
       </CardHeader>
 
-      <CardContent className="p-0 overflow-auto flex justify-center bg-surface-base/50 min-h-[500px]">
+      <CardContent className="p-0 overflow-auto bg-surface-base/50 min-h-[500px]">
         {tasks.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-text-disabled">
             <Network className="h-10 w-10 mb-2 opacity-40" />
@@ -374,7 +374,7 @@ function TaskGraphVisualizer({
                       y={y + 36}
                       textAnchor="middle"
                       fill="var(--text-primary)"
-                      fontSize="11"
+                      fontSize="12"
                       fontWeight="500"
                       className="pointer-events-none drop-shadow-md select-none"
                     >
@@ -565,7 +565,7 @@ function DreadEffortMatrixVisualizer({
           </div>
         </div>
 
-      <div className="grid grid-cols-5 gap-2 pt-4">
+      <div className="grid grid-cols-2 gap-2 pt-4 sm:grid-cols-3 md:grid-cols-5">
         {[1, 2, 3, 4, 5].map((dread) => (
           <div key={dread} className="space-y-2">
             <div className="text-center text-xs font-semibold text-accent-warm border-b border-border-subtle pb-1">

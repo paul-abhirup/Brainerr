@@ -8,7 +8,8 @@ import { useTasks } from "@/hooks/use-tasks"
 import { Button } from "@/components/ui/button"
 import { Card, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
+import { PageHeader } from "@/components/ui/page-header"
+import { Input } from "@/components/ui/input"
 import { BookOpen, CheckCircle2, Calendar as CalendarIcon, HeartPulse, Save } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -108,31 +109,23 @@ export default function JournalPage() {
   ]
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8 py-6 px-4">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <Badge className="bg-accent-warm/15 text-accent-warm border-accent-warm/30 font-bold uppercase tracking-wider text-xs px-3 py-1 mb-1">
-            📓 Daily Reflection
-          </Badge>
-          <h1 className="text-3xl font-black text-text-primary tracking-tight">
-            Daily Brain Journal
-          </h1>
-          <p className="text-xs text-text-secondary">
-            Reflect on wins, log your mood, and clear mental static before bed.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <CalendarIcon className="h-4 w-4 text-text-disabled" />
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="rounded-xl border border-border-subtle bg-surface-1 px-3 py-1.5 text-xs text-text-primary focus:outline-none focus:border-accent-primary"
-          />
-        </div>
-      </div>
+    <div className="mx-auto max-w-4xl space-y-6">
+      <PageHeader
+        eyebrow="Daily Reflection"
+        title="Daily Brain Journal"
+        description="Reflect on wins, log your mood, and clear mental static before bed."
+        actions={
+          <div className="flex items-center gap-2">
+            <CalendarIcon className="h-4 w-4 text-text-disabled" />
+            <Input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="w-auto bg-surface-1 text-text-primary"
+            />
+          </div>
+        }
+      />
 
       <div className="grid gap-6 md:grid-cols-3">
         {/* Left Column: Energy Check-in & Auto-populated Wins */}
@@ -149,7 +142,7 @@ export default function JournalPage() {
                   key={level}
                   onClick={() => setEnergyLevel(level)}
                   className={cn(
-                    "p-2.5 rounded-xl border text-xs font-bold capitalize transition-all cursor-pointer",
+                    "p-2.5 rounded-xl border text-xs font-bold capitalize transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
                     energyLevel === level
                       ? "border-accent-warm bg-accent-warm/15 text-accent-warm shadow-md scale-105"
                       : "border-border-subtle bg-surface-2 text-text-secondary hover:border-text-secondary",
@@ -214,7 +207,6 @@ export default function JournalPage() {
               <Button
                 onClick={handleSaveJournal}
                 disabled={saving}
-                size="sm"
                 className="bg-accent-primary text-white hover:bg-accent-primary/90 font-bold gap-1.5 cursor-pointer"
               >
                 <Save className="h-4 w-4" />
@@ -226,19 +218,19 @@ export default function JournalPage() {
             <div className="grid gap-2 sm:grid-cols-3 text-xs">
               <button
                 onClick={() => setJournalText((prev) => prev + "\n\n### 🌟 Big Win Today:\n- ")}
-                className="p-2 rounded-lg border border-border-subtle bg-surface-2 hover:border-accent-primary transition-all text-left text-text-secondary cursor-pointer"
+                className="p-2 rounded-lg border border-border-subtle bg-surface-2 hover:border-accent-primary transition-all text-left text-text-secondary cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
               >
                 + Insert &quot;Big Win&quot;
               </button>
               <button
                 onClick={() => setJournalText((prev) => prev + "\n\n### 🚧 Friction & Blockers:\n- ")}
-                className="p-2 rounded-lg border border-border-subtle bg-surface-2 hover:border-accent-warm transition-all text-left text-text-secondary cursor-pointer"
+                className="p-2 rounded-lg border border-border-subtle bg-surface-2 hover:border-accent-warm transition-all text-left text-text-secondary cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
               >
                 + Insert &quot;Blockers&quot;
               </button>
               <button
                 onClick={() => setJournalText((prev) => prev + "\n\n### 🎯 Victory for Tomorrow:\n- ")}
-                className="p-2 rounded-lg border border-border-subtle bg-surface-2 hover:border-accent-success transition-all text-left text-text-secondary cursor-pointer"
+                className="p-2 rounded-lg border border-border-subtle bg-surface-2 hover:border-accent-success transition-all text-left text-text-secondary cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
               >
                 + Insert &quot;Tomorrow Goal&quot;
               </button>
@@ -248,7 +240,7 @@ export default function JournalPage() {
               value={journalText}
               onChange={(e) => setJournalText(e.target.value)}
               placeholder="What went well today? What caused friction or overwhelm? What's one thing you want to smash tomorrow?"
-              className="min-h-[320px] font-sans text-sm leading-relaxed p-4 rounded-2xl bg-surface-2/60 border-border-subtle focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20"
+              className="min-h-[320px] font-sans text-sm leading-relaxed p-4 rounded-xl bg-surface-2/60 border-border-subtle focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20"
             />
           </Card>
         </div>
