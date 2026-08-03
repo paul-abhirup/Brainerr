@@ -49,7 +49,10 @@ export function DistractionJar() {
 
   async function convertToInboxTask(id: string, text: string) {
     try {
+      const user = (await supabase.auth.getUser()).data.user
+      if (!user) throw new Error("User not authenticated")
       const { error } = await supabase.from("tasks").insert({
+        user_id: user.id,
         title: text,
         status: "todo",
       })

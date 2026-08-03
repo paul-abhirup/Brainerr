@@ -201,7 +201,10 @@ function HabitDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v: 
     e.preventDefault()
     setSaving(true)
     try {
+      const user = (await supabase.auth.getUser()).data.user
+      if (!user) throw new Error("User not authenticated")
       const { error } = await supabase.from("habits").insert({
+        user_id: user.id,
         title: title.trim(),
         target_days_per_week: Number(target),
       })

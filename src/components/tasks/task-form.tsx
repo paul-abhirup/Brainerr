@@ -42,12 +42,14 @@ export function TaskForm({
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <TaskFormFields
-        key={open ? task?.id ?? "new" : "closed"}
-        task={task}
-        defaultProjectId={defaultProjectId}
-        onClose={() => onOpenChange(false)}
-      />
+      {open && (
+        <TaskFormFields
+          key={task?.id ?? "new"}
+          task={task}
+          defaultProjectId={defaultProjectId}
+          onClose={() => onOpenChange(false)}
+        />
+      )}
     </Dialog>
   )
 }
@@ -244,9 +246,9 @@ function TaskFormFields({
           )}
 
           <DialogFooter>
-            <DialogClose render={<Button type="button" variant="ghost" onClick={onClose} />}>
+            <Button type="button" variant="ghost" onClick={onClose}>
               Cancel
-            </DialogClose>
+            </Button>
             <Button type="submit" disabled={saving || !title.trim()}>
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {task ? "Save changes" : "Add task"}

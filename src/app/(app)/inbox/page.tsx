@@ -42,8 +42,11 @@ export default function InboxPage() {
     if (!quickText.trim() || adding) return
     setAdding(true)
     try {
+      const user = (await supabase.auth.getUser()).data.user
+      if (!user) throw new Error("User not authenticated")
       const p = parseQuickAdd(quickText)
       const { error } = await supabase.from("tasks").insert({
+        user_id: user.id,
         title: p.title,
         due_date: p.dueDate,
         status: "todo",

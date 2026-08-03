@@ -49,9 +49,12 @@ export function useCreateTask() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (input: Partial<TaskRow>) => {
+      const user = (await supabase().auth.getUser()).data.user
+      if (!user) throw new Error("User not authenticated")
+      const payload = input.user_id ? input : { ...input, user_id: user.id }
       const { data, error } = await supabase()
         .from("tasks")
-        .insert(input)
+        .insert(payload)
         .select()
         .single()
       if (error) throw error

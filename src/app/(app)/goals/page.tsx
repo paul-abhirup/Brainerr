@@ -247,7 +247,10 @@ function GoalDialog({
     e.preventDefault()
     setSaving(true)
     try {
+      const user = (await supabase.auth.getUser()).data.user
+      if (!user) throw new Error("User not authenticated")
       const { error } = await supabase.from("goals").insert({
+        user_id: user.id,
         title: title.trim(),
         description: description.trim() || null,
         horizon,
@@ -337,9 +340,12 @@ function TemplatesDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
   async function apply(tpl: GoalTemplate) {
     setApplying(tpl.id)
     try {
+      const user = (await supabase.auth.getUser()).data.user
+      if (!user) throw new Error("User not authenticated")
       const { data: goal, error: goalError } = await supabase
         .from("goals")
         .insert({
+          user_id: user.id,
           title: tpl.goal_title,
           description: tpl.goal_description,
           horizon: tpl.horizon,
@@ -351,12 +357,13 @@ function TemplatesDialog({ open, onOpenChange }: { open: boolean; onOpenChange: 
       for (const p of tpl.data?.projects ?? []) {
         const { data: project, error: projError } = await supabase
           .from("projects")
-          .insert({ name: p.name, color: p.color, goal_id: goal.id })
+          .insert({ user_id: user.id, name: p.name, color: p.color, goal_id: goal.id })
           .select()
           .single()
         if (projError) throw projError
         for (const t of p.tasks ?? []) {
           const { error: taskError } = await supabase.from("tasks").insert({
+            user_id: user.id,
             title: t.title,
             priority: t.priority as TaskPriority,
             project_id: project.id,

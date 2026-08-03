@@ -41,15 +41,18 @@ export function CommandPalette() {
     if (!value.trim() || loading) return
     setLoading(true)
     try {
+      const user = (await supabase.auth.getUser()).data.user
+      if (!user) throw new Error("User not authenticated")
       const p = parseQuickAdd(value)
       if (p.isReminder) {
         const { error } = await supabase
           .from("notes")
-          .insert({ title: p.title, body: p.title })
+          .insert({ user_id: user.id, title: p.title, body: p.title })
         if (error) throw error
         toast.success("Captured to notes")
       } else {
         const { error } = await supabase.from("tasks").insert({
+          user_id: user.id,
           title: p.title,
           due_date: p.dueDate,
           status: "todo",

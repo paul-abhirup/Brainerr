@@ -111,7 +111,10 @@ export function TaskDetailClient({
     setAdding(true)
     try {
       const supabase = (await import("@/lib/supabase/client")).createClient()
+      const user = (await supabase.auth.getUser()).data.user
+      if (!user) throw new Error("User not authenticated")
       const { error } = await supabase.from("tasks").insert({
+        user_id: user.id,
         title: quick.trim(),
         parent_task_id: task.id,
         project_id: task.project_id,

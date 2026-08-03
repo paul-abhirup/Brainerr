@@ -22,7 +22,9 @@ export function useCreateProject() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (input: { name: string; goal_id?: string | null; color?: string }) => {
-      const { data, error } = await supabase().from("projects").insert(input).select().single()
+      const user = (await supabase().auth.getUser()).data.user
+      if (!user) throw new Error("Not signed in")
+      const { data, error } = await supabase().from("projects").insert({ ...input, user_id: user.id }).select().single()
       if (error) throw error
       return data
     },

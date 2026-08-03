@@ -75,7 +75,10 @@ export default function ProjectsPage() {
         if (error) throw error
         toast.success("Project updated")
       } else {
+        const user = (await supabase.auth.getUser()).data.user
+        if (!user) throw new Error("Not signed in")
         const { error } = await supabase.from("projects").insert({
+          user_id: user.id,
           name: name.trim(),
           goal_id: goalId || null,
           color,
