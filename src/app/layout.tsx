@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import { Inter, JetBrains_Mono } from "next/font/google"
 import "./globals.css"
 import { Toaster } from "@/components/ui/sonner"
+import { SupabaseErrorBoundary } from "@/components/supabase-error-boundary"
 
 const inter = Inter({
   variable: "--font-sans",
@@ -37,7 +38,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark h-full antialiased">
       <body className={`${inter.variable} ${jetbrainsMono.variable} min-h-full flex flex-col`}>
-        {children}
+        <SupabaseErrorBoundary>
+          {children}
+        </SupabaseErrorBoundary>
         <Toaster theme="dark" />
       </body>
     </html>

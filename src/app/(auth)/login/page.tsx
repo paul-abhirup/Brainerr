@@ -11,7 +11,7 @@ import { Loader2, Brain } from "lucide-react"
 
 export default function LoginPage() {
   const router = useRouter()
-  const supabase = createClient()
+  const [supabase] = useState(() => createClient())
   const [mode, setMode] = useState<"login" | "signup">("login")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")

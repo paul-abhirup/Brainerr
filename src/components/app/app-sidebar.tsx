@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
@@ -47,7 +48,7 @@ const nav = [
 export function AppSidebar({ userEmail }: { userEmail: string }) {
   const pathname = usePathname()
   const router = useRouter()
-  const supabase = createClient()
+  const [supabase] = useState(() => createClient())
 
   async function signOut() {
     await supabase.auth.signOut()
